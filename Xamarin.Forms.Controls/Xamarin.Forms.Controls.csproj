@@ -161,6 +161,9 @@
     <None Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\SelectionChangedCommandParameter.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Compile Update="VSMTestPage.xaml.cs">
+      <DependentUpon>VSMTestPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">

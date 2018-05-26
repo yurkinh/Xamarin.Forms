@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.VSMTestPage" Padding="40">
+    <ContentPage.Resources>
+        <Storyboard x:Key="myStoryboard">
+            <Animation x:TypeArguments="Color" Storyboard.TargetProperty="BoxView.Color" Storyboard.TargetName="MyAnimatedBoxView" To="Pink" />
+        </Storyboard>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <StackLayout>
+            <Entry FontSize="12" x:Name="entry" Text="Focus to animate to green">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Focused">
+                            <Storyboard Duration="500">
+                                <Animation x:TypeArguments="Color" To="Green"  
+                                           Storyboard.TargetProperty="BoxView.Color" 
+                                           Storyboard.TargetName="MyAnimatedBoxView"  />
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Red" />
+                            </VisualState.Setters>
+                            <Storyboard Duration="1000">
+                                <Animation x:TypeArguments="Color" To="Red" 
+                                           Storyboard.TargetProperty="BoxView.Color"
+                                           Storyboard.TargetName="MyAnimatedBoxView"  />
+                            </Storyboard>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Entry>
+            <Button Text="Disable entry" Clicked="Handle_Clicked" />
+            <BoxView x:Name="MyAnimatedBoxView" Color="Purple" WidthRequest="200" HeightRequest="200" VerticalOptions="Center" HorizontalOptions="Center" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
