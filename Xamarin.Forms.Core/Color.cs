@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 {
 	[DebuggerDisplay("R={R}, G={G}, B={B}, A={A}, Hue={Hue}, Saturation={Saturation}, Luminosity={Luminosity}")]
 	[TypeConverter(typeof(ColorTypeConverter))]
-	public struct Color
+	public struct Color : IInterpolatable<Color>
 	{
 		readonly Mode _mode;
 
@@ -400,6 +400,24 @@ namespace Xamarin.Forms
 		{
 			return new Color(h, s, l, a, Mode.Hsl);
 		}
+
+
+		public object InterpolateTo(object from, object target, double interpolate)
+		{
+			return InterpolateTo((Color)from, (Color)target, interpolate);
+		}
+
+		public Color InterpolateTo(Color from, Color target, double interpolate)
+		{
+
+			var rR = from.R + (target.R - from.R) * interpolate;
+			var gG = from.G + (target.G - from.G) * interpolate;
+			var bB = from.B + (target.B - from.B) * interpolate;
+			var aA = from.A + (target.A - from.A) * interpolate;
+
+			return FromRgba(rR, gG, bB, aA);
+		}
+
 #if !NETSTANDARD1_0
 		public static implicit operator System.Drawing.Color(Color color)
 		{

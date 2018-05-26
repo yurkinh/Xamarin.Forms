@@ -2,11 +2,47 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
-	public partial class VisualElement : NavigableElement, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController, IPropertyPropagationController, IVisualController, ITabStopElement
+	[Xaml.TypeConversion(typeof(VisualElement))]
+	public sealed class VisualElementConverter : TypeConverter, IExtendedTypeConverter
+	{
+		object IExtendedTypeConverter.ConvertFromInvariantString(string value, IServiceProvider serviceProvider)
+		{
+			if (string.IsNullOrWhiteSpace(value))
+				return null;
+			if (serviceProvider == null)
+				return null;
+			var parentValuesProvider = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideParentValues;
+			var typeResolver = serviceProvider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
+			if (typeResolver == null)
+				return null;
+			IXmlLineInfo lineinfo = null;
+			var xmlLineInfoProvider = serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider;
+			if (xmlLineInfoProvider != null)
+				lineinfo = xmlLineInfoProvider.XmlLineInfo;
+			string[] parts = value.Split('.');
+			var parent = parentValuesProvider.ParentObjects.Last();
+			object type = (parent as Element).FindByName<VisualElement>(parts[0]);
+			return type;
+		}
+
+		object IExtendedTypeConverter.ConvertFrom(CultureInfo culture, object value, IServiceProvider serviceProvider)
+		{
+			return ((IExtendedTypeConverter)this).ConvertFromInvariantString(value as string, serviceProvider);
+		}
+	}
+
+	[TypeConverter(typeof(VisualElementConverter))]
+	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IFlowDirectionController
 	{
 		public new static readonly BindableProperty NavigationProperty = NavigableElement.NavigationProperty;
 
