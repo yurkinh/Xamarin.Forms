@@ -88,9 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			foreach (var element in stackLayout.Descendants())
 			{
-				//TODO: if (element is Button button)
-				var button = element as Button;
-				if (button != null)
+				if (element is Button button)
 					button.On<Android>().SetUseDefaultPadding(true).SetUseDefaultShadow(true);
 			}
 
