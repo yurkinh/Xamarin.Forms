@@ -354,10 +354,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			ScrollToPosition(args);
+			ScrollTo(args);
 		}
 
-		protected virtual void ScrollToPosition(ScrollToRequestEventArgs args)
+		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
 			var position = DeterminePosition(args);
 			

@@ -157,7 +157,8 @@
 				var caption = new Label
 				{
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center
+					HorizontalTextAlignment = TextAlignment.Center,
+					HeightRequest = 40
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Date", stringFormat: "{0:d}"));
