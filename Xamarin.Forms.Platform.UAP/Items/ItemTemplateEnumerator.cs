@@ -98,6 +98,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_formsDataTemplate = formsDataTemplate;
 			_innerEnumerator = itemsSource.GetEnumerator();
 		}
+		
 		public IEnumerator GetEnumerator()
 		{
 			return this;

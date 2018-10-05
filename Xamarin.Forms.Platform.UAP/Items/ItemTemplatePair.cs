@@ -6,6 +6,8 @@
 		{
 			FormsDataTemplate = formsDataTemplate;
 			Item = item;
+
+			System.Diagnostics.Debug.WriteLine($">>>>> New ItemTemplatePair, item: {item}");
 		}
 
 		public DataTemplate FormsDataTemplate { get; }

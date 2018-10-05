@@ -135,24 +135,34 @@
 			{
 				var templateLayout = new Grid
 				{
-					BackgroundColor = Color.Bisque,
+					//BackgroundColor = Color.Bisque,
 
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
 					WidthRequest = 100,
 					HeightRequest = 140
 				};
 
-				var image = new Image
+				//var image = new Image
+				//{
+				//	Margin = new Thickness(5),
+				//	HeightRequest = 100,
+				//	WidthRequest = 100,
+				//	HorizontalOptions = LayoutOptions.Center,
+				//	VerticalOptions = LayoutOptions.Center,
+				//	Aspect = Aspect.AspectFit
+				//};
+
+				//image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				var box = new BoxView
 				{
 					Margin = new Thickness(5),
 					HeightRequest = 100,
 					WidthRequest = 100,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
-					Aspect = Aspect.AspectFit
+					Color = Color.BlueViolet
 				};
-
-				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
 				var caption = new Label
 				{
@@ -163,7 +173,8 @@
 
 				caption.SetBinding(Label.TextProperty, new Binding("Date", stringFormat: "{0:d}"));
 				
-				templateLayout.Children.Add(image);
+				//templateLayout.Children.Add(image);
+				templateLayout.Children.Add(box);
 				templateLayout.Children.Add(caption);
 
 				Grid.SetRow(caption, 1);

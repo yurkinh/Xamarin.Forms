@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -25,6 +28,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var formsContentControl = (ItemContentControl)d;
+			//Debug.WriteLine($"ItemContentControl FormsDataTemplate changed");
 			formsContentControl.RealizeFormsDataTemplate((DataTemplate)e.NewValue);
 		}
 
@@ -41,6 +45,7 @@ namespace Xamarin.Forms.Platform.UWP
 		static void FormsDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var formsContentControl = (ItemContentControl)d;
+			//Debug.WriteLine($"ItemContentControl FormsDataContext changed (to {e.NewValue})");
 			formsContentControl.SetFormsDataContext(e.NewValue);
 		}
 
@@ -66,7 +71,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_rootElement = visualElement;
 				_rootElement.MeasureInvalidated += RootElementOnMeasureInvalidated;
 
-				_rootElement.Parent = ;
+				_rootElement.Parent = CollectionViewRenderer.CollectionViewParent;
 
 				Content = Platform.CreateRenderer(visualElement).ContainerElement;
 			}
@@ -84,16 +89,30 @@ namespace Xamarin.Forms.Platform.UWP
 
 		internal void SetFormsDataContext(object context)
 		{
+			//Debug.WriteLine($"Setting data context to {FormsDataContext}");
 			if (_rootElement == null)
 			{
+				//Debug.WriteLine($"But _rootElement was null!");
 				return;
 			}
 
+			//Debug.WriteLine($"Setting inherited binding context to {context}");
+
 			BindableObject.SetInheritedBindingContext(_rootElement, context);
+			_rootElement.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 		}
 
 		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
 		{
+			if (FormsDataContext != null && FormsDataContext.ToString().Contains("November 16"))
+			{
+				Debug.WriteLine("November 16 being measured");
+				if (_rootElement == null)
+				{
+					Debug.WriteLine("But root element is null");
+				}
+			}
+
 			if (_rootElement == null)
 			{
 				return base.MeasureOverride(availableSize);
@@ -109,6 +128,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
+			if (FormsDataContext != null && FormsDataContext.ToString().Contains("November 16"))
+			{
+				Debug.WriteLine("November 16 being arranged");
+				if (!(Content is FrameworkElement))
+				{
+					Debug.WriteLine("But Content is null or not a framework element");
+				}
+			}
+
 			if (!(Content is FrameworkElement frameworkElement))
 			{
 				return finalSize;

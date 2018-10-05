@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.UWP
 		IItemsLayout _layout;
 		CollectionViewSource _collectionViewSource;
 
+		public static VisualElement CollectionViewParent;
+
 		protected ItemsControl ItemsControl { get; private set; }
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
@@ -25,6 +27,8 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementChanged(args);
 			TearDownOldElement(args.OldElement);
 			SetUpNewElement(args.NewElement);
+
+			CollectionViewParent = args.NewElement;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
