@@ -331,7 +331,8 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			// TODO hartez 2018/10/04 16:37:35 Okay, this sort of works for vertical lists but fails totally on horizontal lists. Also, the missing Platform stuff looks like it's causing problems, but we should 	
+			// TODO hartez 2018/10/04 16:37:35 Okay, this sort of works for vertical lists but fails totally on horizontal lists.
+			// Also, the missing Platform stuff looks like it's causing problems, but we should 	
 			// figure out a way to force it just to verify that it's the reason for blank templates
 			var transform = targetContainer.TransformToVisual(scrollViewer.Content as UIElement);
 			var position = transform?.TransformPoint(new Windows.Foundation.Point(0, 0));

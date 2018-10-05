@@ -66,6 +66,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_rootElement = visualElement;
 				_rootElement.MeasureInvalidated += RootElementOnMeasureInvalidated;
 
+				_rootElement.Parent = ;
+
 				Content = Platform.CreateRenderer(visualElement).ContainerElement;
 			}
 
