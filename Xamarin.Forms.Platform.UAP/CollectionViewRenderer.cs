@@ -320,7 +320,9 @@ namespace Xamarin.Forms.Platform.UWP
 				var horizontalOffset = scrollViewer.HorizontalOffset;
 				var verticalOffset = scrollViewer.VerticalOffset;
 
-				await JumpTo(list, targetItem, ScrollToPosition.MakeVisible);
+				Debug.WriteLine($">>>>> CollectionViewRenderer AnimateTo: Current offsets are {horizontalOffset},{verticalOffset}");
+
+				await JumpTo(list, targetItem, scrollToPosition);
 				targetContainer = list.ContainerFromItem(targetItem) as UIElement;
 				await ChangeViewAsync(scrollViewer, horizontalOffset, verticalOffset, true);
 			}
@@ -331,8 +333,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			// TODO hartez 2018/10/04 16:37:35 Okay, this sort of works for vertical lists but fails totally on horizontal lists. Also, the missing Platform stuff looks like it's causing problems, but we should 	
-			// figure out a way to force it just to verify that it's the reason for blank templates
+			// TODO hartez 2018/10/04 16:37:35 Okay, this sort of works for vertical lists but fails totally on horizontal lists. 
 			var transform = targetContainer.TransformToVisual(scrollViewer.Content as UIElement);
 			var position = transform?.TransformPoint(new Windows.Foundation.Point(0, 0));
 
@@ -340,8 +341,29 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return;
 			}
+
+			Debug.WriteLine($">>>>> CollectionViewRenderer AnimateTo: {targetContainer.DesiredSize}");
+
+
+			// TODO hartez 2018/10/05 17:23:23 The animated scroll works fine vertically if we are scrolling to a greater Y offset.	
+			// If we're scrolling back up to a lower Y offset, it just gives up and sends us to 0 (first item)
+			// Works fine if we disable animation, but that's not very helpful
 			
+
 			scrollViewer.ChangeView(position.Value.X, position.Value.Y, null, false);
+
+			//if (scrollToPosition == ScrollToPosition.End)
+			//{
+			//	// Modify position
+			//}
+			//else if (scrollToPosition == ScrollToPosition.Center)
+			//{
+			//	// Modify position
+			//}
+			//else
+			//{
+				
+			//}
 		}
 
 		protected virtual async Task ScrollTo(ScrollToRequestEventArgs args)
