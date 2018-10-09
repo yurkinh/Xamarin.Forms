@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(imageSource);
 			var icon = await handler.LoadImageAsync(imageSource, context);
-			var drawable = new BitmapDrawable(icon);
+			var drawable = new BitmapDrawable(context.Resources, icon);
 			return drawable;
 		}
 
