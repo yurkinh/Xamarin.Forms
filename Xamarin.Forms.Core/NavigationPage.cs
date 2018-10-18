@@ -250,7 +250,7 @@ namespace Xamarin.Forms
 
 		protected override bool OnBackButtonPressed()
 		{
-			if (CurrentPage.SendBackButtonPressed())
+			if (CurrentPage != null && CurrentPage.SendBackButtonPressed())
 				return true;
 
 			if (StackDepth > 1)
