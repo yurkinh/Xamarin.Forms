@@ -619,9 +619,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_masterDetailPage == null)
 			{
 				if (PageController.InternalChildren.Count > 0)
-				{
 					_masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
-				}
 
 				if (_masterDetailPage == null)
 					return;
@@ -1000,9 +998,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Page currentPage = Element.CurrentPage;
 
 			if (currentPage == null)
-			{
 				return;
-			}
 
 			var source = NavigationPage.GetTitleIcon(currentPage);
 
@@ -1068,9 +1064,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Page currentPage = Element.CurrentPage;
 
 			if (currentPage == null)
-			{
 				return;
-			}
 
 			VisualElement titleView = NavigationPage.GetTitleView(currentPage);
 			if (_titleViewRenderer != null)
