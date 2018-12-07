@@ -235,6 +235,10 @@
             <Slider Minimum="-100" Maximum="100" IsEnabled="false"
                     ThumbColor="{StaticResource DarkRedColor}" MaximumTrackColor="{StaticResource SecondaryColor}" MinimumTrackColor="{StaticResource PrimaryColor}" />
 
+            <Slider Minimum="-100" Maximum="100" />
+
+            <Slider Minimum="-100" Maximum="100" ThumbColor="Red" MaximumTrackColor="Blue" MinimumTrackColor="Green" />
+
         </StackLayout>
     </ScrollView>
 
