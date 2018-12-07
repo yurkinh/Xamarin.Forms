@@ -36,9 +36,8 @@ namespace Xamarin.Forms.Platform.Android
 			set { _paddingTop = value; }
 		}
 
-
-		double BorderWidth => Math.Max(Button.IsSet(BorderElement.BorderWidthProperty) ? BorderElement.BorderWidth : .25, 0);
-		Color BorderColor => Button.IsSet(BorderElement.BorderColorProperty) && BorderElement.BorderColor != Color.Default ? BorderElement.BorderColor : Color.FromHex("#c5c5c5");
+		double BorderWidth => Math.Max(BorderElement.IsBorderWidthSet() ? BorderElement.BorderWidth : .25, 0);
+		Color BorderColor => BorderElement.IsBorderColorSet() && BorderElement.BorderColor != Color.Default ? BorderElement.BorderColor : Color.FromHex("#c5c5c5");
 
 		public BorderDrawable(Func<double, float> convertToPixels, Color defaultColor, bool drawOutlineWithBackground)
 		{
@@ -232,7 +231,7 @@ namespace Xamarin.Forms.Platform.Android
 			using (var paint = new Paint { AntiAlias = true })
 			using (var path = new Path())
 			{
-				float borderWidth = _convertToPixels(Button.BorderWidth);
+				float borderWidth = _convertToPixels(BorderElement.BorderWidth);
 
 				// adjust border radius so outer edge of stroke is same radius as border radius of background
 				float borderRadius = Math.Max(ConvertCornerRadiusToPixels(), 0);
