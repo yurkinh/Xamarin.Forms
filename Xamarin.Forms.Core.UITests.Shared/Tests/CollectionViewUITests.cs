@@ -6,6 +6,11 @@ namespace Xamarin.Forms.Core.UITests
 	internal class CollectionViewUITests : BaseTestFixture
 	{
 		string _collectionViewId = "collectionview";
+		string _defaultTextGalleries = "Default Text Galleries";
+		string _defaultTextGalleriesVerticalListCode = "VerticalListCode";
+		string _defaultTextGalleriesHorizontalListCode = "HorizontalListCode";
+		string _defaultTextGalleriesVerticalGridCode = "VerticalGridCode";
+		string _defaultTextGalleriesHorizontalLGridCode = "HorizontalGridCode";
 		string _enableCollectionView = "Enable CollectionView";
 		string _btnUpdate = "Update";
 		string _entryUpdate = "entryUpdate";

@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls
 
 #if __IOS__
 		static IApp InitializeiOSApp() 
-		{ 
+		{
 			// Running on a device
 			var app = ConfigureApp.iOS.InstalledApp(AppPaths.BundleId).Debug()
 				//Uncomment to run from a specific iOS SIM, get the ID from XCode -> Devices

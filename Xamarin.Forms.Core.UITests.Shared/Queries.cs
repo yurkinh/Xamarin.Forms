@@ -47,6 +47,8 @@ namespace Xamarin.Forms.Core.UITests
 
 		public const string AppearingGallery = "* marked:'Appearing Gallery'";
 
+		public const string CollectionViewGallery = "* marked:'CollectionView Gallery'";
+
 		// Legacy galleries
 		public const string CellsGalleryLegacy = "* marked:'Cells Gallery - Legacy'";
 		public const string UnevenListGalleryLegacy = "* marked:'UnevenList Gallery - Legacy'";
