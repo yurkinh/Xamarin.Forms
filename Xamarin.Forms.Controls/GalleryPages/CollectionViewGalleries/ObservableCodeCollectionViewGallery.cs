@@ -2,11 +2,11 @@
 {
 	internal class ObservableCodeCollectionViewGallery : ContentPage
 	{
-		public ObservableCodeCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical, 
+		public ObservableCodeCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical,
 			bool grid = true, int initialItems = 1000)
 		{
 			var layout = new Grid
-			{ 
+			{
 				RowDefinitions = new RowDefinitionCollection
 				{
 					new RowDefinition { Height = GridLength.Auto },
@@ -18,16 +18,21 @@
 				}
 			};
 
-			IItemsLayout itemsLayout = grid 
-				? new GridItemsLayout(3, orientation) 
+			IItemsLayout itemsLayout = grid
+				? new GridItemsLayout(3, orientation)
 				: new ListItemsLayout(orientation) as IItemsLayout;
 
 			var itemTemplate = ExampleTemplates.PhotoTemplate();
 
-			var collectionView = new CollectionView {ItemsLayout = itemsLayout, ItemTemplate = itemTemplate, AutomationId = "collectionview" };
+			var collectionView = new CollectionView
+			{
+				AutomationId = "collectionview",
+				ItemsLayout = itemsLayout,
+				ItemTemplate = itemTemplate
+			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.ObservableCollection);
-			
+			var generator = new ItemsSourceGenerator(collectionView, initialItems);
+
 			var remover = new ItemRemover(collectionView);
 			var adder = new ItemAdder(collectionView);
 			var replacer = new ItemReplacer(collectionView);

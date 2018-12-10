@@ -27,6 +27,7 @@
 
 			var carouselView = new CarouselView
 			{
+				AutomationId = "collectionview",
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 			};

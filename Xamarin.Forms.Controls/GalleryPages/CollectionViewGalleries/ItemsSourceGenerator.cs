@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				for (int n = 0; n < count; n++)
 				{
 					items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
-						$"{_images[n % _images.Length]}, {n}", _images[n % _images.Length], n));
+						$"Item: {n}", _images[n % _images.Length], n));
 				}
 
 				_cv.ItemsSource = items;

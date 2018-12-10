@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			var collectionView = new CollectionView
 			{
+				AutomationId = "collectionview",
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 			};

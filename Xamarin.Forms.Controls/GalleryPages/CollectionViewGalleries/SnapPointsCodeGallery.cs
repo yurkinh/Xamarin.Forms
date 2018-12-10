@@ -25,6 +25,7 @@
 
 			var collectionView = new CollectionView
 			{
+				AutomationId = "collectionview",
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 			};

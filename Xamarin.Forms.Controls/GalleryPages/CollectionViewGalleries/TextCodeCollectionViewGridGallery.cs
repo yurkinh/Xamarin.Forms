@@ -16,7 +16,11 @@
 
 			var itemsLayout = new GridItemsLayout(2, orientation);
 
-			var collectionView = new CollectionView { ItemsLayout = itemsLayout, AutomationId = "collectionview" };
+			var collectionView = new CollectionView
+			{
+				ItemsLayout = itemsLayout,
+				AutomationId = "collectionview"
+			};
 
 			var generator = new ItemsSourceGenerator(collectionView);
 			var spanSetter = new SpanSetter(collectionView);
