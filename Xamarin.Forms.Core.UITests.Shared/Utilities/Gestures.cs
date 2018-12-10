@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UITests
 			Func<AppQuery, AppQuery> elementQuery = q => q.Raw(query);
 
 			int centerTolerance = 50;
-			var appResults = app.QueryNTimes(elementQuery, 10, null);
+			var appResults = app.QueryNTimes(elementQuery, 15, null);
 
 			// Visible elements
 			if (appResults.Length > 1)

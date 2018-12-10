@@ -47,14 +47,13 @@ namespace Xamarin.Forms.Core.UITests
 			NavigateToGallery();
 		}
 		//#if __ANDROID__
-		//		[TestCase("CarouselView", new string[] { "CarouselViewCode,Horizontal", "CarouselViewCode,Vertical" }, 19, 6)]
+		[TestCase("CarouselView", new string[] { "CarouselViewCode,Horizontal", "CarouselViewCode,Vertical" }, 19, 6)]
 		//#endif
-		//[TestCase("ScrollTo", new string[] {
-		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
-		//	"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
-		//  }, 19, 3)]
-		//[TestCase("Snap Points", new string[] { "SnapPointsCode,HorizontalList", "SnapPointsCode,VerticalList", "SnapPointsCode,HorizontalGrid", "SnapPointsCode,VerticalGrid" }, 19, 2)]
-		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
+		[TestCase("ScrollTo", new string[] {
+			"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
+			"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
+		  }, 19, 3)]
+		[TestCase("Snap Points", new string[] { "SnapPointsCode,HorizontalList", "SnapPointsCode,VerticalList", "SnapPointsCode,HorizontalGrid", "SnapPointsCode,VerticalGrid" }, 19, 2)]
 		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 101, 11)]
 		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
 		public void VisitAndUpdateItemsSource(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
@@ -64,20 +63,21 @@ namespace Xamarin.Forms.Core.UITests
 			foreach (var gallery in subGalleries)
 			{
 				if (gallery == "FilterItems")
+				{
 					continue;
-
-				VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, true, false);
+				}
+				else
+				{
 				App.NavigateBack();
 			}
 		}
-
-		//[TestCase("ScrollTo", new string[] {
+		}
 		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
 		//	"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
 		//  }, 1, 20)]
 		//public void ScrollTo(string collectionTestName, string[] subGalleries, int firstItem, int goToItem)
 		//{
-		//	VisitInitialGallery(collectionTestName);
+		void VisitInitialGallery(string collectionTestName)
 
 		//	foreach (var galleryName in subGalleries)
 		//	{
@@ -101,6 +101,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		void TestScrollToItem(int firstItem, int goToItem, string galleryName, bool isList)
 		{
+			var galeryName = $"{collectionTestName} Galleries";
 			App.WaitForElement(t => t.Marked(galleryName));
 			App.Tap(t => t.Marked(galleryName));
 			App.WaitForElement(t => t.Marked(_picker));
@@ -118,21 +119,20 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(goToItemMarked);
 			App.DismissKeyboard();
 			App.Tap(_btnGo);
-			App.WaitForNoElement(c => c.Marked(firstItemMarked));
-			App.WaitForElement(c => c.Marked(goToItemMarked));
+			App.WaitForElement(t => t.Marked(_defaultTextGalleries));
+			App.Tap(t => t.Marked(_defaultTextGalleries));
 		}
 
-		void TestScrollToIndex(int firstItem, int goToItem, string galleryName, bool isList)
 		{
 			App.WaitForElement(t => t.Marked(galleryName));
 			App.Tap(t => t.Marked(galleryName));
-			App.WaitForElement(t => t.Marked(_entryScrollTo));
+			App.WaitForElement(t => t.Marked(_btnUpdate));
 			App.ClearText(_entryScrollTo);
-			App.EnterText(_entryScrollTo, goToItem.ToString());
-			App.DismissKeyboard();
+				UITest.Queries.AppRect collectionViewFrame = TestItemsExist(scrollDown, lastItem);
+				TestUpdateItemsWorks(scrollDown, firstPageItem, updateItemsCount.ToString(), collectionViewFrame);
+			}
+		}
 			App.Tap(_btnGo);
-			App.WaitForNoElement(c => c.Marked($"Item: {firstItem}"));
-			var itemToCheck = isList ? $"Item: {goToItem}" : $"Item: {goToItem - 1}";
 			App.WaitForElement(c => c.Marked(itemToCheck));
 		}
 
@@ -145,12 +145,12 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			if (gallery == "FilterItems")
 				continue;
-
+			App.ScrollForElement($"* marked:'{itemMarked}'", new Drag(collectionViewFrame, scrollDown ? Drag.Direction.TopToBottom : Drag.Direction.LeftToRight, Drag.DragLength.Long), 50);
 			VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, false, true);
-			App.NavigateBack();
-		}
-		}
 
+		}
+		}
+			App.ClearText(_entryUpdate);
 		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
 		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode" }, 101, 11)] //HorizontalGridCode
 		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
@@ -162,28 +162,26 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				if (gallery == "FilterItems")
 					continue;
-				App.WaitForElement(t => t.Marked(gallery));
-				App.Tap(t => t.Marked(gallery));
-				TesItemsPosition(gallery);
-				App.NavigateBack();
-			}
-		}
+			App.Tap(t => t.Marked(_defaultTextGalleriesHorizontalListCode));
 
+				TesItemsPosition(gallery);
+
+		}
+			App.Tap(_btnUpdate);
 		void VisitInitialGallery(string collectionTestName)
 		{
 			var galeryName = $"{collectionTestName} Galleries";
-			App.WaitForElement(t => t.Marked(_enableCollectionView));
-			App.Tap(t => t.Marked(_enableCollectionView));
-
+			App.WaitForElement(t => t.Marked(_defaultTextGalleriesVerticalGridCode));
+			App.Tap(t => t.Marked(_defaultTextGalleriesVerticalGridCode));
+		}
 			App.WaitForElement(t => t.Marked(galeryName));
 			App.Tap(t => t.Marked(galeryName));
 		}
 
 		void VisitSubGallery(string galleryName, bool scrollDown, string lastItem, string firstPageItem, int updateItemsCount, bool testItemSource, bool testAddRemove)
 		{
-			App.WaitForElement(t => t.Marked(galleryName));
-			App.Tap(t => t.Marked(galleryName));
-
+			App.WaitForElement(t => t.Marked(_defaultTextGalleriesHorizontalLGridCode));
+			App.Tap(t => t.Marked(_defaultTextGalleriesHorizontalLGridCode));
 			//let's test the update
 			if (testItemSource)
 			{
@@ -191,12 +189,12 @@ namespace Xamarin.Forms.Core.UITests
 				TestUpdateItemsWorks(scrollDown, firstPageItem, updateItemsCount.ToString(), collectionViewFrame);
 			}
 
-			if (testAddRemove)
-			{
-				TestAddRemoveReplaceWorks(lastItem);
+
+
+
 			}
 		}
-
+			//App.WaitForElement("Appearing NavAppearingPage");
 		void TestAddRemoveReplaceWorks(string lastItem)
 		{
 			App.WaitForElement(t => t.Marked(_entryRemove));
@@ -217,34 +215,34 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(_btnReplace);
 			App.WaitForElement(_replaced);
 		}
-
+			//App.Tap(t => t.Marked("Push new Page"));
 		void TestUpdateItemsWorks(bool scrollDown, string itemMarked, string updateItemsCount, UITest.Queries.AppRect collectionViewFrame)
 		{
 			App.WaitForElement(t => t.Marked(_entryUpdate));
 			App.ScrollForElement($"* marked:'{itemMarked}'", new Drag(collectionViewFrame, scrollDown ? Drag.Direction.TopToBottom : Drag.Direction.LeftToRight, Drag.DragLength.Long), 50);
-
+			//App.WaitForElement("Disappearing Page 1");
 			App.ClearText(_entryUpdate);
 			App.EnterText(_entryUpdate, updateItemsCount);
 			App.DismissKeyboard();
 			App.Tap(_btnUpdate);
 			App.WaitForNoElement(t => t.Marked(itemMarked));
 		}
-
+			//App.WaitForElement("Appearing Page 2");
 		UITest.Queries.AppRect TestItemsExist(bool scrollDown, string itemMarked)
 		{
 			App.WaitForElement(t => t.Marked(_btnUpdate));
-
+			//App.Tap(t => t.Marked("Change Main Page"));
 			var collectionViewFrame = App.Query(q => q.Marked(_collectionViewId))[0].Rect;
 			App.ScrollForElement($"* marked:'{itemMarked}'", new Drag(collectionViewFrame, scrollDown ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long));
 			return collectionViewFrame;
 		}
-
+			//App.WaitForElement("Disappearing Page 2");
 		void TesItemsPosition(string gallery)
 		{
 			var isVertical = !gallery.Contains("Horizontal");
 			var isList = !gallery.Contains("Grid");
 			App.WaitForNoElement(t => t.Marked(gallery));
-
+			//App.WaitForElement("Disappearing NavAppearingPage");
 			var element1 = App.Query(c => c.Marked("Item: 0"))[0];
 			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
 			{
@@ -252,7 +250,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.ScrollForElement($"* marked:'Item: 2'", new Drag(collectionViewFrame, isVertical ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long), 50);
 			}
 			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
-
+			//App.WaitForElement("Appearing Page 3");
 			if (isVertical)
 			{
 				if (isList)
