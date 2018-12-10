@@ -63,13 +63,27 @@ namespace Xamarin.Forms.Core.UITests
 			foreach (var gallery in subGalleries)
 			{
 				if (gallery == "FilterItems")
-				{
 					continue;
-				}
-				else
-				{
+
+
 				App.NavigateBack();
 			}
+		}
+
+		[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 1, 6)]
+		public void AddRemoveItems(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
+		{
+			VisitInitialGallery(collectionTestName);
+
+			foreach (var gallery in subGalleries)
+			{
+				if (gallery == "FilterItems")
+					continue;
+
+					VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1);
+
+				App.NavigateBack();
+
 		}
 		}
 		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
@@ -189,10 +203,30 @@ namespace Xamarin.Forms.Core.UITests
 				TestUpdateItemsWorks(scrollDown, firstPageItem, updateItemsCount.ToString(), collectionViewFrame);
 			}
 
-
-
-
+			if (testAddRemove)
+			{
+				TestAddRemoveReplaceWorks(lastItem);
 			}
+		}
+
+		private void TestAddRemoveReplaceWorks(string lastItem)
+		{
+			App.WaitForElement(t => t.Marked(_entryRemove));
+			App.ClearText(_entryRemove);
+			App.EnterText(_entryRemove, "1");
+			App.DismissKeyboard();
+			App.Tap(_btnRemove);
+			App.WaitForNoElement(lastItem);
+			App.ClearText(_entryInsert);
+			App.EnterText(_entryInsert, "1");
+			App.DismissKeyboard();
+			App.Tap(_btnInsert);
+			App.WaitForElement(_inserted);
+			App.ClearText(_entryReplace);
+			App.EnterText(_entryReplace, "1");
+			App.DismissKeyboard();
+			App.Tap(_btnReplace);
+			App.WaitForElement(_replaced);
 		}
 			//App.WaitForElement("Appearing NavAppearingPage");
 		void TestAddRemoveReplaceWorks(string lastItem)
