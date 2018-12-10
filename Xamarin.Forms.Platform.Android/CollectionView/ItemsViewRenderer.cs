@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EffectControlProvider _effectControlProvider;
 
 		protected ItemsViewAdapter ItemsViewAdapter;
-		
+
 		int? _defaultLabelFor;
 		bool _disposed;
 
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
 
-		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
+		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
@@ -93,13 +93,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnElementChanged(oldElement, newElement);
 
-			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it	
+			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it
 			element.SendViewInitialized(this);
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			// TODO hartez 2018/06/06 20:58:54 Rethink whether we need to have _defaultLabelFor as a class member	
+			// TODO hartez 2018/06/06 20:58:54 Rethink whether we need to have _defaultLabelFor as a class member
 			if (_defaultLabelFor == null)
 			{
 				_defaultLabelFor = LabelFor;
@@ -154,16 +154,20 @@ namespace Xamarin.Forms.Platform.Android
 				case GridItemsLayout gridItemsLayout:
 					return CreateGridLayout(gridItemsLayout);
 				case ListItemsLayout listItemsLayout:
-					var orientation = listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
-						? LinearLayoutManager.Horizontal
-						: LinearLayoutManager.Vertical;
-
-					return new LinearLayoutManager(Context, orientation, false);
+					return CreateListLayout(listItemsLayout);
 			}
 
 			// Fall back to plain old vertical list
-			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
+			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout
 			return new LinearLayoutManager(Context);
+		}
+
+		LayoutManager CreateListLayout(ListItemsLayout listItemsLayout)
+		{
+			return new LinearLayoutManager(Context,
+				listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+									? LinearLayoutManager.Horizontal
+									: LinearLayoutManager.Vertical, false);
 		}
 
 		GridLayoutManager CreateGridLayout(GridItemsLayout gridItemsLayout)
@@ -185,7 +189,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementPropertyChanged?.Invoke(this, changedProperty);
 
-			// TODO hartez 2018/10/24 10:41:55 If the ItemTemplate changes from set to null, we need to make sure to clear the recyclerview pool	
+			// TODO hartez 2018/10/24 10:41:55 If the ItemTemplate changes from set to null, we need to make sure to clear the recyclerview pool
 
 			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
 			{
@@ -234,8 +238,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
-		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper	
+		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic
+		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper
 		void Watch(Adapter adapter)
 		{
 			if (_dataChangeViewObserver == null)
@@ -258,7 +262,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ItemsView.PropertyChanged += OnElementPropertyChanged;
 
-			// TODO hartez 2018/06/06 20:49:14 Review whether we can just do this in the constructor	
+			// TODO hartez 2018/06/06 20:49:14 Review whether we can just do this in the constructor
 			if (Tracker == null)
 			{
 				Tracker = new VisualElementTracker(this);
@@ -270,7 +274,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_layout = ItemsView.ItemsLayout;
 			SetLayoutManager(SelectLayoutManager(_layout));
-			
+
 			UpdateSnapBehavior();
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
@@ -284,7 +288,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			ItemsView.ScrollToRequested += ScrollToRequested;
 		}
-		
+
 		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
@@ -327,7 +331,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					gridLayoutManager.SpanCount = ((GridItemsLayout)_layout).Span;
 				}
-			} 
+			}
 			else if (propertyChanged.IsOneOf(ItemsLayout.SnapPointsTypeProperty, ItemsLayout.SnapPointsAlignmentProperty))
 			{
 				UpdateSnapBehavior();
@@ -344,7 +348,7 @@ namespace Xamarin.Forms.Platform.Android
 			_snapManager.UpdateSnapBehavior();
 		}
 
-		// TODO hartez 2018/08/09 09:30:17 Package up background color and flow direction providers so we don't have to re-implement them here	
+		// TODO hartez 2018/08/09 09:30:17 Package up background color and flow direction providers so we don't have to re-implement them here
 		protected virtual void UpdateBackgroundColor(Color? color = null)
 		{
 			if (Element == null)
@@ -426,7 +430,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
+				// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well
 				return args.Index;
 			}
 
@@ -441,7 +445,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
 			var position = DeterminePosition(args);
-			
+
 			if (args.IsAnimated)
 			{
 				ScrollHelper.AnimateScrollToPosition(position, args.ScrollToPosition);
@@ -465,7 +469,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				SwapAdapter(_emptyViewAdapter, true);
 
-				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
+				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager
 				SetLayoutManager(new LinearLayoutManager(Context));
 			}
 			else
