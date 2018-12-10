@@ -26,8 +26,9 @@ namespace Xamarin.Forms.Core.UITests
 			app.WaitForElement(q => q.Raw(goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromSeconds(10));
 
 			var text = Regex.Match (page, "'(?<text>[^']*)'").Groups["text"].Value;
+
 			app.WaitForElement("SearchBar");
-			app.EnterText("SearchBar", text);
+			app.EnterText(q => q.Raw("* marked:'SearchBar'"), text);
 
 			//var element = app.Query("SearchBar").First();
 			//app.TapCoordinates(element.Rect.CenterX, element.Rect.CenterY+50);
