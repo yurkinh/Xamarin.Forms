@@ -30,10 +30,6 @@ namespace Xamarin.Forms.Core.UITests
 			app.WaitForElement("SearchBar");
 			app.EnterText(q => q.Raw("* marked:'SearchBar'"), text);
 
-			//var element = app.Query("SearchBar").First();
-			//app.TapCoordinates(element.Rect.CenterX, element.Rect.CenterY+50);
-			//app.EnterText (text);
-			//app.Tap("SearchBar");
 			app.Tap (q => q.Raw (goToTestButtonQuery));
 			app.WaitForNoElement (o => o.Raw (goToTestButtonQuery), "Timed out waiting for Go To Test button to disappear", TimeSpan.FromMinutes(2));
 		}
