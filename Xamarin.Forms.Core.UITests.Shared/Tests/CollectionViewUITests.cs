@@ -87,10 +87,24 @@ namespace Xamarin.Forms.Core.UITests
 		}
 		}
 		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
-		//	"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
+		[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
+		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 101, 11)]
+		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
 		//  }, 1, 20)]
-		//public void ScrollTo(string collectionTestName, string[] subGalleries, int firstItem, int goToItem)
-		//{
+		public void VisitAndTestItemsPosition(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
+		{
+			VisitInitialGallery(collectionTestName);
+			foreach (var gallery in subGalleries)
+			{
+				if (gallery == "FilterItems")
+					continue;
+				App.WaitForElement(t => t.Marked(gallery));
+				App.Tap(t => t.Marked(gallery));
+				TesItemsPosition(gallery);
+				App.NavigateBack();
+			}
+		}
+
 		void VisitInitialGallery(string collectionTestName)
 
 		//	foreach (var galleryName in subGalleries)
@@ -270,13 +284,11 @@ namespace Xamarin.Forms.Core.UITests
 			App.ScrollForElement($"* marked:'{itemMarked}'", new Drag(collectionViewFrame, scrollDown ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long));
 			return collectionViewFrame;
 		}
-			//App.WaitForElement("Disappearing Page 2");
 		void TesItemsPosition(string gallery)
 		{
 			var isVertical = !gallery.Contains("Horizontal");
 			var isList = !gallery.Contains("Grid");
 			App.WaitForNoElement(t => t.Marked(gallery));
-			//App.WaitForElement("Disappearing NavAppearingPage");
 			var element1 = App.Query(c => c.Marked("Item: 0"))[0];
 			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
 			{
@@ -284,7 +296,6 @@ namespace Xamarin.Forms.Core.UITests
 				App.ScrollForElement($"* marked:'Item: 2'", new Drag(collectionViewFrame, isVertical ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long), 50);
 			}
 			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
-			//App.WaitForElement("Appearing Page 3");
 			if (isVertical)
 			{
 				if (isList)
