@@ -157,8 +157,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			UISwitch.Appearance.OnTintColor = UIColor.Red;
 			var versionPart = UIDevice.CurrentDevice.SystemVersion.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			App.IOSVersion = int.Parse(versionPart[0]);
-
+#if DEBUG
 			Xamarin.Calabash.Start();
+#endif
 			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
 			Forms.Init();
 			FormsMaps.Init();

@@ -69,7 +69,13 @@ namespace Xamarin.Forms.Core.UITests
 				yEnd = dragBounds.CenterY;
 				float xDisplacement = (dragBounds.CenterX + (dragBounds.Width / 2)) - dragBounds.X;
 				float insetForScroll = (xDisplacement - (xDisplacement * scrollPercentage)) / 2;
+#if __IOS__
+				// we might be dragging very close to the edge and it will navigate back 
+				// or open the MDP page
+				xStart = System.Math.Max(dragBounds.X, 1) + insetForScroll;
+#else
 				xStart = dragBounds.X + insetForScroll;
+#endif
 				xEnd = (dragBounds.CenterX + (dragBounds.Width / 2)) - insetForScroll;
 			} else if (direction == Direction.RightToLeft) {
 				yStart = dragBounds.CenterY;
