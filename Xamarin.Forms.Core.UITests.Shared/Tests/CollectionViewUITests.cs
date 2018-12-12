@@ -70,6 +70,68 @@ namespace Xamarin.Forms.Core.UITests
 			}
 		}
 
+		[TestCase("ScrollTo", new string[] {
+			"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
+			"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
+		  }, 1, 20)]
+		public void ScrollTo(string collectionTestName, string[] subGalleries, int firstItem, int goToItem)
+		{
+			VisitInitialGallery(collectionTestName);
+
+			foreach (var galleryName in subGalleries)
+			{
+				if (galleryName == "FilterItems")
+					continue;
+
+				var isVertical = !galleryName.Contains("Horizontal");
+				var isList = !galleryName.Contains("Grid");
+				var isItem = !galleryName.Contains("Index");
+				if(isItem)
+				{
+					TestScrollToItem(firstItem, goToItem, galleryName, isList);
+				}
+				else
+				{
+					TestScrollToIndex(firstItem, goToItem, galleryName, isList);
+				}
+				App.Back();
+			}
+		}
+
+		void TestScrollToItem(int firstItem, int goToItem, string galleryName, bool isList)
+		{
+			App.WaitForElement(t => t.Marked(galleryName));
+			App.Tap(t => t.Marked(galleryName));
+			App.WaitForElement(t => t.Marked(_picker));
+			App.Tap(t => t.Marked(_picker));
+
+			var firstItemMarked = $"Item: {firstItem}";
+			var goToItemMarked = isList ? $"Item: {goToItem}" : $"Item: {goToItem - 1}";
+			App.WaitForElement(firstItemMarked);
+			var pickerDialogFrame = App.Query(q => q.Marked(_dialogAndroidFrame))[0].Rect;
+			var scrollDown = true;
+			App.ScrollForElement($"* marked:'{goToItemMarked}'", new Drag(pickerDialogFrame, scrollDown ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long));
+			App.Tap(goToItemMarked);
+			App.DismissKeyboard();
+			App.Tap(_btnGo);
+			App.WaitForNoElement(c => c.Marked(firstItemMarked));
+			App.WaitForElement(c => c.Marked(goToItemMarked));
+		}
+
+		void TestScrollToIndex(int firstItem, int goToItem, string galleryName, bool isList)
+		{
+			App.WaitForElement(t => t.Marked(galleryName));
+			App.Tap(t => t.Marked(galleryName));
+			App.WaitForElement(t => t.Marked(_entryScrollTo));
+			App.ClearText(_entryScrollTo);
+			App.EnterText(_entryScrollTo, goToItem.ToString());
+			App.DismissKeyboard();
+			App.Tap(_btnGo);
+			App.WaitForNoElement(c => c.Marked($"Item: {firstItem}"));
+			var itemToCheck = isList ? $"Item: {goToItem}" : $"Item: {goToItem - 1}";
+			App.WaitForElement(c => c.Marked(itemToCheck));
+		}
+
 		[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 1, 6)]
 		public void AddRemoveItems(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
 		{
@@ -81,9 +143,7 @@ namespace Xamarin.Forms.Core.UITests
 					continue;
 
 					VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1);
-
 				App.NavigateBack();
-
 		}
 		}
 		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
@@ -223,7 +283,7 @@ namespace Xamarin.Forms.Core.UITests
 			}
 		}
 
-		private void TestAddRemoveReplaceWorks(string lastItem)
+		void TestAddRemoveReplaceWorks(string lastItem)
 		{
 			App.WaitForElement(t => t.Marked(_entryRemove));
 			App.ClearText(_entryRemove);
@@ -293,7 +353,6 @@ namespace Xamarin.Forms.Core.UITests
 			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
 			{
 				var collectionViewFrame = App.Query(q => q.Marked(_collectionViewId))[0].Rect;
-
 
 			}
 			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
