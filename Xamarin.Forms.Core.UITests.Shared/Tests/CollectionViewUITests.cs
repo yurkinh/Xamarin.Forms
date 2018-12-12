@@ -108,9 +108,12 @@ namespace Xamarin.Forms.Core.UITests
 			var firstItemMarked = $"Item: {firstItem}";
 			var goToItemMarked = isList ? $"Item: {goToItem}" : $"Item: {goToItem - 1}";
 			App.WaitForElement(firstItemMarked);
+#if __ANDROID__
 			var pickerDialogFrame = App.Query(q => q.Marked(_dialogAndroidFrame))[0].Rect;
-			var scrollDown = true;
-			App.ScrollForElement($"* marked:'{goToItemMarked}'", new Drag(pickerDialogFrame, scrollDown ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long));
+#else
+			var pickerDialogFrame = App.Query(q => q.Class(_pickeriOSFrame))[0].Rect;
+#endif
+			App.ScrollForElement($"* marked:'{goToItemMarked}'", new Drag(pickerDialogFrame,  Drag.Direction.BottomToTop, Drag.DragLength.Short));
 			App.Tap(goToItemMarked);
 			App.DismissKeyboard();
 			App.Tap(_btnGo);
