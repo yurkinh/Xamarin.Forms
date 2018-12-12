@@ -293,7 +293,8 @@ namespace Xamarin.Forms.Core.UITests
 			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
 			{
 				var collectionViewFrame = App.Query(q => q.Marked(_collectionViewId))[0].Rect;
-				App.ScrollForElement($"* marked:'Item: 2'", new Drag(collectionViewFrame, isVertical ? Drag.Direction.BottomToTop : Drag.Direction.RightToLeft, Drag.DragLength.Long), 50);
+
+
 			}
 			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
 			if (isVertical)
