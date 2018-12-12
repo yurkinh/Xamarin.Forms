@@ -7,13 +7,14 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ActionSheetArguments
 	{
-		public ActionSheetArguments(string title, string cancel, string destruction, IEnumerable<string> buttons)
+		public ActionSheetArguments(string title, string cancel, string destruction, IEnumerable<string> buttons, IVisual visual)
 		{
 			Title = title;
 			Cancel = cancel;
 			Destruction = destruction;
 			Buttons = buttons;
 			Result = new TaskCompletionSource<string>();
+			Visual = visual ?? VisualMarker.Default;
 		}
 
 		/// <summary>
@@ -38,6 +39,8 @@ namespace Xamarin.Forms.Internals
 		///     Gets the title for the action sheet. Can be null.
 		/// </summary>
 		public string Title { get; private set; }
+
+		public IVisual Visual { get; }
 
 		public void SetResult(string result)
 		{

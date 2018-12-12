@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class AlertArguments
 	{
-		public AlertArguments(string title, string message, string accept, string cancel, IVisual visual = null)
+		public AlertArguments(string title, string message, string accept, string cancel, IVisual visual)
 		{
 			Title = title;
 			Message = message;

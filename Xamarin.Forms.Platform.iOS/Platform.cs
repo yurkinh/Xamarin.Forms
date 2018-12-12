@@ -303,132 +303,180 @@ namespace Xamarin.Forms.Platform.iOS
 			return Page == page || _modals.Contains(page);
 		}
 
-		// Creates a UIAlertAction which includes a call to hide the presenting UIWindow at the end
-		UIAlertAction CreateActionWithWindowHide(string text, UIAlertActionStyle style, Action setResult, UIWindow window)
-		{
-			return UIAlertAction.Create(text, style,
-					a =>
-					{
-						window.Hidden = true;
-						setResult();
-					});
-		}
-
 		void PresentAlert(AlertArguments arguments)
 		{
-			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
-
-			if (arguments.Visual.IsMaterial())
+			PresentPopUp(false, (window, onComplete) =>
 			{
-				var malert = AlertController.Create(arguments.Title, arguments.Message);
+				UIViewController alertViewController = null;
 
-				if (arguments.Cancel != null)
+				if (arguments.Visual.IsMaterial())
 				{
-					malert.AddAction(AlertAction.Create(arguments.Cancel, ActionEmphasis.Low, act => {
-						window.Hidden = true;
-						arguments.SetResult(false);
-					}));
+					// Material
+					// TODO: move this out of the main assembly for linking
+
+					var alert = AlertController.Create(arguments.Title, arguments.Message);
+					alert.MdcGetDialogPresentationController().DismissOnBackgroundTap = false;
+
+					if (arguments.Cancel != null)
+					{
+						alert.AddAction(AlertAction.Create(arguments.Cancel, ActionEmphasis.Low, act =>
+						{
+							onComplete();
+							arguments.SetResult(false);
+						}));
+					}
+
+					if (arguments.Accept != null)
+					{
+						alert.AddAction(AlertAction.Create(arguments.Accept, ActionEmphasis.Low, act =>
+						{
+							onComplete();
+							arguments.SetResult(true);
+						}));
+					}
+
+					var scheme = new AlertScheme();
+					AlertControllerThemer.ApplyScheme(scheme, alert);
+
+					alertViewController = alert;
+				}
+				else
+				{
+					// Default / fallback
+
+					var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
+					var oldFrame = alert.View.Frame;
+					alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
+
+					if (arguments.Cancel != null)
+					{
+						alert.AddAction(UIAlertAction.Create(arguments.Cancel, UIAlertActionStyle.Cancel, a =>
+						{
+							onComplete();
+							arguments.SetResult(false);
+						}));
+					}
+
+					if (arguments.Accept != null)
+					{
+						alert.AddAction(UIAlertAction.Create(arguments.Accept, UIAlertActionStyle.Default, a =>
+						{
+							onComplete();
+							arguments.SetResult(true);
+						}));
+					}
+
+					alertViewController = alert;
 				}
 
-				if (arguments.Accept != null)
-				{
-					malert.AddAction(AlertAction.Create(arguments.Accept, ActionEmphasis.Low, act => {
-						window.Hidden = true;
-						arguments.SetResult(true);
-					}));
-				}
-
-				var scheme = new AlertScheme();
-				AlertControllerThemer.ApplyScheme(scheme, malert);
-
-				window.RootViewController = new UIViewController();
-				window.RootViewController.View.BackgroundColor = Color.Transparent.ToUIColor();
-				window.WindowLevel = UIWindowLevel.Alert + 1;
-				window.MakeKeyAndVisible();
-				window.RootViewController.PresentViewController(malert, true, null);
-
-				return;
-			}
-
-			var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
-			var oldFrame = alert.View.Frame;
-			alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
-
-			if (arguments.Cancel != null)
-			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel,
-					() => arguments.SetResult(false), window));
-			}
-
-			if (arguments.Accept != null)
-			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default,
-					() => arguments.SetResult(true), window));
-			}
-
-			PresentPopUp(window, alert);
+				return alertViewController;
+			});
 		}
 
 		void PresentActionSheet(ActionSheetArguments arguments)
 		{
-			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
-			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
-
-			// Clicking outside of an ActionSheet is an implicit cancel on iPads. If we don't handle it, it freezes the app.
-			if (arguments.Cancel != null || UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+			PresentPopUp(true, (window, onComplete) =>
 			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel ?? "", UIAlertActionStyle.Cancel, () => arguments.SetResult(arguments.Cancel), window));
-			}
+				UIViewController actionsViewController = null;
 
-			if (arguments.Destruction != null)
-			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Destruction, UIAlertActionStyle.Destructive, () => arguments.SetResult(arguments.Destruction), window));
-			}
+				if (arguments.Visual.IsMaterial() && false)
+				{
+					// Material
+					// TODO: move this out of the main assembly for linking
+					// TODO: not yet stable in MaterialComponents
+				}
+				else
+				{
+					// Default / fallback
 
-			foreach (var label in arguments.Buttons)
-			{
-				if (label == null)
-					continue;
+					var sheet = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
 
-				var blabel = label;
+					// Clicking outside of an ActionSheet is an implicit cancel on iPads. If we don't handle it, it freezes the app.
+					if (arguments.Cancel != null || UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+					{
+						sheet.AddAction(UIAlertAction.Create(arguments.Cancel ?? "", UIAlertActionStyle.Cancel, a =>
+						{
+							onComplete();
+							arguments.SetResult(arguments.Cancel);
+						}));
+					}
 
-				alert.AddAction(CreateActionWithWindowHide(blabel, UIAlertActionStyle.Default, () => arguments.SetResult(blabel), window));
-			}
+					if (arguments.Destruction != null)
+					{
+						sheet.AddAction(UIAlertAction.Create(arguments.Destruction, UIAlertActionStyle.Destructive, a =>
+						{
+							onComplete();
+							arguments.SetResult(arguments.Destruction);
+						}));
+					}
 
-			PresentPopUp(window, alert, arguments);
+					foreach (var label in arguments.Buttons)
+					{
+						if (label == null)
+							continue;
+
+						var blabel = label;
+
+						sheet.AddAction(UIAlertAction.Create(blabel, UIAlertActionStyle.Default, a =>
+						{
+							onComplete();
+							arguments.SetResult(blabel);
+						}));
+					}
+
+					actionsViewController = sheet;
+				}
+
+				return actionsViewController;
+			});
 		}
 
-		static void PresentPopUp(UIWindow window, UIAlertController alert, ActionSheetArguments arguments = null)
+		static void PresentPopUp(bool updatePopoverSourceBounds, Func<UIWindow, Action, UIViewController> creator)
 		{
+			NSObject observer = null;
+
+			// Use a new, separate window: https://github.com/xamarin/Xamarin.Forms/pull/481
+			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+
+			var controller = creator(window, onComplete);
+
 			window.RootViewController = new UIViewController();
 			window.RootViewController.View.BackgroundColor = Color.Transparent.ToUIColor();
 			window.WindowLevel = UIWindowLevel.Alert + 1;
 			window.MakeKeyAndVisible();
 
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad && arguments != null)
+			if (updatePopoverSourceBounds && UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
 			{
 				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
-				var observer = NSNotificationCenter.DefaultCenter.AddObserver(UIDevice.OrientationDidChangeNotification,
-					n => { alert.PopoverPresentationController.SourceRect = window.RootViewController.View.Bounds; });
-
-				arguments.Result.Task.ContinueWith(t =>
+				observer = NSNotificationCenter.DefaultCenter.AddObserver(UIDevice.OrientationDidChangeNotification, n =>
 				{
-					NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
-					UIDevice.CurrentDevice.EndGeneratingDeviceOrientationNotifications();
-				}, TaskScheduler.FromCurrentSynchronizationContext());
+					controller.PopoverPresentationController.SourceRect = window.RootViewController.View.Bounds;
+				});
 
-				alert.PopoverPresentationController.SourceView = window.RootViewController.View;
-				alert.PopoverPresentationController.SourceRect = window.RootViewController.View.Bounds;
-				alert.PopoverPresentationController.PermittedArrowDirections = 0; // No arrow
+				controller.PopoverPresentationController.SourceView = window.RootViewController.View;
+				controller.PopoverPresentationController.SourceRect = window.RootViewController.View.Bounds;
+				controller.PopoverPresentationController.PermittedArrowDirections = 0; // No arrow
 			}
 
-			if(!Forms.IsiOS9OrNewer)
+			if (!Forms.IsiOS9OrNewer)
 			{
 				// For iOS 8, we need to explicitly set the size of the window
 				window.Frame = new RectangleF(0, 0, UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
 			}
 
-			window.RootViewController.PresentViewController(alert, true, null);
+			window.RootViewController.PresentViewController(controller, true, null);
+
+			void onComplete()
+			{
+				window.Hidden = true;
+				window.Dispose();
+
+				if (observer != null)
+				{
+					NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
+					UIDevice.CurrentDevice.EndGeneratingDeviceOrientationNotifications();
+				}
+			}
 		}
 
 		async Task PresentModal(Page modal, bool animated)

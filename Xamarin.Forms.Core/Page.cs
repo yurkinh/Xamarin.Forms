@@ -131,7 +131,7 @@ namespace Xamarin.Forms
 
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
-			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
+			var args = new ActionSheetArguments(title, cancel, destruction, buttons, Visual);
 			MessagingCenter.Send(this, ActionSheetSignalName, args);
 			return args.Result.Task;
 		}

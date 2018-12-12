@@ -57,5 +57,11 @@ namespace Xamarin.Forms.Controls
 			var result = await DisplayAlert("Material Design", "This should be a material alert.", "YAY!", "NAH");
 			await DisplayAlert("Material Design", $"You selected: {result}.", "OK");
 		}
+
+		async void OnShowActionsClicked(object sender, EventArgs e)
+		{
+			var result = await DisplayActionSheet("Material Design", "Cancel", "NUKE!", "One", "Two", "Three");
+			await DisplayAlert("Material Design", $"You selected: {result}.", "OK");
+		}
 	}
 }
