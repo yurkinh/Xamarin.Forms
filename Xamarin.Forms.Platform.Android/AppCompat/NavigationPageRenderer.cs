@@ -744,18 +744,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void SetupToolbar()
 		{
 			Context context = Context;
-			var activity = (FormsAppCompatActivity)context;
-
-			AToolbar bar;
-			if (FormsAppCompatActivity.ToolbarResource != 0)
-				bar = activity.LayoutInflater.Inflate(FormsAppCompatActivity.ToolbarResource, null).JavaCast<AToolbar>();
-			else
-				bar = new AToolbar(context);
-
-			bar.SetNavigationOnClickListener(this);
-
-			AddView(bar);
-			_toolbar = bar;
+			if(context is FormsAppCompatActivity activity)
+			{
+				_toolbar = activity.CreateNewToolbar(this);
+				AddView(_toolbar);
+			}
 		}
 
 		Task<bool> SwitchContentAsync(Page page, bool animated, bool removed = false, bool popToRoot = false)

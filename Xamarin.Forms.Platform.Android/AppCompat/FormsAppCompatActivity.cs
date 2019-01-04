@@ -157,18 +157,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.OnCreate(savedInstanceState);
 
-			AToolbar bar;
-			if (ToolbarResource != 0)
-			{
-				bar = LayoutInflater.Inflate(ToolbarResource, null).JavaCast<AToolbar>();
-				if (bar == null)
-					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
-			}
-			else
-				bar = new AToolbar(this);
-
-			SetSupportActionBar(bar);
-
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
@@ -389,6 +377,22 @@ namespace Xamarin.Forms.Platform.Android
 		internal class DefaultApplication : Application
 		{
 		}
+
+		internal AToolbar CreateNewToolbar(global::Android.Views.View.IOnClickListener onClickListener)
+		{
+			AToolbar bar;
+			if (ToolbarResource != 0)
+				bar = LayoutInflater.Inflate(ToolbarResource, null).JavaCast<AToolbar>();
+			else
+				bar = new AToolbar(this);
+
+			SetSupportActionBar(bar);
+			if (onClickListener != null)
+				bar.SetOnClickListener(onClickListener);
+
+			return bar;
+		}
+
 
 		#region Statics
 
