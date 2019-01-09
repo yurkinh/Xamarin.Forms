@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 						$"{_images[n % _images.Length]}, {n}", _images[n % _images.Length], n));
 				}
 
-				_cv.ItemsSource = items;
+				_cv.ItemsSource = new ObservableCollection<CollectionViewGalleryTestItem>(items);
 			}
 		}
 
