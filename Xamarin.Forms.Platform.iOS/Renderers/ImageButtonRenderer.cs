@@ -76,6 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					SetNativeControl(CreateNativeControl());
+					Control.AdjustsImageWhenHighlighted = false;
 
 					Debug.Assert(Control != null, "Control != null");
 				}
@@ -112,7 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override UIButton CreateNativeControl()
 		{
-			return new UIButton(UIButtonType.System);
+			return new UIButton(UIButtonType.Custom);
 		}
 
 		protected override void SetAccessibilityLabel()
