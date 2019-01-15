@@ -14,16 +14,21 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+	// This test only passes because of an override in FormsAppCompatActivity passes the 
+	// software back button press to the OnBackButtonPressed Command
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 4827, "[Android] Software backbutton doesn't work",
+	[Issue(IssueTracker.Github, 4827, "[Android] Software backbutton doesn't continue on device rotation",
 		PlatformAffected.iOS)]
 #if UITEST
 	[NUnit.Framework.Category(UITestCategories.Navigation)]
 #endif
 	public class Issue4827 : TestNavigationPage
 	{
+
+
 		Label results = new Label();
 		const string _success = "Success";
+		const string _pushPageButton = "Push Page";
 
 		public void Success()
 		{
@@ -43,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 						results,
 						new Button()
 						{
-							Text = "Push Page",
+							Text = _pushPageButton,
 							Command = new Command(PushSecondPage)
 						}
 					}
@@ -76,7 +81,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Label()
 						{
-							Text = "Click back. If you see text that says Success then test has passed"
+							Text = "Click back. If you see text that says Success then this test has passed"
 						}
 					}
 				};
@@ -92,9 +97,17 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __ANDROID__
 		[Test]
-		public void UpdatingSourceOfDisposedListViewDoesNotCrash()
+		public void TestForSoftwareBackButtonTriggeringOnBackButtonPressed()
 		{
-
+			RunningApp.WaitForElement(_pushPageButton);
+			RunningApp.Tap(_pushPageButton);
+			RunningApp.WaitForElement(_success);
+			RunningApp.SetOrientationLandscape();
+			RunningApp.Tap(_pushPageButton);
+			RunningApp.WaitForElement(_success);
+			RunningApp.SetOrientationPortrait();
+			RunningApp.Tap(_pushPageButton);
+			RunningApp.WaitForElement(_success);
 		}
 #endif
 	}

@@ -10,6 +10,7 @@ using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 using System.Linq;
+using System;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -96,6 +97,16 @@ namespace Xamarin.Forms.ControlGallery.Android
 		public bool IsPreAppCompat()
 		{
 			return false;
+		}
+
+
+
+		public override bool OnOptionsItemSelected(global::Android.Views.IMenuItem item)
+		{
+			if (_app.GetVisiblePage() is Issue4827 && item.ItemId == global::Android.Resource.Id.Home)
+				OnBackPressed();
+
+			return base.OnOptionsItemSelected(item);
 		}
 	}
 }

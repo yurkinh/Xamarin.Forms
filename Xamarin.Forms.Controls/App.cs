@@ -245,5 +245,15 @@ namespace Xamarin.Forms.Controls
 		{
 			SetMainPage(CreateDefaultMainPage());
 		}
+
+		public Page GetVisiblePage()
+		{
+			int modalIndex = Current.MainPage.Navigation.ModalStack.Count;
+			if (modalIndex > 0)
+				return Current.MainPage.Navigation.ModalStack[modalIndex - 1];
+
+
+			return Current.MainPage;
+		}
 	}
 }

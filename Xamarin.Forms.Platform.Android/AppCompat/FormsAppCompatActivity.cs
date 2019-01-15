@@ -66,14 +66,6 @@ namespace Xamarin.Forms.Platform.Android
 			ConfigurationChanged?.Invoke(this, new EventArgs());
 		}
 
-		public override bool OnOptionsItemSelected(IMenuItem item)
-		{
-			if (item.ItemId == global::Android.Resource.Id.Home)
-				BackPressed?.Invoke(this, EventArgs.Empty);
-
-			return base.OnOptionsItemSelected(item);
-		}
-
 		public void SetStatusBarColor(AColor color)
 		{
 			if (Forms.IsLollipopOrNewer)
