@@ -380,7 +380,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetSupportActionBar(bar);
 			if (onClickListener != null)
-				bar.SetOnClickListener(onClickListener);
+				bar.SetNavigationOnClickListener(onClickListener);
 
 			return bar;
 		}
