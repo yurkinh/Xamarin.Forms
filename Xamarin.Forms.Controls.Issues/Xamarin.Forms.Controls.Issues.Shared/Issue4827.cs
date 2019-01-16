@@ -105,15 +105,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var softwareBackButton = RunningApp.Query(app => app.Marked("toolbar").Descendant()).Where(x=> x.Class.Contains("AppCompatImageButton")).FirstOrDefault();
 
-			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
+			RunningApp.Tap(PlatformQueries.NavigationBarBackButton);
 			RunningApp.WaitForElement(_success);
 			RunningApp.SetOrientationLandscape();
 			RunningApp.Tap(_pushPageButton);
-			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
+			RunningApp.Tap(PlatformQueries.NavigationBarBackButton);
 			RunningApp.WaitForElement(_success);
 			RunningApp.SetOrientationPortrait();
 			RunningApp.Tap(_pushPageButton);
-			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
+			RunningApp.Tap(PlatformQueries.NavigationBarBackButton);
 			RunningApp.WaitForElement(_success);
 		}
 #endif
