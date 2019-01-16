@@ -378,9 +378,12 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				bar = new AToolbar(this);
 
-			SetSupportActionBar(bar);
+			// don't change the order of this and SetSupportActionBar otherwise
+			// OnOptionsItemSelected won't fire anymore
 			if (onClickListener != null)
 				bar.SetNavigationOnClickListener(onClickListener);
+
+			SetSupportActionBar(bar);
 
 			return bar;
 		}

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
+using System.Linq;
 
 #if UITEST
 using Xamarin.UITest;
@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 		Label results = new Label();
 		const string _success = "Success";
 		const string _pushPageButton = "Push Page";
+		const string _instructionsLabel = "_instructionsLabel";
 
 		public void Success()
 		{
@@ -81,7 +82,8 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						new Label()
 						{
-							Text = "Click back. If you see text that says Success then this test has passed"
+							Text = "Click back. If you see text that says Success then this test has passed",
+							AutomationId = _instructionsLabel
 						}
 					}
 				};
@@ -99,14 +101,19 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void TestForSoftwareBackButtonTriggeringOnBackButtonPressed()
 		{
-			RunningApp.WaitForElement(_pushPageButton);
-			RunningApp.Tap(_pushPageButton);
+			RunningApp.WaitForElement(_instructionsLabel);
+
+			var softwareBackButton = RunningApp.Query(app => app.Marked("toolbar").Descendant()).Where(x=> x.Class.Contains("AppCompatImageButton")).FirstOrDefault();
+
+			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
 			RunningApp.WaitForElement(_success);
 			RunningApp.SetOrientationLandscape();
 			RunningApp.Tap(_pushPageButton);
+			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
 			RunningApp.WaitForElement(_success);
 			RunningApp.SetOrientationPortrait();
 			RunningApp.Tap(_pushPageButton);
+			RunningApp.TapCoordinates(softwareBackButton.Rect.X, softwareBackButton.Rect.Y);
 			RunningApp.WaitForElement(_success);
 		}
 #endif
