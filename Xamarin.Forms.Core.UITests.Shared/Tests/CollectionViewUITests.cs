@@ -16,14 +16,14 @@ namespace Xamarin.Forms.Core.UITests
 		string _entryUpdate = "entryUpdate";
 		string _entryInsert = "entryInsert";
 		string _entryRemove = "entryRemove";
-		string _entryReplace = "entryReplace";
+		//string _entryReplace = "entryReplace";
 		string _entryScrollTo = "entryScrollTo";
 		string _btnInsert = "btnInsert";
 		string _btnRemove = "btnRemove";
-		string _btnReplace = "btnReplace";
+		//string _btnReplace = "btnReplace";
 		string _btnGo = "btnGo";
 		string _inserted = "Inserted";
-		string _replaced = "Replacement";
+		//string _replaced = "Replacement";
 		string _picker = "pickerSelectItem";
 #if __ANDROID__
 		string _dialogAndroidFrame = "select_dialog_listview";
@@ -46,9 +46,9 @@ namespace Xamarin.Forms.Core.UITests
 			ResetApp();
 			NavigateToGallery();
 		}
-		//#if __ANDROID__
+#if __ANDROID__
 		[TestCase("CarouselView", new string[] { "CarouselViewCode,Horizontal", "CarouselViewCode,Vertical" }, 19, 6)]
-		//#endif
+#endif
 		[TestCase("ScrollTo", new string[] {
 			"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
 			"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Core.UITests
 				var isVertical = !galleryName.Contains("Horizontal");
 				var isList = !galleryName.Contains("Grid");
 				var isItem = !galleryName.Contains("Index");
-				if(isItem)
+				if (isItem)
 				{
 					TestScrollToItem(firstItem, goToItem, galleryName, isList);
 				}
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Core.UITests
 #else
 			var pickerDialogFrame = App.Query(q => q.Class(_pickeriOSFrame))[0].Rect;
 #endif
-			App.ScrollForElement($"* marked:'{goToItemMarked}'", new Drag(pickerDialogFrame,  Drag.Direction.BottomToTop, Drag.DragLength.Short));
+			App.ScrollForElement($"* marked:'{goToItemMarked}'", new Drag(pickerDialogFrame, Drag.Direction.BottomToTop, Drag.DragLength.Short));
 			App.Tap(goToItemMarked);
 			App.DismissKeyboard();
 			App.Tap(_btnGo);
@@ -299,11 +299,12 @@ namespace Xamarin.Forms.Core.UITests
 			App.DismissKeyboard();
 			App.Tap(_btnInsert);
 			App.WaitForElement(_inserted);
-			App.ClearText(_entryReplace);
-			App.EnterText(_entryReplace, "1");
-			App.DismissKeyboard();
-			App.Tap(_btnReplace);
-			App.WaitForElement(_replaced);
+			//TODO: enable replace
+			//App.ClearText(_entryReplace);
+			//App.EnterText(_entryReplace, "1");
+			//App.DismissKeyboard();
+			//App.Tap(_btnReplace);
+			//App.WaitForElement(_replaced);
 		}
 			//App.WaitForElement("Appearing NavAppearingPage");
 		void TestAddRemoveReplaceWorks(string lastItem)
@@ -356,7 +357,7 @@ namespace Xamarin.Forms.Core.UITests
 			if (App.Query(c => c.Marked("Item: 2")).Length == 0)
 			{
 				var collectionViewFrame = App.Query(q => q.Marked(_collectionViewId))[0].Rect;
-
+				App.ScrollForElement($"* marked:'Item: 2'", new Drag(collectionViewFrame, Drag.Direction.BottomToTop, Drag.DragLength.Long), 50);
 			}
 			var element2 = App.Query(c => c.Marked("Item: 2"))[0];
 			if (isVertical)
