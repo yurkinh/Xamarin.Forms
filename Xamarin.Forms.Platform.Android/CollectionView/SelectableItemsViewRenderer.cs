@@ -17,8 +17,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
 
-			if (changedProperty.IsOneOf(SelectableItemsView.SelectedItemProperty, 
-				SelectableItemsView.SelectedItemsProperty, 
+			if (changedProperty.IsOneOf(SelectableItemsView.SelectedItemProperty,
+				SelectableItemsView.SelectedItemsProperty,
 				SelectableItemsView.SelectionModeProperty))
 			{
 				UpdateNativeSelection();
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				case SelectionMode.Multiple:
 					var selectedItems = SelectableItemsView.SelectedItems;
-					
+
 					foreach(var item in selectedItems)
 					{
 						SelectableItemsViewAdapter.MarkNativeSelection(item);
