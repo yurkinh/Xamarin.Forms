@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
 
 			ItemsView = itemsView;
-			_createItemContentView = createItemContentView;
-			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+			_createView = createView;
+			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, this));
 
 			if (_createItemContentView == null)
 			{

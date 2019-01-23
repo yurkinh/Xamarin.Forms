@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly IList _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, RecyclerView.Adapter adapter)
+		public ObservableItemsSource(INotifyCollectionChanged itemSource, RecyclerView.Adapter adapter)
 		{
 			_itemsSource = itemSource;
 			_adapter = adapter;

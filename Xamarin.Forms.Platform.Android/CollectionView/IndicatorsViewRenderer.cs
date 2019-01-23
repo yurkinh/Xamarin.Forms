@@ -18,14 +18,10 @@ namespace Xamarin.Forms.Platform.Android
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 
-		IItemsViewSource ItemsSource;
-
 		protected IndicatorsView IndicatorsView;
-		protected SelectableItemsView SelectableItemsView => IndicatorsView.GetItemsSourceBy(IndicatorsView);
 
 		int? _defaultLabelFor;
 		bool _disposed;
-		int _selectedIndex = 0;
 		AColor _currentPageIndicatorTintColor;
 		ShapeType _shapeType = ShapeType.Oval;
 		Drawable _currentPageShape = null;
@@ -156,7 +152,8 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBackgroundColor();
 			}
-			else if (changedProperty.Is(IndicatorsView.ItemsSourceByProperty))
+			else if (changedProperty.IsOneOf(IndicatorsView.ItemsSourceByProperty, IndicatorsView.PositionProperty, 
+											 IndicatorsView.CountProperty, SelectableItemsView.SelectedItemProperty))
 			{
 				UpdateItemsSource();
 			}
@@ -165,10 +162,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void UpdateBackgroundColor(Color? color = null)
 		{
 			if (Element == null)
-			{
 				return;
-			}
-
+		
 			SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
 		}
 
@@ -183,8 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 			IndicatorsView = newElement;
 
 			IndicatorsView.PropertyChanged += OnElementPropertyChanged;
-			IndicatorsView.ItemSourcePropertyChanged += IndicatorsViewItemSourcePropertyChanged;
-
+	
 			if (Tracker == null)
 			{
 				Tracker = new VisualElementTracker(this);
@@ -196,44 +190,10 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateItemsSource();
 		}
 
-		void IndicatorsViewItemSourcePropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
-			{
-				UpdateItemsSource();
-			}
-			else if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
-			{
-				UpdateSelectedIndicator();
-			} 
-		}
-
-		void UpdateSelectedIndicator()
-		{
-			_selectedIndex = GetPositionForItem(SelectableItemsView?.SelectedItem);
-			UpdateIndicators();
-		}
-
 		void UpdateItemsSource()
 		{
-			ItemsSource = ItemsSourceFactory.Create(SelectableItemsView?.ItemsSource, null);
 			ResetIndicators();
 			UpdateIndicatorCount();
-		}
-
-		int GetPositionForItem(object item)
-		{
-			var itemsCount = ItemsSource.Count;
-		
-			for (int n = 0; n < itemsCount; n++)
-			{
-				if (ItemsSource[n] == item)
-				{
-					return n;
-				}
-			}
-
-			return -1;
 		}
 
 		void TearDownOldElement(IndicatorsView oldElement)
@@ -244,7 +204,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			oldElement.PropertyChanged -= OnElementPropertyChanged;
-			IndicatorsView.ItemSourcePropertyChanged -= IndicatorsViewItemSourcePropertyChanged;
 		}
 
 		void UpdateIndicatorCount()
@@ -252,7 +211,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (!IsVisible)
 				return;
 
-			var count = ItemsSource.Count;
+			var count = IndicatorsView.Count;
+			var selectedIndex = IndicatorsView.Position;
 			var childCount = ChildCount;
 
 			for (int i = ChildCount; i < count; i++)
@@ -263,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					imageView.SetPadding(0, (int)Context.ToPixels(4), 0, (int)Context.ToPixels(4));
 
-				imageView.SetImageDrawable(_selectedIndex == i ? _currentPageShape : _pageShape);
+				imageView.SetImageDrawable(selectedIndex == i ? _currentPageShape : _pageShape);
 				AddView(imageView);
 			}
 
@@ -294,12 +254,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!IsVisible)
 				return;
-
+			var selectedIndex = IndicatorsView.Position;
 			var count = ChildCount;
 			for (int i = 0; i < count; i++)
 			{
 				ImageView view = (ImageView)GetChildAt(i);
-				var drawableToUse = _selectedIndex == i ? _currentPageShape : _pageShape;
+				var drawableToUse = selectedIndex == i ? _currentPageShape : _pageShape;
 				if (drawableToUse != view.Drawable)
 					view.SetImageDrawable(drawableToUse);
 			}

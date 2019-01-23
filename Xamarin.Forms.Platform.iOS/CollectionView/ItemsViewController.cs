@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ItemsViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			_itemsView = itemsView;
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 			
 			// If we already have data, the UICollectionView will have items and we'll be safe to call
 			// ReloadData if the ItemsSource changes in the future (see UpdateItemsSource for more).
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateItemsSourceAndReload()
 		{
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			_itemsSource =  ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
