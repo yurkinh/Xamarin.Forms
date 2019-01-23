@@ -30,6 +30,27 @@ namespace Xamarin.Forms.Controls
 		public const string DefaultMainPageId = "ControlGalleryMainPage";
 
 		public static bool PreloadTestCasesIssuesList { get; set; } = true;
+		
+#if TEST_4729
+		public App()
+		{
+			_testCloudService = DependencyService.Get<ITestCloudService>();
+
+			var root = new ContentPage
+			{
+				Title = "4729",
+				Content = new Label { Text = "Welcome to Xamarin.Forms!" }
+			};
+
+			SetMainPage(new NavigationPage(root));
+		}
+
+		protected override async void OnStart()
+		{
+			await Current.MainPage.Navigation.PushAsync(new Page { Title = "New" });
+			await Current.MainPage.Navigation.PopAsync();
+		}
+#else
 		public App()
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
@@ -45,6 +66,7 @@ namespace Xamarin.Forms.Controls
 		{
 			//TestIssue2393();
 		}
+#endif
 
 		async Task TestBugzilla44596()
 		{

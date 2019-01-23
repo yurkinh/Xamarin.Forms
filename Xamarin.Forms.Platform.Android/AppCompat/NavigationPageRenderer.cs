@@ -296,13 +296,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (!Element.IsAttachedToRoot())
 				return;
 
+			_isAttachedToWindow = true;
+
 			RegisterToolbar();
 
 			// If there is already stuff on the stack we need to push it
 			PushCurrentPages();
 
 			UpdateToolbar();
-			_isAttachedToWindow = true;
 		}
 
 		protected override void OnDetachedFromWindow()
@@ -782,6 +783,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (!Element.IsAttachedToRoot())
 				return Task.FromResult(false);
+
+			if (!_isAttachedToWindow)
+				return Task.FromResult(removed);
 
 			var tcs = new TaskCompletionSource<bool>();
 			Fragment fragment = GetFragment(page, removed, popToRoot);
