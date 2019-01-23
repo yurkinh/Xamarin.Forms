@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
+using System.Windows.Input;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -37,20 +39,25 @@ namespace Xamarin.Forms
 			set { SetValue(IndicatorsShapeProperty, value); }
 		}
 
-		public static event EventHandler<PropertyChangedEventArgs> ItemSourcePropertyChanged;
+		public static readonly BindableProperty CountProperty = BindableProperty.Create(nameof(Count), typeof(int), typeof(IndicatorsView), default(int));
 
-		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(SelectableItemsView), typeof(IndicatorsView), default(SelectableItemsView), 
-		propertyChanged: (b, o, n) => {
-			var oldItemsView = (o as SelectableItemsView);
-			//if(oldItemsView != null)
-			//{
-			//	oldItemsView.PropertyChanged -= ItemsViewPropertyChanged;
-			//}
-			(n as SelectableItemsView).PropertyChanged += (s,e) => {
+		public int Count
+		{
+			get => (int)GetValue(CountProperty);
+			set => SetValue(CountProperty, value);
+		}
 
-				ItemSourcePropertyChanged?.Invoke(b, e);
-			};
-		} );
+		public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(int), typeof(IndicatorsView), default(int), BindingMode.TwoWay, propertyChanged: OnPositionPropertyChanged);
+
+		public int Position
+		{
+			get => (int)GetValue(PositionProperty);
+			set => SetValue(PositionProperty, value);
+		}
+
+		public event EventHandler<PositionChangedEventArgs> PositionChanged;
+
+		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(SelectableItemsView), typeof(IndicatorsView), default(SelectableItemsView), propertyChanged: OnItemsSourceByPropertyChanged);
 
 		[TypeConverter(typeof(ReferenceTypeConverter))]
 		public static SelectableItemsView GetItemsSourceBy(BindableObject bindable)
@@ -63,9 +70,69 @@ namespace Xamarin.Forms
 			bindable.SetValue(ItemsSourceByProperty, value);
 		}
 
-		public IndicatorsView()
+		protected IItemsViewSource ItemsSource;
+
+		protected SelectableItemsView ItemsView => GetItemsSourceBy(this);
+
+		static void OnPositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
+			var indicatorsView = (IndicatorsView)bindable;
+
+			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
+
+			indicatorsView.PositionChanged?.Invoke(indicatorsView, args);
 		}
 
+		static void OnItemsSourceByPropertyChanged(object bindable, object oldValue, object newValue)
+		{
+			var oldItemsView = (oldValue as SelectableItemsView);
+
+			var newSelectableItemsView = (newValue as SelectableItemsView);
+			if (newSelectableItemsView == null)
+				return;
+
+			var indicatorsView = (bindable as IndicatorsView);
+			UpdateFromItemsSource(indicatorsView, newSelectableItemsView.ItemsSource);
+
+			newSelectableItemsView.PropertyChanged += (s, e) =>
+			{
+				//TODO: rmarinho Validate this only works with SelectionMode single
+				if (e.PropertyName.Equals(nameof(SelectableItemsView.SelectedItem)))
+				{
+					UpdatePositionFromSelectedItem(indicatorsView, s as SelectableItemsView);
+				}
+				if (e.PropertyName.Equals(nameof(SelectableItemsView.ItemsSource)))
+				{
+					UpdateFromItemsSource(indicatorsView, newSelectableItemsView.ItemsSource);
+
+				}
+			};
+		}
+
+		static void UpdatePositionFromSelectedItem(IndicatorsView indicatorsView, SelectableItemsView selectableItemsView)
+		{
+			var selectedItem = selectableItemsView?.SelectedItem;
+			var newPosition = indicatorsView.GetPositionForItem(selectedItem);
+			indicatorsView.SetValue(PositionProperty, newPosition);
+		}
+
+		static void UpdateFromItemsSource(IndicatorsView indicatorsView, IEnumerable itemsView)
+		{
+			indicatorsView.ItemsSource = ItemsSourceFactory.Create(itemsView, null);
+			indicatorsView.SetValue(CountProperty, indicatorsView.ItemsSource.Count);
+			UpdatePositionFromSelectedItem(indicatorsView, indicatorsView.ItemsView);
+		}
+
+		int GetPositionForItem(object item)
+		{
+			for (int n = 0; n < Count; n++)
+			{
+				if (ItemsSource[n] == item)
+				{
+					return n;
+				}
+			}
+			return -1;
+		}
 	}
 }

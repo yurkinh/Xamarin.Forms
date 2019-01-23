@@ -119,8 +119,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (position == -1)
 				return;
 			(ItemsViewAdapter as SelectableItemsViewAdapter)?.UpdateSelection(position);
-
-			Carousel.SetValueCore(CarouselView.PositionProperty, position);
 		}
 
 		void UpdateSpacing()

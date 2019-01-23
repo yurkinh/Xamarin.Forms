@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly RecyclerView.Adapter _adapter;
 		readonly IList _itemsSource;
 
-		public ObservableItemsSource(IEnumerable itemSource, RecyclerView.Adapter adapter)
+		public ObservableItemsSource(INotifyCollectionChanged itemSource, RecyclerView.Adapter adapter)
 		{
 			_itemsSource = (IList)itemSource;
 			_adapter = adapter;

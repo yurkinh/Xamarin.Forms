@@ -5,8 +5,8 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	// TODO hartez 2018/06/01 14:17:00 Implement Dispose override ?	
-	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout	
+	// TODO hartez 2018/06/01 14:17:00 Implement Dispose override ?
+	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout
 	public class ItemsViewController : UICollectionViewController
 	{
 		IItemsViewSource _itemsSource;
@@ -26,8 +26,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public ItemsViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			_itemsView = itemsView;
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
-			
+			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
+
 			// If we already have data, the UICollectionView will have items and we'll be safe to call
 			// ReloadData if the ItemsSource changes in the future (see UpdateItemsSource for more).
 			_safeForReload = _itemsSource?.Count > 0;
@@ -52,9 +52,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// Make sure the new layout is sized properly
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
-				
+
 				CollectionView.SetCollectionViewLayout(_layout, false);
-				
+
 				// Reload the data so the currently visible cells get laid out according to the new layout
 				CollectionView.ReloadData();
 			}
@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateItemsSourceAndReload()
 		{
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			_itemsSource =  ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
@@ -342,7 +342,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (emptyViewTemplate != null)
 			{
-				// We have a template; turn it into a Forms view 
+				// We have a template; turn it into a Forms view
 				var templateElement = emptyViewTemplate.CreateContent() as View;
 				var renderer = CreateRenderer(templateElement);
 

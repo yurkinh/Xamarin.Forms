@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ItemsView = itemsView;
 			_createView = createView;
-			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, this));
 
 			if (_createView == null)
 			{
