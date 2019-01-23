@@ -210,6 +210,13 @@
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
+    <Compile Include="Material\MaterialFrameRenderer.cs" />
+    <Compile Include="Material\MaterialColors.cs" />
+    <Compile Include="Material\MaterialSliderRenderer.cs" />
+    <Compile Include="Material\MaterialActivityIndicatorRenderer.cs" />
+    <Compile Include="CollectionView\IndicatorsViewRenderer.cs" />
+    <Compile Include="CollectionView\CarouselViewRenderer.cs" />
+    <Compile Include="CollectionView\CarouselViewLayout.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
