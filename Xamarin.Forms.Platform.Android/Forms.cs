@@ -286,7 +286,7 @@ namespace Xamarin.Forms
 			bool _disposed;
 			readonly Context _formsActivity;
 			readonly Size _pixelScreenSize;
-			readonly double _scalingFactor;
+			readonly double _scalingFactor, _statusBarHeight;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
@@ -297,6 +297,7 @@ namespace Xamarin.Forms
 					_scalingFactor = display.Density;
 					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
 					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
+					_statusBarHeight = formsActivity.Resources.GetDimensionPixelSize(formsActivity.Resources.GetIdentifier("status_bar_height", "dimen", "android")) / _scalingFactor;
 				}
 
 				CheckOrientationChanged(formsActivity.Resources.Configuration.Orientation);
@@ -322,6 +323,8 @@ namespace Xamarin.Forms
 			{
 				get { return _scalingFactor; }
 			}
+
+			public override double StatusBarHeight => _statusBarHeight;
 
 
 			public override double DisplayRound(double value) =>

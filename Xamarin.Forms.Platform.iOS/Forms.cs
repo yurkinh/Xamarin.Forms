@@ -155,7 +155,7 @@ namespace Xamarin.Forms
 			readonly NSObject _notification;
 #endif
 			readonly Size _scaledScreenSize;
-			readonly double _scalingFactor;
+			readonly double _scalingFactor, _statusBarHeight;
 
 			public IOSDeviceInfo()
 			{
@@ -168,6 +168,7 @@ namespace Xamarin.Forms
 				_scaledScreenSize = new Size(NSScreen.MainScreen.Frame.Width, NSScreen.MainScreen.Frame.Height);
 #endif
 				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
+				_statusBarHeight = UIKit.UIApplication.SharedApplication.StatusBarFrame.Height;
 			}
 
 			public override Size PixelScreenSize { get; }
@@ -175,6 +176,8 @@ namespace Xamarin.Forms
 			public override Size ScaledScreenSize => _scaledScreenSize;
 
 			public override double ScalingFactor => _scalingFactor;
+
+			public override double StatusBarHeight => _statusBarHeight;
 
 			protected override void Dispose(bool disposing)
 			{

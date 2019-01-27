@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Internals
 
 		public abstract double ScalingFactor { get; }
 
+		public abstract double StatusBarHeight { get; }
+
 		public void Dispose()
 		{
 			Dispose(true);
