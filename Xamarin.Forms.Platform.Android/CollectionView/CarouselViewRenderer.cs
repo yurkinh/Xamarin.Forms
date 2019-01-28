@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (position == -1)
 				return;
-			(ItemsViewAdapter as SelectableItemsViewAdapter)?.UpdateSelection(position);
+			(ItemsViewAdapter as SelectableItemsViewAdapter)?.UpdateFormsSelection(position);
 		}
 
 		void UpdateSpacing()
