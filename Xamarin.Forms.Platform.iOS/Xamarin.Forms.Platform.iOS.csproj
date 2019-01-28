@@ -211,6 +211,8 @@
     <Compile Include="CollectionView\IndicatorsViewRenderer.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\CarouselViewLayout.cs" />
+    <Compile Include="CollectionView\CollectionViewRenderer.cs" />
+    <Compile Include="CollectionView\CarouselViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
