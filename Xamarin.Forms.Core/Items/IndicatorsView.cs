@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_IndicatorsViewRenderer))]
 	public class IndicatorsView : View
 	{
-		public static readonly BindableProperty IndicatorsTintColorProperty = BindableProperty.Create(nameof(IndicatorsTintColor), typeof(Color), typeof(CarouselView), Color.Silver);
+		public static readonly BindableProperty IndicatorsTintColorProperty = BindableProperty.Create(nameof(IndicatorsTintColor), typeof(Color), typeof(IndicatorsView), Color.Silver);
 
 		public Color IndicatorsTintColor
 		{
@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 			set { SetValue(IndicatorsTintColorProperty, value); }
 		}
 
-		public static readonly BindableProperty SelectedIndicatorTintColorProperty = BindableProperty.Create(nameof(SelectedIndicatorTintColor), typeof(Color), typeof(CarouselView), Color.Gray);
+		public static readonly BindableProperty SelectedIndicatorTintColorProperty = BindableProperty.Create(nameof(SelectedIndicatorTintColor), typeof(Color), typeof(IndicatorsView), Color.Gray);
 
 		public Color SelectedIndicatorTintColor
 		{
@@ -31,7 +31,7 @@ namespace Xamarin.Forms
 			set { SetValue(SelectedIndicatorTintColorProperty, value); }
 		}
 
-		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorsShape), typeof(CarouselView), IndicatorsShape.Circle);
+		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorsShape), typeof(IndicatorsView), IndicatorsShape.Circle);
 
 		public IndicatorsShape IndicatorsShape
 		{
@@ -57,22 +57,22 @@ namespace Xamarin.Forms
 
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
 
-		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(SelectableItemsView), typeof(IndicatorsView), default(SelectableItemsView), propertyChanged: OnItemsSourceByPropertyChanged);
+		public static readonly BindableProperty ItemsSourceByProperty = BindableProperty.Create("ItemsSourceBy", typeof(CarouselView), typeof(IndicatorsView), default(CarouselView), propertyChanged: OnItemsSourceByPropertyChanged);
 
 		[TypeConverter(typeof(ReferenceTypeConverter))]
-		public static SelectableItemsView GetItemsSourceBy(BindableObject bindable)
+		public static CarouselView GetItemsSourceBy(BindableObject bindable)
 		{
-			return (SelectableItemsView)bindable.GetValue(ItemsSourceByProperty);
+			return (CarouselView)bindable.GetValue(ItemsSourceByProperty);
 		}
 
-		public static void SetItemsSourceBy(BindableObject bindable, ItemsView value)
+		public static void SetItemsSourceBy(BindableObject bindable, CarouselView value)
 		{
 			bindable.SetValue(ItemsSourceByProperty, value);
 		}
 
 		protected IItemsViewSource ItemsSource;
 
-		protected SelectableItemsView ItemsView => GetItemsSourceBy(this);
+		protected CarouselView CarouselItemsView => GetItemsSourceBy(this);
 
 		static void OnPositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -85,54 +85,40 @@ namespace Xamarin.Forms
 
 		static void OnItemsSourceByPropertyChanged(object bindable, object oldValue, object newValue)
 		{
-			var oldItemsView = (oldValue as SelectableItemsView);
+			var oldCarouselView = (oldValue as CarouselView);
 
-			var newSelectableItemsView = (newValue as SelectableItemsView);
-			if (newSelectableItemsView == null)
+			var newCarouselView = (newValue as CarouselView);
+			if (newCarouselView == null)
 				return;
 
 			var indicatorsView = (bindable as IndicatorsView);
-			UpdateFromItemsSource(indicatorsView, newSelectableItemsView.ItemsSource);
+			UpdateItemsSource(indicatorsView, newCarouselView.ItemsSource);
 
-			newSelectableItemsView.PropertyChanged += (s, e) =>
+			newCarouselView.PropertyChanged += (s, e) =>
 			{
-				//TODO: rmarinho Validate this only works with SelectionMode single
-				if (e.PropertyName.Equals(nameof(SelectableItemsView.SelectedItem)))
+				if (e.PropertyName.Equals(nameof(CarouselView.Position)))
 				{
-					UpdatePositionFromSelectedItem(indicatorsView, s as SelectableItemsView);
+					UpdatePosition(indicatorsView, s as CarouselView);
 				}
-				if (e.PropertyName.Equals(nameof(SelectableItemsView.ItemsSource)))
+				if (e.PropertyName.Equals(nameof(CarouselView.ItemsSource)))
 				{
-					UpdateFromItemsSource(indicatorsView, newSelectableItemsView.ItemsSource);
+					UpdateItemsSource(indicatorsView, newCarouselView.ItemsSource);
 
 				}
 			};
 		}
 
-		static void UpdatePositionFromSelectedItem(IndicatorsView indicatorsView, SelectableItemsView selectableItemsView)
+		static void UpdatePosition(IndicatorsView indicatorsView, CarouselView carouselView)
 		{
-			var selectedItem = selectableItemsView?.SelectedItem;
-			var newPosition = indicatorsView.GetPositionForItem(selectedItem);
+			var newPosition = carouselView.Position;
 			indicatorsView.SetValue(PositionProperty, newPosition);
 		}
 
-		static void UpdateFromItemsSource(IndicatorsView indicatorsView, IEnumerable itemsView)
+		static void UpdateItemsSource(IndicatorsView indicatorsView, IEnumerable itemsView)
 		{
 			indicatorsView.ItemsSource = ItemsSourceFactory.Create(itemsView, null);
 			indicatorsView.SetValue(CountProperty, indicatorsView.ItemsSource.Count);
-			UpdatePositionFromSelectedItem(indicatorsView, indicatorsView.ItemsView);
-		}
-
-		int GetPositionForItem(object item)
-		{
-			for (int n = 0; n < Count; n++)
-			{
-				if (ItemsSource[n] == item)
-				{
-					return n;
-				}
-			}
-			return -1;
+			UpdatePosition(indicatorsView, indicatorsView.CarouselItemsView);
 		}
 	}
 }

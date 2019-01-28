@@ -153,7 +153,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundColor();
 			}
 			else if (changedProperty.IsOneOf(IndicatorsView.ItemsSourceByProperty, IndicatorsView.PositionProperty, 
-											 IndicatorsView.CountProperty, SelectableItemsView.SelectedItemProperty))
+											 IndicatorsView.CountProperty, CarouselView.CurrentItemProperty))
 			{
 				UpdateItemsSource();
 			}
