@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return new ListViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Vertical));
 		}
 
-		void TearDownOldElement(ItemsView oldElement)
+		protected virtual void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
 			{
