@@ -73,6 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewController.RemoveLogicalChild(cell);
 		}
 
+		//Should this be moved to ItemsViewController ?
 		public override void Scrolled(UIScrollView scrollView)
 		{
 			CarouselViewController?.Scrolled(scrollView);
@@ -81,6 +82,26 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
 			CarouselViewController?.DecelerationEnded(scrollView);
+		}
+
+		public override void DecelerationStarted(UIScrollView scrollView)
+		{
+			CarouselViewController?.DecelerationStarted(scrollView);
+		}
+
+		public override void DraggingStarted(UIScrollView scrollView)
+		{
+			CarouselViewController?.DraggingStarted(scrollView);
+		}
+
+		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
+		{
+			CarouselViewController?.DraggingEnded(scrollView, willDecelerate);
+		}
+
+		public override void ScrollAnimationEnded(UIScrollView scrollView)
+		{
+			CarouselViewController?.ScrollAnimationEnded(scrollView);
 		}
 	}
 }
