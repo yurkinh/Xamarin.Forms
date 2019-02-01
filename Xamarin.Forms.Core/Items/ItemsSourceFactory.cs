@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
@@ -17,7 +18,7 @@ namespace Xamarin.Forms
 			switch (itemsSource)
 			{
 				case IList _ when itemsSource is INotifyCollectionChanged:
-					return observableItemsSourceFactory(itemsSource as INotifyCollectionChanged);
+					return observableItemsSourceFactory != null ? observableItemsSourceFactory(itemsSource as INotifyCollectionChanged) : new ObservableListSource(itemsSource);
 				case IEnumerable<object> generic:
 					return new ListSource(generic);
 			}
@@ -38,6 +39,17 @@ namespace Xamarin.Forms
 		}
 
 		public ListSource(IEnumerable enumerable)
+		{
+			foreach (object item in enumerable)
+			{
+				Add(item);
+			}
+		}
+	}
+
+	internal class ObservableListSource : ListSource
+	{
+		public ObservableListSource(IEnumerable enumerable)
 		{
 			foreach (object item in enumerable)
 			{

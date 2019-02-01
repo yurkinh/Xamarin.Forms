@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
@@ -36,13 +37,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 	internal class ItemsSourceGenerator : ContentView
 	{
+		public event EventHandler<NotifyCollectionChangedEventArgs> CollectionChanged;
 		readonly ItemsView _cv;
 		private readonly ItemsSourceType _itemsSourceType;
 		readonly Entry _entry;
+		int _count = 0;
 
+		public int Count => _count;
 		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000, 
 			ItemsSourceType itemsSourceType = ItemsSourceType.List)
 		{
+			_count = initialItems;
 			_cv = cv;
 			_itemsSourceType = itemsSourceType;
 			var layout = new StackLayout
@@ -60,6 +65,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			layout.Children.Add(button);
 
 			button.Clicked += GenerateItems;
+			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => {
+				(cv.ItemsSource as ObservableCollection<CollectionViewGalleryTestItem>).Remove(obj.BindingContext as CollectionViewGalleryTestItem);
+			});
 
 			Content = layout;
 		}
@@ -107,6 +115,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 		}
 
+		ObservableCollection<CollectionViewGalleryTestItem> _obsCollection;
 		void GenerateObservableCollection()
 		{
 			if (int.TryParse(_entry.Text, out int count))
@@ -119,9 +128,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 						$"Item: {n}", _images[n % _images.Length], n));
 				}
 
-				_cv.ItemsSource = new ObservableCollection<CollectionViewGalleryTestItem>(items);
+				_obsCollection = new ObservableCollection<CollectionViewGalleryTestItem>(items);
+				_obsCollection.CollectionChanged += ObsItemsSource_CollectionChanged;
+				_cv.ItemsSource = _obsCollection;
 			}
 		}
+
+		void ObsItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			_count = _obsCollection.Count;
+			CollectionChanged?.Invoke(sender, e);
+		}
+
 
 		void GenerateMultiTestObservableCollection()
 		{
