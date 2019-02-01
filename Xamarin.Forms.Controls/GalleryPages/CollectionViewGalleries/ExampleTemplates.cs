@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			return new DataTemplate(() =>
 			{
-				return new ExampleTemplateCarousel();
+				return new CarouselViewGalleries.ExampleTemplateCarousel();
 			});
 		}
 
