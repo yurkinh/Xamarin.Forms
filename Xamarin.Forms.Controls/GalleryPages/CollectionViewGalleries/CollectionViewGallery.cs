@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries;
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
+using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries;
 using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionGalleries;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
