@@ -181,14 +181,14 @@ namespace Xamarin.Forms
 
 		View CreateItemView(object item, int index)
 		{
-			return CreateItemView(item, index, _itemTemplate ?? _itemTemplateSelector?.SelectTemplate(item, null));
+			return CreateItemView(item, index, _itemTemplate ?? _itemTemplateSelector);
 		}
 
 		View CreateItemView(object item, int index, DataTemplate dataTemplate)
 		{
 			if (dataTemplate != null)
 			{
-				var view = (View)dataTemplate.CreateContent();
+				var view = (View)dataTemplate.CreateContent(item, null);
 				view.BindingContext = item;
 				return view;
 			}

@@ -7,16 +7,10 @@ namespace Xamarin.Forms.Internals
 	{
 		public static DataTemplate SelectDataTemplate(this DataTemplate self, object item, BindableObject container)
 		{
-			var selector = self as DataTemplateSelector;
-			if (selector == null)
-				return self;
+			if (self is DataTemplateSelector selector)
+				return selector.SelectTemplate(item, container);
 
-			return selector.SelectTemplate(item, container);
-		}
-
-		public static object CreateContent(this DataTemplate self, object item, BindableObject container)
-		{
-			return self.SelectDataTemplate(item, container).CreateContent();
+			return self;
 		}
 	}
 }

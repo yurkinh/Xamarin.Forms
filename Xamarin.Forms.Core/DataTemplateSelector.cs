@@ -5,18 +5,20 @@ namespace Xamarin.Forms
 {
 	public abstract class DataTemplateSelector : DataTemplate
 	{
-		Dictionary<Type, DataTemplate> _dataTemplates = new Dictionary<Type, DataTemplate>();
+		readonly Dictionary<Type, DataTemplate> _dataTemplates = new Dictionary<Type, DataTemplate>();
+
+		// NOTE: we don't call base as this is a proxy object that does not need to be bound
+		//       and we do not actually make use of any of the base functionality
+		internal override object OnCreateContent(object item, BindableObject container) =>
+			SelectTemplate(item, container).CreateContent();
 
 		public DataTemplate SelectTemplate(object item, BindableObject container)
 		{
-			var listView = container as ListView;
+			var recycle = false;
+			if (container is ListView listView)
+				recycle = listView.CachingStrategy.HasFlag(ListViewCachingStrategy.RecycleElementAndDataTemplate);
 
-			var recycle = listView == null ? false :
-				(listView.CachingStrategy & ListViewCachingStrategy.RecycleElementAndDataTemplate) ==
-					ListViewCachingStrategy.RecycleElementAndDataTemplate;
-
-			DataTemplate dataTemplate = null;
-			if (recycle && _dataTemplates.TryGetValue(item.GetType(), out dataTemplate))
+			if (recycle && _dataTemplates.TryGetValue(item?.GetType(), out var dataTemplate))
 				return dataTemplate;
 
 			dataTemplate = OnSelectTemplate(item, container);
@@ -30,7 +32,7 @@ namespace Xamarin.Forms
 					throw new NotSupportedException(
 						"RecycleElementAndDataTemplate requires DataTemplate activated with ctor taking a type.");
 
-				_dataTemplates[item.GetType()] = dataTemplate;
+				_dataTemplates[item?.GetType()] = dataTemplate;
 			}
 
 			return dataTemplate;

@@ -37,16 +37,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
+		class TemplateNull : DataTemplate
+		{
+			public TemplateNull () : base (typeof (SwitchCell))
+			{
+				
+			}
+		}
+
 		class TestDTS : DataTemplateSelector
 		{
 			public TestDTS ()
 			{
 				templateOne = new TemplateOne ();
 				templateTwo = new TemplateTwo ();
+				templateNull = new TemplateNull ();
 			}
 
 			protected override DataTemplate OnSelectTemplate (object item, BindableObject container)
 			{
+				if (item is null)
+					return templateNull;
 				if (item is double)
 					return templateOne;
 				if (item is byte)
@@ -56,6 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			readonly DataTemplate templateOne;
 			readonly DataTemplate templateTwo;
+			readonly DataTemplate templateNull;
 		}
 
 		[Test]
@@ -70,17 +82,32 @@ namespace Xamarin.Forms.Core.UnitTests
 			var dts = new TestDTS ();
 			Assert.IsInstanceOf<TemplateOne> (dts.SelectTemplate (1d, null));
 			Assert.IsInstanceOf<TemplateTwo> (dts.SelectTemplate ("test", null));
+			Assert.IsInstanceOf<TemplateNull> (dts.SelectTemplate (null, null));
 		}
 
 		[Test]
 		public void ListViewSupport ()
 		{
 			var listView = new ListView(ListViewCachingStrategy.RecycleElement);
-			listView.ItemsSource = new object[] { 0d, "test" };
+			listView.ItemsSource = new object[] { 0d, "test", null };
 
 			listView.ItemTemplate = new TestDTS ();
 			Assert.IsInstanceOf<ViewCell> (listView.TemplatedItems[0]);
 			Assert.IsInstanceOf<EntryCell> (listView.TemplatedItems[1]);
+			Assert.IsInstanceOf<SwitchCell> (listView.TemplatedItems[2]);
+		}
+
+		[Test]
+		public void ListViewHeaderFooterSupport ()
+		{
+			var listView = new ListView(ListViewCachingStrategy.RecycleElement);
+			listView.Header = 0d;
+			listView.Footer = "footer";
+
+			listView.HeaderTemplate = new TestDTS ();
+			listView.FooterTemplate = new TestDTS ();
+			Assert.IsInstanceOf<ViewCell> (listView.HeaderElement);
+			Assert.IsInstanceOf<EntryCell> (listView.HeaderElement);
 		}
 
 		[Test]
@@ -88,6 +115,15 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var dts = new TestDTS ();
 			Assert.Throws<NotSupportedException> (() => dts.SelectTemplate ((byte)0, null));
+		}
+
+		[Test]
+		public void NullItemAndContainerDoesNotThrow ()
+		{
+			var dts = new TestDTS ();
+			Assert.IsInstanceOf<TemplateNull> (dts.SelectTemplate (null, null));
+			Assert.IsInstanceOf<SwitchCell> (dts.CreateContent (null, null));
+			Assert.IsInstanceOf<SwitchCell> (dts.CreateContent ());
 		}
 	}
 

@@ -49,10 +49,14 @@ namespace Xamarin.Forms
 			Values[property] = value;
 		}
 
-		internal override void SetupContent(object item)
+		internal override object OnCreateContent(object item, BindableObject container)
 		{
-			ApplyBindings(item);
-			ApplyValues(item);
+			var content = base.OnCreateContent(item, container);
+
+			ApplyBindings(content);
+			ApplyValues(content);
+
+			return content;
 		}
 
 		void ApplyBindings(object item)

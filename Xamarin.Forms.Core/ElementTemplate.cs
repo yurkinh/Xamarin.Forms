@@ -4,13 +4,14 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
+	public class ElementTemplate : IElement
 #pragma warning disable 612
-	public class ElementTemplate : IElement, IDataTemplate
+		, IDataTemplate
 #pragma warning restore 612
 	{
 		List<Action<object, ResourcesChangedEventArgs>> _changeHandlers;
 		Element _parent;
-		bool _canRecycle; // aka IsDeclarative
+		Func<object> _loadTemplate;
 
 		internal ElementTemplate()
 		{
@@ -21,27 +22,23 @@ namespace Xamarin.Forms
 			if (type == null)
 				throw new ArgumentNullException("type");
 
-			_canRecycle = true;
+			CanRecycle = true;
 
-			LoadTemplate = () => Activator.CreateInstance(type);
+			_loadTemplate = () => Activator.CreateInstance(type);
 		}
 
 		internal ElementTemplate(Func<object> loadTemplate) : this()
 		{
-			if (loadTemplate == null)
-				throw new ArgumentNullException("loadTemplate");
-
-			LoadTemplate = loadTemplate;
+			_loadTemplate = loadTemplate ?? throw new ArgumentNullException(nameof(loadTemplate));
 		}
 
-		Func<object> LoadTemplate { get; set; }
 #pragma warning disable 0612
 		Func<object> IDataTemplate.LoadTemplate
 		{
-#pragma warning restore 0612
-			get { return LoadTemplate; }
-			set { LoadTemplate = value; }
+			get { return _loadTemplate; }
+			set { _loadTemplate = value; }
 		}
+#pragma warning restore 0612
 
 		void IElement.AddResourcesChangedListener(Action<object, ResourcesChangedEventArgs> onchanged)
 		{
@@ -49,7 +46,8 @@ namespace Xamarin.Forms
 			_changeHandlers.Add(onchanged);
 		}
 
-		internal bool CanRecycle => _canRecycle;
+		internal bool CanRecycle { get; private set; }
+
 		Element IElement.Parent
 		{
 			get { return _parent; }
@@ -72,21 +70,18 @@ namespace Xamarin.Forms
 			_changeHandlers.Remove(onchanged);
 		}
 
-		public object CreateContent()
+		public object CreateContent() =>
+			OnCreateContent(null, null);
+
+		public object CreateContent(object item, BindableObject container) =>
+			OnCreateContent(item, container);
+
+		internal virtual object OnCreateContent(object item, BindableObject container)
 		{
-			if (LoadTemplate == null)
+			if (_loadTemplate == null)
 				throw new InvalidOperationException("LoadTemplate should not be null");
-			if (this is DataTemplateSelector)
-				throw new InvalidOperationException("Cannot call CreateContent directly on a DataTemplateSelector");
 
-			object item = LoadTemplate();
-			SetupContent(item);
-
-			return item;
-		}
-
-		internal virtual void SetupContent(object item)
-		{
+			return _loadTemplate();
 		}
 
 		void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)

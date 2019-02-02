@@ -314,14 +314,9 @@ namespace Xamarin.Forms.Platform.UWP
 				DataTemplate template = isGroupHeader ? lv.GroupHeaderTemplate : lv.ItemTemplate;
 				object bindingContext = newContext;
 
-				if (template is DataTemplateSelector)
-				{
-					template = ((DataTemplateSelector)template).SelectTemplate(bindingContext, lv);
-				}
-
 				if (template != null)
 				{
-					cell = template.CreateContent() as Cell;
+					cell = template.CreateContent(bindingContext, lv) as Cell;
 				}
 				else
 				{
