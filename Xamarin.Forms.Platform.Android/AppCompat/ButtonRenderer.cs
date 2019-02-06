@@ -95,12 +95,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
+			Profile.Push();
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
+					Profile.PopPush(nameof(CreateNativeControl));
 					AppCompatButton button = CreateNativeControl();
 
 					button.SetOnClickListener(this);
@@ -108,6 +110,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.AddOnAttachStateChangeListener(this);
 					_textColorSwitcher = new TextColorSwitcher(button.TextColors, e.NewElement.UseLegacyColorManagement());
 
+					Profile.PopPush(nameof(SetNativeControl));
 					SetNativeControl(button);
 				}
 
@@ -116,6 +119,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_buttonLayoutManager?.Update();
 				UpdateAll();
 			}
+			Profile.Pop();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -135,7 +139,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null || Control == null)
 				return;
 
+			Profile.Push();
 			_backgroundTracker?.UpdateDrawable();
+			Profile.Pop();
 		}
 
 		void UpdateAll()
@@ -148,7 +154,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateEnabled()
 		{
+			Profile.Push();
 			Control.Enabled = Element.IsEnabled;
+			Profile.Pop();
 		}
 
 		void UpdateFont()
@@ -159,6 +167,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (font == Font.Default && _defaultFontSize == 0f)
 				return;
 
+			Profile.Push();
 			if (_defaultFontSize == 0f)
 			{
 				_defaultTypeface = NativeButton.Typeface;
@@ -175,11 +184,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				NativeButton.Typeface = font.ToTypeface();
 				NativeButton.SetTextSize(ComplexUnitType.Sp, font.ToScaledPixel());
 			}
+			Profile.Pop();
 		}
 
 		void UpdateTextColor()
 		{
+			Profile.Push();
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+			Profile.Pop();
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

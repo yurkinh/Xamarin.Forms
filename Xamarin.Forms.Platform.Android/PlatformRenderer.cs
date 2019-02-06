@@ -69,8 +69,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
+			Profile.Push();
 			SetMeasuredDimension(r - l, b - t);
 			_canvas?.OnLayout(changed, l, t, r, b);
+			Profile.Pop();
 		}
 
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)

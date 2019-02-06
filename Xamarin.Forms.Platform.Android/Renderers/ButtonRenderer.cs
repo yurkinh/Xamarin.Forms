@@ -103,6 +103,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
+			Profile.Push();
 			base.OnElementChanged(e);
 
 			if (e.OldElement == null)
@@ -124,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			UpdateAll();
+			Profile.Pop();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -148,10 +150,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void UpdateBackgroundColor()
 		{
+			Profile.Push();
 			if (Element == null || Control == null)
 				return;
 
 			_backgroundTracker?.UpdateDrawable();
+			Profile.Pop();
 		}
 
 		void UpdateAll()
@@ -228,6 +232,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFont()
 		{
+			Profile.Push();
 			Button button = Element;
 			if (button.Font == Font.Default && _defaultFontSize == 0f)
 				return;
@@ -248,10 +253,12 @@ namespace Xamarin.Forms.Platform.Android
 				NativeButton.Typeface = button.Font.ToTypeface();
 				NativeButton.SetTextSize(ComplexUnitType.Sp, button.Font.ToScaledPixel());
 			}
+			Profile.Pop();
 		}
 
 		void UpdateText()
 		{
+			Profile.Push();
 			var oldText = NativeButton.Text;
 			NativeButton.Text = Element.Text;
 
@@ -260,11 +267,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBitmap();
 			}
+			Profile.Pop();
 		}
 
 		void UpdateTextColor()
 		{
+			Profile.Push();
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+			Profile.Pop();
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;
@@ -284,18 +294,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
+			Profile.Push();
 			Control?.SetPadding(
 				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
 				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
 				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
 				(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
 			);
+			Profile.Pop();
 		}
 
 		void UpdateContentEdge(Thickness? delta = null)
 		{
+			Profile.Push();
 			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
+			Profile.Pop();
 		}
 
 		class ButtonClickListener : Object, IOnClickListener

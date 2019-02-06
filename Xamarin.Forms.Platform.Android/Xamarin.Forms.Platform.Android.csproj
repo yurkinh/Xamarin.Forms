@@ -40,7 +40,7 @@
     <Optimize>true</Optimize>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">bin\Release\monoandroid81\</OutputPath>
     <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">bin\Release\monoandroid90\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;PROFILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

@@ -70,13 +70,22 @@ namespace Xamarin.Forms
 		// Why is bundle a param if never used?
 		public static void Init(Context activity, Bundle bundle)
 		{
-			Assembly resourceAssembly = Assembly.GetCallingAssembly();
+			Assembly resourceAssembly;
+
+			Profile.Push("Assembly.GetCallingAssembly");
+			resourceAssembly = Assembly.GetCallingAssembly();
+			Profile.Pop();
+
+			Profile.Push();
 			SetupInit(activity, resourceAssembly);
+			Profile.Pop();
 		}
 
 		public static void Init(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
+			Profile.Push();
 			SetupInit(activity, resourceAssembly);
+			Profile.Pop();
 		}
 
 		/// <summary>
@@ -128,6 +137,7 @@ namespace Xamarin.Forms
 
 		static void SetupInit(Context activity, Assembly resourceAssembly)
 		{
+			Profile.Push();
 			if (!IsInitialized)
 			{
 				// Only need to get this once; it won't change
@@ -141,9 +151,11 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 			{
 				// Only need to do this once
+				Profile.PopPush("ResourceManager.Init");
 				ResourceManager.Init(resourceAssembly);
 			}
 
+			Profile.PopPush("Color.SetAccent()");
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// This could change if the UI mode changes (e.g., if night mode is enabled)
 			Color.SetAccent(GetAccentColor(activity));
@@ -152,11 +164,13 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 			{
 				// Only need to do this once
+				Profile.PopPush("Log.Listeners");
 				Internals.Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 			}
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because AndroidPlatformServices needs a current activity to launch URIs from
+			Profile.PopPush("Device.PlatformServices");
 			Device.PlatformServices = new AndroidPlatformServices(activity);
 
 			// use field and not property to avoid exception in getter
@@ -168,13 +182,18 @@ namespace Xamarin.Forms
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
+			Profile.PopPush("new AndroidDeviceInfo(activity)");
 			Device.Info = new AndroidDeviceInfo(activity);
 			Device.SetFlags(s_flags);
+
+			Profile.PopPush("AndroidTicker");
 
 			var ticker = Ticker.Default as AndroidTicker;
 			if (ticker != null)
 				ticker.Dispose();
 			Ticker.SetDefault(new AndroidTicker());
+
+			Profile.PopPush("RegisterAll");
 
 			if (!IsInitialized)
 			{
@@ -182,6 +201,7 @@ namespace Xamarin.Forms
 				Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 			}
 
+			Profile.PopPush("Epilog");
 			// This could change as a result of a config change, so we need to check it every time
 			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
 			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
@@ -193,6 +213,7 @@ namespace Xamarin.Forms
 				ExpressionSearch.Default = new AndroidExpressionSearch();
 
 			IsInitialized = true;
+			Profile.Pop();
 		}
 
 		static IReadOnlyList<string> s_flags;
