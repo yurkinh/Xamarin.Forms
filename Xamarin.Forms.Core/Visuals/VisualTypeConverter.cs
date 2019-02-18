@@ -34,10 +34,19 @@ namespace Xamarin.Forms
 				try
 				{
 					IVisual registeredVisual = (IVisual)Activator.CreateInstance(visual);
-					_visualTypeMappings[visual.Name] = registeredVisual;
-					_visualTypeMappings[visual.FullName] = registeredVisual;
-					_visualTypeMappings[$"{visual.Name}Visual"] = registeredVisual;
-					_visualTypeMappings[$"{visual.FullName}Visual"] = registeredVisual;
+					string name = visual.Name;
+					string fullName = visual.FullName;
+
+					if (name.EndsWith("Visual", StringComparison.OrdinalIgnoreCase))
+					{
+						name = name.Substring(0, name.Length - 6);
+						fullName = fullName.Substring(0, fullName.Length - 6);
+					}
+
+					_visualTypeMappings[name] = registeredVisual;
+					_visualTypeMappings[fullName] = registeredVisual;
+					_visualTypeMappings[$"{name}Visual"] = registeredVisual;
+					_visualTypeMappings[$"{fullName}Visual"] = registeredVisual;
 				}
 				catch
 				{

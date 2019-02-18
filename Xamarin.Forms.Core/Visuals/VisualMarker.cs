@@ -5,9 +5,9 @@
 		static bool _isMaterialRegistered = false;
 		static bool _warnedAboutMaterial = false;
 
-		public static IVisual MatchParent { get; } = new VisualRendererMarker.MatchParent();
-		public static IVisual Default { get; } = new VisualRendererMarker.Default();
-		public static IVisual Material { get; } = new VisualRendererMarker.Material();
+		public static IVisual MatchParent { get; } = new MatchParentVisual();
+		public static IVisual Default { get; } = new DefaultVisual();
+		public static IVisual Material { get; } = new MaterialVisual();
 
 		internal static void RegisterMaterial() => _isMaterialRegistered = true;
 		internal static void MaterialCheck()
@@ -21,5 +21,10 @@
 			else if (Device.RuntimePlatform != Device.Android)
 				Internals.Log.Warning("Visual", $"Material is currently not support on {Device.RuntimePlatform}.");
 		}
+
+
+		public sealed class MaterialVisual : IVisual { public MaterialVisual() { } }
+		public sealed class DefaultVisual : IVisual { public DefaultVisual() { } }
+		public sealed class MatchParentVisual : IVisual { public MatchParentVisual() { } }
 	}
 }
