@@ -4,10 +4,7 @@
              x:Class="Xamarin.Forms.Sandbox.MainPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-               FontSize="Large"
-                HorizontalOptions="CenterAndExpand" />
+            <Button Text="Material text" Visual="MaTeRiAl" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
