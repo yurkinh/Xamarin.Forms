@@ -38,7 +38,13 @@
 
 				foreach (var typeElement in typeElements)
 					if (typeElement.Name != baseType.Name)
-						derivedNames.Add(typeElement.Name);
+					{
+						string name = typeElement.Name;
+						if (name.EndsWith("Visual", StringComparison.OrdinalIgnoreCase))
+							name = name.Substring(0, name.Length - 6);
+
+						derivedNames.Add(name);
+					}
 
 				Values = new StandardValuesCollection(derivedNames);
 			}
