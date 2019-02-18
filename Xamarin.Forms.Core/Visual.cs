@@ -29,13 +29,27 @@ namespace Xamarin.Forms
 	{
 		public sealed class Material : IVisual { internal Material() { } }
 		public sealed class Default : IVisual { internal Default() { } }
-		internal sealed class MatchParent : IVisual { internal MatchParent() { } }
+		public sealed class MatchParent : IVisual { internal MatchParent() { } }
 	}
 
 	[TypeConverter(typeof(VisualTypeConverter))]
 	public interface IVisual
 	{
+	}
 
+
+	public class ShaneTypeConverter : TypeConverter
+	{
+		public override object ConvertFromInvariantString(string value)
+		{
+			return new Shane();
+		}
+	}
+
+	[TypeConverter(typeof(ShaneTypeConverter))]
+	public struct Shane
+	{
+		public static readonly Shane Rabbit = new Shane();
 	}
 
 	[Xaml.TypeConversion(typeof(IVisual))]
