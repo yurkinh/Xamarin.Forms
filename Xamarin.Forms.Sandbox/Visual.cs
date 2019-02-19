@@ -6,7 +6,7 @@ namespace SkiaSharpVisual
 	{
 		public static SkiaSharp Instance { get; } = new SkiaSharp();
 
-		internal SkiaSharp()
+		public SkiaSharp()
 		{
 		}
 	}

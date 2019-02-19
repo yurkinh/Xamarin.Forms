@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Sandbox
 		// This code is called from the App Constructor so just initialize the main page of the application here
 		void InitializeMainPage()
 		{
-			MainPage = new NavigationPage(new CodePage());
+			MainPage = new NavigationPage(new XamlPage());
 		}
 	}
 }
