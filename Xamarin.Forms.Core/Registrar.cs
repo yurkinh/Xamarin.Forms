@@ -272,21 +272,10 @@ namespace Xamarin.Forms.Internals
 			{
 				foreach (Type attrType in attrTypes)
 				{
-					object[] attributes;
-					try
-					{
-#if NETSTANDARD2_0
-						attributes = assembly.GetCustomAttributes(attrType, true);
-#else
-						attributes = assembly.GetCustomAttributes(attrType).ToArray();
-#endif
-					}
-					catch (System.IO.FileNotFoundException)
-					{
-						// Sometimes the previewer doesn't actually have everything required for these loads to work
-						Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, attrType.FullName);
+					object[] attributes = assembly.GetCustomAttributesSafe(attrType);
+					if (attributes == null)
 						continue;
-					}
+
 					var length = attributes.Length;
 					for (var i = 0; i < length; i++)
 					{
@@ -297,35 +286,33 @@ namespace Xamarin.Forms.Internals
 				}
 
 				string resolutionName = assembly.FullName;
-				var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttribute(typeof(ResolutionGroupNameAttribute));
+				var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttributeSafe(typeof(ResolutionGroupNameAttribute));
 				if (resolutionNameAttribute != null)
 					resolutionName = resolutionNameAttribute.ShortName;
 
-#if NETSTANDARD2_0
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute), true);
-#else
-				object[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute)).ToArray();
-#endif
-				var exportEffectsLength = effectAttributes.Length;
-				for (var i = 0; i < exportEffectsLength; i++)
+				object[] effectAttributes = assembly.GetCustomAttributesSafe(typeof(ExportEffectAttribute));
+				if (effectAttributes != null)
 				{
-					var effect = (ExportEffectAttribute)effectAttributes[i];
-					Effects[resolutionName + "." + effect.Id] = effect.Type;
+					var exportEffectsLength = effectAttributes.Length;
+					for (var i = 0; i < exportEffectsLength; i++)
+					{
+						var effect = (ExportEffectAttribute)effectAttributes[i];
+						Effects[resolutionName + "." + effect.Id] = effect.Type;
+					}
 				}
 
-#if NETSTANDARD2_0
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute), true);
-#else
-				object[] styleAttributes = assembly.GetCustomAttributes(typeof(StyleSheets.StylePropertyAttribute)).ToArray();
-#endif
-				var stylePropertiesLength = styleAttributes.Length;
-				for (var i = 0; i < stylePropertiesLength; i++)
+				object[] styleAttributes = assembly.GetCustomAttributesSafe(typeof(StyleSheets.StylePropertyAttribute));
+				if (styleAttributes != null)
 				{
-					var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
-					if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
-						attrList.Add(attribute);
-					else
-						StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
+					var stylePropertiesLength = styleAttributes.Length;
+					for (var i = 0; i < stylePropertiesLength; i++)
+					{
+						var attribute = (StyleSheets.StylePropertyAttribute)styleAttributes[i];
+						if (StyleProperties.TryGetValue(attribute.CssPropertyName, out var attrList))
+							attrList.Add(attribute);
+						else
+							StyleProperties[attribute.CssPropertyName] = new List<StyleSheets.StylePropertyAttribute> { attribute };
+					}
 				}
 			}
 

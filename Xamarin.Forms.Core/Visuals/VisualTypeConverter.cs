@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
@@ -15,6 +15,7 @@ namespace Xamarin.Forms
 			var mappings = new Dictionary<string, IVisual>(StringComparer.OrdinalIgnoreCase);
 			Assembly[] assemblies = Device.GetAssemblies();
 
+			// Check for IVisual Types
 			foreach (var assembly in assemblies)
 				Register(assembly, mappings);
 
@@ -22,49 +23,75 @@ namespace Xamarin.Forms
 				foreach (var assembly in Internals.Registrar.ExtraAssemblies)
 					Register(assembly, mappings);
 
+
+			// Check for visual assembly attributes	after scanning for IVisual Types
+			// this will let users replace the default visual names if they want to
+			foreach (var assembly in assemblies)
+				RegisterFromAttributes(assembly, mappings);
+
+			if (Internals.Registrar.ExtraAssemblies != null)
+				foreach (var assembly in Internals.Registrar.ExtraAssemblies)
+					RegisterFromAttributes(assembly, mappings);
+
 			_visualTypeMappings = mappings;
+		}
+
+		static void RegisterFromAttributes(Assembly assembly, Dictionary<string, IVisual> mappings)
+		{
+			object[] attributes = assembly.GetCustomAttributesSafe(typeof(VisualAttribute));
+
+			if (attributes != null)
+			{
+				foreach (VisualAttribute attribute in attributes)
+				{
+					var visual = CreateVisual(attribute.Visual);
+					if (visual != null)
+						mappings[attribute.Key] = visual;
+				}
+			}
 		}
 
 		static void Register(Assembly assembly, Dictionary<string, IVisual> mappings)
 		{
-#if NETSTANDARD2_0
 			foreach (var type in assembly.GetExportedTypes())
 				if (typeof(IVisual).IsAssignableFrom(type) && type != typeof(IVisual))
 					Register(type, mappings);
-#else
-			foreach (var type in assembly.ExportedTypes)
-				if (typeof(IVisual).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) && type != typeof(IVisual))
-					Register(type, mappings);
-
-#endif
 		}
 
 		static void Register(Type visual, Dictionary<string, IVisual> mappings)
 		{
-			if(!mappings.ContainsKey(visual.FullName))
+			IVisual registeredVisual = CreateVisual(visual);
+			if (registeredVisual == null)
+				return;
+
+			string name = visual.Name;
+			string fullName = visual.FullName;
+
+			if (name.EndsWith("Visual", StringComparison.OrdinalIgnoreCase))
 			{
-				try
-				{
-					IVisual registeredVisual = (IVisual)Activator.CreateInstance(visual);
-					string name = visual.Name;
-					string fullName = visual.FullName;
-
-					if (name.EndsWith("Visual", StringComparison.OrdinalIgnoreCase))
-					{
-						name = name.Substring(0, name.Length - 6);
-						fullName = fullName.Substring(0, fullName.Length - 6);
-					}
-
-					mappings[name] = registeredVisual;
-					mappings[fullName] = registeredVisual;
-					mappings[$"{name}Visual"] = registeredVisual;
-					mappings[$"{fullName}Visual"] = registeredVisual;
-				}
-				catch
-				{
-					Internals.Log.Warning("Visual", $"Unable to register {visual} please add default constructor or call VisualTypeConverter.Register");
-				}
+				name = name.Substring(0, name.Length - 6);
+				fullName = fullName.Substring(0, fullName.Length - 6);
 			}
+
+			mappings[name] = registeredVisual;
+			mappings[fullName] = registeredVisual;
+			mappings[$"{name}Visual"] = registeredVisual;
+			mappings[$"{fullName}Visual"] = registeredVisual;
+			
+		}
+
+		static IVisual CreateVisual(Type visualType)
+		{
+			try
+			{
+				return (IVisual)Activator.CreateInstance(visualType);
+			}
+			catch
+			{
+				Internals.Log.Warning("Visual", $"Unable to register {visualType} please add a public default constructor");
+			}
+
+			return null;
 		}
 
 		public override object ConvertFromInvariantString(string value)
