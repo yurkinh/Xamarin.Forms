@@ -8,9 +8,14 @@
         <Button Text="Default" />
         
         <Button Text="Material" Visual="Material" />
-        
+
         <Button Text="SkiaSharp" Visual="SkiaSharp" WidthRequest="100" HeightRequest="100" />
-        
+
+        <Button Text="BetterMaterialName" Visual="BetterMaterialName" />
+
+        <Button Text="BetterSkia" Visual="BetterSkia" WidthRequest="100" HeightRequest="100" />
+
+
     </StackLayout>
 
 </ContentPage>

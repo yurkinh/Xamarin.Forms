@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
+[assembly: Visual("BetterSkia", typeof(SkiaSharpVisual.SkiaSharp))]
+[assembly: Visual("BetterMaterialName", typeof(VisualMarker.MaterialVisual))]
 namespace Xamarin.Forms.Sandbox
 {
 	public partial class App 
