@@ -25,6 +25,6 @@
 
 		public sealed class MaterialVisual : IVisual { public MaterialVisual() { } }
 		public sealed class DefaultVisual : IVisual { public DefaultVisual() { } }
-		public sealed class MatchParentVisual : IVisual { public MatchParentVisual() { } }
+		internal sealed class MatchParentVisual : IVisual { public MatchParentVisual() { } }
 	}
 }
