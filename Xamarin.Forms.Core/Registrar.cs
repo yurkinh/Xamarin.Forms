@@ -38,10 +38,7 @@ namespace Xamarin.Forms.Internals
 			}
 
 			for (int i = 0; i < supportedVisuals.Length; i++)
-			{
 				visualRenderers[supportedVisuals[i]] = trender;
-				VisualTypeConverter.Register(supportedVisuals[i]);
-			}
 		}
 
 		public void Register(Type tview, Type trender) => Register(tview, trender, _defaultVisualRenderers);

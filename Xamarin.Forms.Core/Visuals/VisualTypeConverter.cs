@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
@@ -9,27 +10,38 @@ namespace Xamarin.Forms
 	public class VisualTypeConverter : TypeConverter
 	{
 		static Dictionary<string, IVisual> _visualTypeMappings;
-		static Dictionary<string, IVisual> InitMappings()
+		void InitMappings()
 		{
 			var mappings = new Dictionary<string, IVisual>(StringComparer.OrdinalIgnoreCase);
+			Assembly[] assemblies = Device.GetAssemblies();
+
+			foreach (var assembly in assemblies)
+				Register(assembly, mappings);
+
+			if (Internals.Registrar.ExtraAssemblies != null)
+				foreach (var assembly in Internals.Registrar.ExtraAssemblies)
+					Register(assembly, mappings);
+
 			_visualTypeMappings = mappings;
-			return mappings;
 		}
 
-		public static void Register(string visualKey, IVisual visual)
+		static void Register(Assembly assembly, Dictionary<string, IVisual> mappings)
 		{
-			if (_visualTypeMappings == null)
-				InitMappings();
+#if NETSTANDARD2_0
+			foreach (var type in assembly.GetExportedTypes())
+				if (typeof(IVisual).IsAssignableFrom(type) && type != typeof(IVisual))
+					Register(type, mappings);
+#else
+			foreach (var type in assembly.ExportedTypes)
+				if (typeof(IVisual).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) && type != typeof(IVisual))
+					Register(type, mappings);
 
-			_visualTypeMappings[visualKey] = visual;
+#endif
 		}
 
-		internal static void Register(Type visual)
+		static void Register(Type visual, Dictionary<string, IVisual> mappings)
 		{
-			if (_visualTypeMappings == null)
-				InitMappings();
-
-			if(!_visualTypeMappings.ContainsKey(visual.FullName))
+			if(!mappings.ContainsKey(visual.FullName))
 			{
 				try
 				{
@@ -43,10 +55,10 @@ namespace Xamarin.Forms
 						fullName = fullName.Substring(0, fullName.Length - 6);
 					}
 
-					_visualTypeMappings[name] = registeredVisual;
-					_visualTypeMappings[fullName] = registeredVisual;
-					_visualTypeMappings[$"{name}Visual"] = registeredVisual;
-					_visualTypeMappings[$"{fullName}Visual"] = registeredVisual;
+					mappings[name] = registeredVisual;
+					mappings[fullName] = registeredVisual;
+					mappings[$"{name}Visual"] = registeredVisual;
+					mappings[$"{fullName}Visual"] = registeredVisual;
 				}
 				catch
 				{
@@ -69,7 +81,7 @@ namespace Xamarin.Forms
 				return VisualMarker.Default;
 			}
 
-			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(IVisual)}");
+			throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(IVisual)}");
 		}
 	}
 }
