@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use SwitchRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public SwitchRenderer()
 		{
 			AutoPackage = false;
@@ -81,7 +82,9 @@ namespace Xamarin.Forms.Platform.Android
 					_defaultTrackDrawable = Control.TrackDrawable;
 				}
 				else
+				{
 					UpdateEnabled(); // Normally set by SetNativeControl, but not when the Control is reused.
+				}
 
 				e.NewElement.Toggled += HandleToggled;
 				Control.Checked = e.NewElement.IsToggled;

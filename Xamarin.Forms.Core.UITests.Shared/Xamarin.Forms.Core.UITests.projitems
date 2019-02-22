@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\EditorUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\EntryUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\FrameUITests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\ImageButtonUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ImageUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\LabelUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Legacy-CellsUITests.cs" />
@@ -55,5 +56,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ParsingUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\UITestCustomExceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ViewInspector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\CollectionViewUITests.cs" />
   </ItemGroup>
 </Project>

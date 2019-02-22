@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -7,6 +8,7 @@ using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -27,9 +29,14 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class ImageRenderer : ViewRenderer<Image, UIImageView>
+	public class ImageRenderer : ViewRenderer<Image, UIImageView>, IImageVisualElementRenderer
 	{
 		bool _isDisposed;
+
+		public ImageRenderer() : base()
+		{
+			ImageElementManager.Init(this);
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -41,6 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIImage oldUIImage;
 				if (Control != null && (oldUIImage = Control.Image) != null)
 				{
+					ImageElementManager.Dispose(this);
 					oldUIImage.Dispose();
 				}
 			}
@@ -62,9 +70,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.NewElement != null)
 			{
-				SetAspect();
-				await TrySetImage(e.OldElement);
-				SetOpacity();
+				await TrySetImage(e.OldElement as Image);
 			}
 
 			base.OnElementChanged(e);
@@ -73,22 +79,9 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
-				await TrySetImage();
-			else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
-				SetOpacity();
-			else if (e.PropertyName == Image.AspectProperty.PropertyName)
-				SetAspect();
-		}
-
-		void SetAspect()
-		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
-
-			Control.ContentMode = Element.Aspect.ToUIViewContentMode();
+				await TrySetImage().ConfigureAwait(false);
 		}
 
 		protected virtual async Task TrySetImage(Image previous = null)
@@ -113,69 +106,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected async Task SetImage(Image oldElement = null)
 		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
-
-			var source = Element.Source;
-
-			if (oldElement != null)
-			{
-				var oldSource = oldElement.Source;
-				if (Equals(oldSource, source))
-					return;
-
-				if (oldSource is FileImageSource && source is FileImageSource && ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
-					return;
-
-				Control.Image = null;
-			}
-
-			IImageSourceHandler handler;
-
-			Element.SetIsLoading(true);
-
-			if (source != null &&
-			    (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				UIImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
-
-				if (_isDisposed)
-					return;
-
-				var imageView = Control;
-				if (imageView != null)
-					imageView.Image = uiimage;
-
-				((IVisualElementController)Element).NativeSizeChanged();
-			}
-			else
-			{
-				Control.Image = null;
-			}
-
-			Element.SetIsLoading(false);
+			await ImageElementManager.SetImage(this, Element, oldElement).ConfigureAwait(false);
 		}
 
-		void SetOpacity()
-		{
-			if (_isDisposed || Element == null || Control == null)
-			{
-				return;
-			}
+		void IImageVisualElementRenderer.SetImage(UIImage image) => Control.Image = image;
 
-			Control.Opaque = Element.IsOpaque;
-		}
+		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
+
+		UIImageView IImageVisualElementRenderer.GetImage() => Control;
 	}
+
 
 	public interface IImageSourceHandler : IRegisterable
 	{
@@ -246,6 +186,44 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return image;
+		}
+	}
+
+	public sealed class FontImageSourceHandler : IImageSourceHandler
+	{
+		public Task<UIImage> LoadImageAsync(
+			ImageSource imagesource, 
+			CancellationToken cancelationToken = default(CancellationToken), 
+			float scale = 1f)
+		{
+			UIImage image = null;
+			var fontsource = imagesource as FontImageSource;
+			if (fontsource != null)
+			{
+				var iconcolor = fontsource.Color != Color.Default ? fontsource.Color : Color.White;
+				var imagesize = new SizeF((float)fontsource.Size, (float)fontsource.Size);
+				var hasFontFamily = fontsource.FontFamily != null && UIFont.FamilyNames.Contains(fontsource.FontFamily);
+				var font = hasFontFamily ?
+					UIFont.FromName(fontsource.FontFamily, (float)fontsource.Size) :
+					UIFont.SystemFontOfSize((float)fontsource.Size);
+
+				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
+				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
+				var ctx = new NSStringDrawingContext();
+				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
+				attString.DrawString(new RectangleF(
+					imagesize.Width / 2 - boundingRect.Size.Width / 2,
+					imagesize.Height / 2 - boundingRect.Size.Height / 2,
+					imagesize.Width,
+					imagesize.Height));
+				image = UIGraphics.GetImageFromCurrentImageContext();
+				UIGraphics.EndImageContext();
+
+				if (iconcolor != Color.Default)
+					image = image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+			}
+			return Task.FromResult(image);
+
 		}
 	}
 }

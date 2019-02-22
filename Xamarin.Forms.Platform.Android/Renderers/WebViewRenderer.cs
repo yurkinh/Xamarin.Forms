@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use WebViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public WebViewRenderer()
 		{
 			AutoPackage = false;
@@ -100,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 				webView.SetWebViewClient(_webViewClient);
 
 				_webChromeClient = GetFormsWebChromeClient();
-				_webChromeClient.SetContext(Context as Activity);
+				_webChromeClient.SetContext(Context);
 				webView.SetWebChromeClient(_webChromeClient);
 
 				webView.Settings.JavaScriptEnabled = true;

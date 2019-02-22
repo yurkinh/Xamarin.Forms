@@ -8,7 +8,6 @@ using Android.Views;
 using Android.Support.V4.App;
 using AView = Android.Views.View;
 using Android.OS;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -29,12 +28,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _presented;
 		VisualElementTracker _tracker;
 		FragmentManager _fragmentManager;
+		string _defaultContentDescription;
+		string _defaultHint;
 
 		public MasterDetailPageRenderer(Context context) : base(context)
 		{
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use MasterDetailPageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public MasterDetailPageRenderer() : base(Forms.Context)
 		{
 		}
@@ -167,6 +169,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				Presented = newElement.IsPresented;
 
+				if (element != null && !string.IsNullOrEmpty(element.AutomationId))
+					SetAutomationId(element.AutomationId);
+
 				newElement.SendViewInitialized(this);
 			}
 
@@ -175,11 +180,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// Make sure to initialize this AFTER event is fired
 			if (_tracker == null)
 				_tracker = new VisualElementTracker(this);
+
+			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
+				SetAutomationId(element.AutomationId);
+
+			SetContentDescription();
 		}
 
-		void IVisualElementRenderer.SetLabelFor(int? id)
-		{
-		}
+		void IVisualElementRenderer.SetLabelFor(int? id) => LabelFor = id ?? LabelFor;
 
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
 
@@ -193,6 +201,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		AView IVisualElementRenderer.View => this;
 
 		bool ILifeCycleState.MarkedForDispose { get; set; } = false;
+
+		protected virtual void SetAutomationId(string id) => FastRenderers.AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+
+		protected virtual void SetContentDescription() => FastRenderers.AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
 
 		protected override void Dispose(bool disposing)
 		{
@@ -387,6 +399,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateFlowDirection()
 		{
 			this.UpdateFlowDirection(Element);
+			_detailLayout.UpdateFlowDirection();
 		}
 
 		void UpdateIsPresented()

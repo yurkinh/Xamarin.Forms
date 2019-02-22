@@ -21,7 +21,10 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class Platform : BindableObject, IPlatform, INavigation, IDisposable, IPlatformLayout
+	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
@@ -281,7 +284,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
 			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			await PresentModal(modal, animated);
 
@@ -317,6 +324,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
 			// If there's a previewer context set, use that when created 
@@ -407,6 +415,7 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
 				{
@@ -421,6 +430,7 @@ namespace Xamarin.Forms.Platform.Android
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 			}
 		}
@@ -465,7 +475,13 @@ namespace Xamarin.Forms.Platform.Android
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
 			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -766,12 +782,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon, 0, 0);
+			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
+			                                                   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+													  		   resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
 #pragma warning restore 618
-
 			MasterDetailPageToggle.SyncState();
 		}
+
 
 		bool HandleBackPressed(object sender, EventArgs e)
 		{
@@ -1155,12 +1174,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion
 
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
+
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
 			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
+			[EditorBrowsable(EditorBrowsableState.Never)]
 			public DefaultRenderer()
 			{
 			}
@@ -1268,16 +1297,18 @@ namespace Xamarin.Forms.Platform.Android
 				view?.UpdateLayout();
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			Performance.Start(out string reference);
 
 			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = GetRenderer(view);
 
+			var context = visualElementRenderer.View.Context;
+
 			// negative numbers have special meanings to android they don't to us
-			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(widthConstraint);
-			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(heightConstraint);
+			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(widthConstraint);
+			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(heightConstraint);
 
 			bool widthConstrained = !double.IsPositiveInfinity(widthConstraint);
 			bool heightConstrained = !double.IsPositiveInfinity(heightConstraint);
@@ -1293,8 +1324,8 @@ namespace Xamarin.Forms.Platform.Android
 			SizeRequest rawResult = visualElementRenderer.GetDesiredSize(widthMeasureSpec, heightMeasureSpec);
 			if (rawResult.Minimum == Size.Zero)
 				rawResult.Minimum = rawResult.Request;
-			var result = new SizeRequest(new Size(_context.FromPixels(rawResult.Request.Width), _context.FromPixels(rawResult.Request.Height)),
-				new Size(_context.FromPixels(rawResult.Minimum.Width), _context.FromPixels(rawResult.Minimum.Height)));
+			var result = new SizeRequest(new Size(context.FromPixels(rawResult.Request.Width), context.FromPixels(rawResult.Request.Height)),
+				new Size(context.FromPixels(rawResult.Minimum.Width), context.FromPixels(rawResult.Minimum.Height)));
 
 			if ((widthConstrained && result.Request.Width < widthConstraint)
 				|| (heightConstrained && result.Request.Height < heightConstraint))

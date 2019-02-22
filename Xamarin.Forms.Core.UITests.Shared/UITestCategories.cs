@@ -9,6 +9,7 @@
 		public const string BoxView = "BoxView";
 		public const string Button = "Button";
 		public const string Cells = "Cells";
+		public const string CollectionView = "CollectionView";
 		public const string ContextActions = "ContextActions";
 		public const string DatePicker = "DatePicker";
 		public const string DisplayAlert = "DisplayAlert";
@@ -16,8 +17,10 @@
 		public const string Entry = "Entry";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
+		public const string ImageButton = "ImageButton";
 		public const string Label = "Label";
 		public const string ListView = "ListView";
+		public const string UwpIgnore = "UwpIgnore";
 		public const string LifeCycle = "Lifecycle";
 		public const string MasterDetailPage = "MasterDetailPage";
 		public const string Picker = "Picker";
@@ -38,6 +41,7 @@
 		public const string Gestures = "Gestures";
 		public const string Navigation = "Navigation";
 		public const string Effects = "Effects";
+		public const string Focus = "Focus";
 
 		public const string ManualReview = "ManualReview";
 		public const string Performance = "Performance";

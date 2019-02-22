@@ -77,6 +77,13 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		protected override UITextField CreateNativeControl()
+		{
+			var textField = new UITextField(RectangleF.Empty);
+			textField.BorderStyle = UITextBorderStyle.RoundedRect;
+			textField.ClipsToBounds = true;
+			return textField;
+		}
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
@@ -86,7 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Control == null)
 			{
-				var textField = new UITextField(RectangleF.Empty);
+				var textField = CreateNativeControl();
 				SetNativeControl(textField);
 
 				// Cache the default text color
@@ -94,8 +101,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
-				textField.BorderStyle = UITextBorderStyle.RoundedRect;
-				textField.ClipsToBounds = true;
 
 				textField.EditingChanged += OnEditingChanged;
 				textField.ShouldReturn = OnShouldReturn;
@@ -111,11 +116,12 @@ namespace Xamarin.Forms.Platform.iOS
 			_cursorPositionChangePending = Element.IsSet(Entry.CursorPositionProperty);
 			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
+			// Font needs to be set before Text and Placeholder so that they layout correctly when set
+			UpdateFont();
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
 			UpdateColor();
-			UpdateFont();
 			UpdateKeyboard();
 			UpdateAlignment();
 			UpdateAdjustsFontSizeToFitWidth();
@@ -126,6 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorSelection();
 
 			UpdateCursorColor();
+			UpdateIsReadOnly();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -171,6 +178,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorSelection();
 			else if (e.PropertyName == Specifics.CursorColorProperty.PropertyName)
 				UpdateCursorColor();
+			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -194,9 +203,14 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnEditingEnded(object sender, EventArgs e)
 		{
 			// Typing aid changes don't always raise EditingChanged event
-			if (Control.Text != Element.Text)
+
+			// Normalizing nulls to string.Empty allows us to ensure that a change from null to "" doesn't result in a change event.
+			// While technically this is a difference it serves no functional good.
+			var controlText = Control.Text ?? string.Empty;
+			var entryText = Element.Text ?? string.Empty;
+			if (controlText != entryText)
 			{
-				ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Text);
+				ElementController.SetValueFromRenderer(Entry.TextProperty, controlText);
 			}
 
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
@@ -214,7 +228,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
-		void UpdateColor()
+		protected internal virtual void UpdateColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -233,7 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
-		void UpdateFont()
+		protected internal virtual void UpdateFont()
 		{
 			if (initialSize == CGSize.Empty)
 			{
@@ -281,7 +295,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SecureTextEntry = Element.IsPassword;
 		}
 
-		void UpdatePlaceholder()
+		protected internal virtual void UpdatePlaceholder()
 		{
 			var formatted = (FormattedString)Element.Placeholder;
 
@@ -473,5 +487,10 @@ namespace Xamarin.Forms.Platform.iOS
 				_nativeSelectionIsUpdating = false;
 			}
 		}
-	}
+
+        void UpdateIsReadOnly()
+        {
+            Control.UserInteractionEnabled = !Element.IsReadOnly;
+        }
+    }
 }

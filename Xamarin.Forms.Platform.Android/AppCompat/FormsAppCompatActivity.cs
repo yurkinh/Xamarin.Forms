@@ -51,8 +51,6 @@ namespace Xamarin.Forms.Platform.Android
 			PopupManager.Subscribe(this);
 		}
 
-		IApplicationController Controller => _application;
-
 		public event EventHandler ConfigurationChanged;
 
 		public override void OnBackPressed()
@@ -246,12 +244,9 @@ namespace Xamarin.Forms.Platform.Android
 			// counterpart to OnPause
 			base.OnResume();
 
-			if (_application != null && _application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
+			if (_application != null && CurrentFocus != null && _application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
 			{
-				if (CurrentFocus != null && (CurrentFocus is EditText || CurrentFocus is TextView || CurrentFocus is SearchView))
-				{
-					CurrentFocus.ShowKeyboard();
-				}
+				CurrentFocus.ShowKeyboard();
 			}
 
 			_previousState = _currentState;
@@ -331,8 +326,7 @@ namespace Xamarin.Forms.Platform.Android
 			PopupManager.ResetBusyCount(this);
 
 			Platform = new AppCompat.Platform(this);
-			if (_application != null)
-				_application.Platform = Platform;
+			
 			Platform.SetPage(page);
 			_layout.AddView(Platform);
 			_layout.BringToFront();

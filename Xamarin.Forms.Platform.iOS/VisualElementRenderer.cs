@@ -129,12 +129,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			remove { _elementChangedHandlers.Remove(value); }
 		}
 
+
+
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
 		public NativeView NativeView => this;
+
+
+		protected internal virtual NativeView GetControl() => NativeView;
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
@@ -170,36 +175,35 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			int tabIndex = Element.TabIndex;
 			int attempt = 0;
-			NativeView control = null;
 
 			do
 			{
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
-				control = (renderer as ITabStop)?.TabStop;
-#else
-				element.Focus();
+				var control = (renderer as ITabStop)?.TabStop;
+				if (control != null && control.AcceptsFirstResponder())
+					return control;
 #endif
-			} while (!(control != null || element.IsFocused || ++attempt >= maxAttempts));
-			return control;
+				element.Focus();
+			} while (!(element.IsFocused || ++attempt >= maxAttempts));
+			return null;
 		}
 
 #if __MACOS__
-		public override NativeView NextKeyView { 
-			get {
-				return FocusSearch (forwardDirection: true) ?? base.NextKeyView;
+		public override void KeyUp(NSEvent theEvent)
+		{
+			if (theEvent.KeyCode == (ushort)NSKey.Tab)
+			{
+				bool shift = (theEvent.ModifierFlags & NSEventModifierMask.ShiftKeyMask) == NSEventModifierMask.ShiftKeyMask;
+				var nextControl = FocusSearch(forwardDirection: !shift);
+				if (nextControl != null)
+				{
+					Window?.MakeFirstResponder(nextControl);
+					return;
+				}
 			}
-			set {
-				if (value != null) // setting the value to null throws an exception
-					base.NextKeyView = value;
-			}
-		}
-
-		public override NativeView PreviousKeyView {
-			get {
-				return FocusSearch (forwardDirection: false) ?? base.PreviousKeyView;
-			}
+			base.KeyUp(theEvent);
 		}
 #else
 		UIKeyCommand [] tabCommands = {
@@ -376,6 +380,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetIsAccessibilityElement();
 #endif
+
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
@@ -386,35 +391,17 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		protected virtual void SetAccessibilityHint()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = AccessibilityHint;
-
-			AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
+			_defaultAccessibilityHint = this.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected virtual void SetAccessibilityLabel()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = AccessibilityLabel;
-
-			AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = this.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected virtual void SetIsAccessibilityElement()
 		{
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = IsAccessibilityElement;
-
-			IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = this.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 #endif
 		protected virtual void SetAutomationId(string id)

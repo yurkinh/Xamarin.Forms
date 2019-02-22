@@ -16,12 +16,14 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
 		[Obsolete("XAlignProperty is obsolete as of version 2.0.0. Please use HorizontalTextAlignmentProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty XAlignProperty = HorizontalTextAlignmentProperty;
 
 		public static readonly BindableProperty VerticalTextAlignmentProperty = BindableProperty.Create("VerticalTextAlignment", typeof(TextAlignment), typeof(Label), TextAlignment.Start,
 			propertyChanged: OnVerticalTextAlignmentPropertyChanged);
 
 		[Obsolete("YAlignProperty is obsolete as of version 2.0.0. Please use VerticalTextAlignmentProperty instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty YAlignProperty = VerticalTextAlignmentProperty;
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
@@ -48,6 +50,7 @@ namespace Xamarin.Forms
 
 					formattedString.SpansCollectionChanged -= label.Span_CollectionChanged;
 					formattedString.PropertyChanged -= label.OnFormattedTextChanged;
+					formattedString.PropertyChanging -= label.OnFormattedTextChanging;
 					formattedString.Parent = null;
 					label.RemoveSpans(formattedString.Spans);
 				}
@@ -59,6 +62,7 @@ namespace Xamarin.Forms
 				{
 					var formattedString = (FormattedString)newvalue;
 					formattedString.Parent = label;
+					formattedString.PropertyChanging += label.OnFormattedTextChanging;
 					formattedString.PropertyChanged += label.OnFormattedTextChanged;
 					formattedString.SpansCollectionChanged += label.Span_CollectionChanged;
 					label.SetupSpans(formattedString.Spans);
@@ -97,6 +101,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font attributes which are on the class itself.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Font Font
 		{
 			get { return (Font)GetValue(FontProperty); }
@@ -140,6 +145,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("XAlign is obsolete as of version 2.0.0. Please use HorizontalTextAlignment instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TextAlignment XAlign
 		{
 			get { return (TextAlignment)GetValue(XAlignProperty); }
@@ -147,6 +153,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("YAlign is obsolete as of version 2.0.0. Please use VerticalTextAlignment instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TextAlignment YAlign
 		{
 			get { return (TextAlignment)GetValue(YAlignProperty); }
@@ -208,10 +215,14 @@ namespace Xamarin.Forms
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
+		void OnFormattedTextChanging(object sender, PropertyChangingEventArgs e)
+		{
+			OnPropertyChanging("FormattedText");
+		}
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			OnPropertyChanged("FormattedText");
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		void SetupSpans(System.Collections.IEnumerable spans)

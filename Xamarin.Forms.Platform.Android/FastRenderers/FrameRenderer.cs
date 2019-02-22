@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
+using Android.Support.V4.View;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Xamarin.Forms.Platform.Android.FastRenderers;
@@ -37,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use FrameRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public FrameRenderer() : base(Forms.Context)
 		{
 			_gestureManager = new GestureManager(this);
@@ -89,9 +91,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
 			if (_defaultLabelFor == null)
-				_defaultLabelFor = LabelFor;
+				_defaultLabelFor = ViewCompat.GetLabelFor(this);
 
-			LabelFor = (int)(id ?? _defaultLabelFor);
+			ViewCompat.SetLabelFor(this, (int)(id ?? _defaultLabelFor));
 		}
 
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;

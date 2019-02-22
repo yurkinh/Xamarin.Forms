@@ -102,7 +102,7 @@ namespace Xamarin.Forms
 
 		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
 		{
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			InvalidateLayout();
 		}
 
 		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
@@ -126,6 +126,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public sealed override SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest size = base.GetSizeRequest(widthConstraint - Padding.HorizontalThickness, heightConstraint - Padding.VerticalThickness);
@@ -416,8 +417,9 @@ namespace Xamarin.Forms
 
 			if (e.OldItems != null)
 			{
-				foreach (object item in e.OldItems)
+				for (int i = 0; i < e.OldItems.Count; i++)
 				{
+					object item = e.OldItems[i];
 					var v = item as View;
 					if (v == null)
 						continue;
@@ -428,8 +430,9 @@ namespace Xamarin.Forms
 
 			if (e.NewItems != null)
 			{
-				foreach (object item in e.NewItems)
+				for (int i = 0; i < e.NewItems.Count; i++)
 				{
+					object item = e.NewItems[i];
 					var v = item as View;
 					if (v == null)
 						continue;

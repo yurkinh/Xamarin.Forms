@@ -131,10 +131,16 @@ namespace Xamarin.Forms.Platform.Tizen
 				throw new InvalidOperationException("Call Forms.Init (UIApplication) before this");
 			}
 
-			if (_application != null)
-			{
-				_application.Platform = _platform;
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			if (_application != null)	
+			{	
+				_application.Platform = _platform;	
 			}
+#pragma warning restore CS0618 // Type or member is obsolete
+
+			_platform.HasAlpha = MainWindow.Alpha;
 			_platform.SetPage(page);
 		}
 
@@ -181,7 +187,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			};
 
 			_platform = Platform.CreatePlatform(BaseLayout);
-			_platform.HasAlpha = MainWindow.Alpha;
 			BaseLayout.SetContent(_platform.GetRootNativeView());
 			_platform.RootNativeViewChanged += (s, e) => BaseLayout.SetContent(e.RootNativeView);
 		}

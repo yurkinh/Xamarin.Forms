@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use PageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public PageRenderer()
 		{
 		}
@@ -106,7 +107,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackgroundColor(Page view)
 		{
-			if (view.BackgroundColor != Color.Default)
+			if (view.Parent is BaseShellItem)
+			{
+				var background = view.BackgroundColor;
+				var color = Context.Resources.GetColor(global::Android.Resource.Color.BackgroundLight, Context.Theme);
+				SetBackgroundColor(background.IsDefault ? color : background.ToAndroid());
+			}
+			else if (view.BackgroundColor != Color.Default)
 				SetBackgroundColor(view.BackgroundColor.ToAndroid());
 		}
 

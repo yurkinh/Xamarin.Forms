@@ -7,6 +7,7 @@ using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Runtime;
+using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
 
-		readonly GestureManager _gestureManager;
+		GestureManager _gestureManager;
 
 		protected VisualElementRenderer(Context context) : base(context)
 		{
@@ -64,6 +65,7 @@ namespace Xamarin.Forms.Platform.Android
 		}		  		
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		protected VisualElementRenderer() : this(Forms.Context)
 		{
 		}
@@ -142,13 +144,25 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void UpdateTabIndex() => TabIndex = Element.TabIndex;
 
+		bool CheckCustomNextFocus(AView focused, FocusSearchDirection direction)
+		{
+			return direction == FocusSearchDirection.Forward && focused.NextFocusForwardId != NoId ||
+				direction == FocusSearchDirection.Down && focused.NextFocusDownId != NoId ||
+				direction == FocusSearchDirection.Left && focused.NextFocusLeftId != NoId ||
+				direction == FocusSearchDirection.Right && focused.NextFocusRightId != NoId ||
+				direction == FocusSearchDirection.Up && focused.NextFocusUpId != NoId;
+		}
+
 		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
 		{
+			if (CheckCustomNextFocus(focused, direction))
+				return base.FocusSearch(focused, direction);
+
 			VisualElement element = Element as VisualElement;
 			int maxAttempts = 0;
 			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 			if (tabIndexes == null)
-				return null;
+				return base.FocusSearch(focused, direction);
 
 			int tabIndex = element.TabIndex;
 			AView control = null;
@@ -165,7 +179,11 @@ namespace Xamarin.Forms.Platform.Android
 				control = (renderer as ITabStop)?.TabStop;
 			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
-			return control;
+			// when the user focuses on picker show a popup dialog
+			if (control is IPopupTrigger popupElement)
+				popupElement.ShowPopupOnFocus = true;
+
+			return control?.Focusable == true ? control : null;
 		}
 
 		public ViewGroup ViewGroup => this;
@@ -182,8 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 			TElement oldElement = Element;
 			Element = element;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 			{
@@ -251,6 +268,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 
+				EffectUtilities.UnregisterEffectControlProvider(this, Element);
+
 				if (Tracker != null)
 				{
 					Tracker.Dispose();
@@ -261,6 +280,12 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					_packager.Dispose();
 					_packager = null;
+				}
+
+				if (_gestureManager != null)
+				{
+					_gestureManager.Dispose();
+					_gestureManager = null;
 				}
 
 				if (ManageNativeControlLifetime)
@@ -405,6 +430,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
-			=> LabelFor = id ?? LabelFor;
+			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
 	}
 }

@@ -51,6 +51,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use TabbedPageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TabbedPageRenderer()
 		{
 			AutoPackage = false;
@@ -187,12 +188,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
+			if (Parent is PageContainer pageContainer && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
+				return;
 			PageController.SendAppearing();
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
+			if (Parent is PageContainer pageContainer && pageContainer.IsInFragment)
+				return;
 			PageController.SendDisappearing();
 		}
 

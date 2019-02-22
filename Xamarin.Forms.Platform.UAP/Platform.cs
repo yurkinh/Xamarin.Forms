@@ -10,11 +10,16 @@ using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public abstract class Platform : IPlatform, INavigation
+	public abstract class Platform : INavigation
+#pragma warning disable CS0618 // Type or member is obsolete
+		, IPlatform
+#pragma warning restore CS0618 // Type or member is obsolete
 	{
 		static Task<bool> s_currentAlert;
 
@@ -96,11 +101,6 @@ namespace Xamarin.Forms.Platform.UWP
 			_navModel.Push(newRoot, null);
 			SetCurrent(newRoot, true);
 			Application.Current.NavigationProxy.Inner = this;
-		}
-
-		internal void SetPlatformDisconnected(VisualElement visualElement)
-		{
-			visualElement.Platform = this;
 		}
 
 		public IReadOnlyList<Page> NavigationStack
@@ -185,6 +185,11 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
+		{
+			return Platform.GetNativeSize(element, widthConstraint, heightConstraint);
+		} 
+
+		public static SizeRequest GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
 		{
 			// Hack around the fact that Canvas ignores the child constraints.
 			// It is entirely possible using Canvas as our base class is not wise.
@@ -277,7 +282,11 @@ namespace Xamarin.Forms.Platform.UWP
 			if (newPage == _currentPage)
 				return;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
 			newPage.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			if (_currentPage != null)
 			{
@@ -401,6 +410,11 @@ namespace Xamarin.Forms.Platform.UWP
 				button.SetBinding(AppBarButton.IconProperty, "Icon", _fileImageSourcePathConverter);
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
+				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
+				button.SetAutomationPropertiesName(item);
+				button.SetAutomationPropertiesAccessibilityView(item);							   
+				button.SetAutomationPropertiesHelpText(item);
+				button.SetAutomationPropertiesLabeledBy(item);
 
 				ToolbarItemOrder order = item.Order == ToolbarItemOrder.Default ? ToolbarItemOrder.Primary : item.Order;
 				if (order == ToolbarItemOrder.Primary)
@@ -463,7 +477,15 @@ namespace Xamarin.Forms.Platform.UWP
 					options.SetResult(null);
 			};
 
-			actionSheet.ShowAt(((Page)sender).GetOrCreateRenderer().ContainerElement);
+			try
+			{
+				actionSheet.ShowAt(((Page)sender).GetOrCreateRenderer().ContainerElement);
+			}
+			catch (ArgumentException) // if the page is not in the visual tree
+			{
+				if (Window.Current.Content is FrameworkElement mainPage)
+					actionSheet.ShowAt(mainPage);
+			}
 		}
 
 		static async void OnPageAlert(Page sender, AlertArguments options)
@@ -509,5 +531,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			e.Handled = BackButtonPressed();
 		}
+
+
 	}
 }

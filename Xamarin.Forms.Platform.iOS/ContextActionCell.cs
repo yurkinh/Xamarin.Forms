@@ -276,6 +276,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_scroller != null)
 				{
+					_scroller.Delegate = null;
 					_scroller.Dispose();
 					_scroller = null;
 				}
@@ -342,9 +343,8 @@ namespace Xamarin.Forms.Platform.iOS
 					var action = UIAlertAction.Create(item.Text, UIAlertActionStyle.Default, a =>
 					{
 						_scroller.SetContentOffset(new PointF(0, 0), true);
-						MenuItem mi;
-						if (weakItem.TryGetTarget(out mi))
-							mi.Activate();
+						if (weakItem.TryGetTarget(out MenuItem mi))
+							((IMenuItemController)mi).Activate();
 					});
 					actionSheet.AddAction(action);
 				}
@@ -462,7 +462,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_scroller.SetContentOffset(new PointF(0, 0), true);
-				_cell.ContextActions[(int)button.Tag].Activate();
+				((IMenuItemController)_cell.ContextActions[(int)button.Tag]).Activate();
 			}
 		}
 
@@ -718,7 +718,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// do not activate a -1 index when dismissing by clicking outside the popover
 				if (buttonIndex >= 0)
-					Items[(int)buttonIndex].Activate();
+					((IMenuItemController)Items[(int)buttonIndex]).Activate();
 			}
 		}
 	}

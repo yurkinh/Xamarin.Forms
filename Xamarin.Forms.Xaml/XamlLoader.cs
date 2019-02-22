@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -37,6 +38,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Xaml.Internals
 {
 	[Obsolete ("Replaced by ResourceLoader")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class XamlLoader
 	{
 		static Func<Type, string> xamlFileProvider;
@@ -61,19 +63,19 @@ namespace Xamarin.Forms.Xaml
 	{
 		public static void Load(object view, Type callingType)
 		{
-			var xaml = GetXamlForType(callingType);
+			var xaml = GetXamlForType(callingType, out var useDesignProperties);
 			if (string.IsNullOrEmpty(xaml))
 				throw new XamlParseException(string.Format("No embeddedresource found for {0}", callingType), new XmlLineInfo());
-			Load(view, xaml);
+			Load(view, xaml, useDesignProperties);
 		}
 
-		public static void Load(object view, string xaml)
+		public static void Load(object view, string xaml) => Load(view, xaml, false);
+
+		public static void Load(object view, string xaml, bool useDesignProperties)
 		{
 			using (var textReader = new StringReader(xaml))
-			using (var reader = XmlReader.Create(textReader))
-			{
-				while (reader.Read())
-				{
+			using (var reader = XmlReader.Create(textReader)) {
+				while (reader.Read()) {
 					//Skip until element
 					if (reader.NodeType == XmlNodeType.Whitespace)
 						continue;
@@ -84,26 +86,29 @@ namespace Xamarin.Forms.Xaml
 						continue;
 					}
 
-					var rootnode = new RuntimeRootNode (new XmlType (reader.NamespaceURI, reader.Name, null), view, (IXmlNamespaceResolver)reader);
-					XamlParser.ParseXaml (rootnode, reader);
-					Visit (rootnode, new HydrationContext {
+					var rootnode = new RuntimeRootNode(new XmlType(reader.NamespaceURI, reader.Name, null), view, (IXmlNamespaceResolver)reader);
+					XamlParser.ParseXaml(rootnode, reader);
+					Visit(rootnode, new HydrationContext {
 						RootElement = view,
 #pragma warning disable 0618
-						ExceptionHandler = ResourceLoader.ExceptionHandler ?? (Internals.XamlLoader.DoNotThrowOnExceptions ? e => { }: (Action<Exception>)null)
+						ExceptionHandler = ResourceLoader.ExceptionHandler ?? (Internals.XamlLoader.DoNotThrowOnExceptions ? e => { } : (Action<Exception>)null)
 #pragma warning restore 0618
-					});
+					}, useDesignProperties);
 					break;
 				}
 			}
 		}
 
-		[Obsolete ("Use the XamlFileProvider to provide xaml files. We will remove this when Cycle 8 hits Stable.")]
-		public static object Create (string xaml, bool doNotThrow = false)
+		public static object Create(string xaml, bool doNotThrow = false) => Create(xaml, doNotThrow, false);
+
+		public static object Create(string xaml, bool doNotThrow, bool useDesignProperties)
 		{
+			doNotThrow = doNotThrow || ResourceLoader.ExceptionHandler != null;
+			var exceptionHandler = doNotThrow ? (ResourceLoader.ExceptionHandler ?? (e => { })) : null;
 			object inflatedView = null;
 			using (var textreader = new StringReader(xaml))
-			using (var reader = XmlReader.Create (textreader)) {
-				while (reader.Read ()) {
+			using (var reader = XmlReader.Create(textreader)) {
+				while (reader.Read()) {
 					//Skip until element
 					if (reader.NodeType == XmlNodeType.Whitespace)
 						continue;
@@ -114,48 +119,59 @@ namespace Xamarin.Forms.Xaml
 						continue;
 					}
 
-					var rootnode = new RuntimeRootNode (new XmlType (reader.NamespaceURI, reader.Name, null), null, (IXmlNamespaceResolver)reader);
-					XamlParser.ParseXaml (rootnode, reader);
+					var rootnode = new RuntimeRootNode(new XmlType(reader.NamespaceURI, reader.Name, null), null, (IXmlNamespaceResolver)reader);
+					XamlParser.ParseXaml(rootnode, reader);
 					var visitorContext = new HydrationContext {
-						ExceptionHandler = doNotThrow ? e => { } : (Action<Exception>)null,
+						ExceptionHandler = exceptionHandler,
 					};
-					var cvv = new CreateValuesVisitor (visitorContext);
-					cvv.Visit ((ElementNode)rootnode, null);
-					inflatedView = rootnode.Root = visitorContext.Values [rootnode];
+					var cvv = new CreateValuesVisitor(visitorContext);
+					cvv.Visit((ElementNode)rootnode, null);
+					inflatedView = rootnode.Root = visitorContext.Values[rootnode];
 					visitorContext.RootElement = inflatedView as BindableObject;
 
-					Visit (rootnode, visitorContext);
+					Visit(rootnode, visitorContext, useDesignProperties);
 					break;
 				}
 			}
 			return inflatedView;
 		}
 
-		static void Visit (RootNode rootnode, HydrationContext visitorContext)
+		static void Visit(RootNode rootnode, HydrationContext visitorContext, bool useDesignProperties)
 		{
-			rootnode.Accept (new XamlNodeVisitor ((node, parent) => node.Parent = parent), null); //set parents for {StaticResource}
-			rootnode.Accept (new ExpandMarkupsVisitor (visitorContext), null);
-			rootnode.Accept (new PruneIgnoredNodesVisitor(), null);
-			rootnode.Accept (new NamescopingVisitor (visitorContext), null); //set namescopes for {x:Reference}
-			rootnode.Accept (new CreateValuesVisitor (visitorContext), null);
-			rootnode.Accept (new RegisterXNamesVisitor (visitorContext), null);
-			rootnode.Accept (new FillResourceDictionariesVisitor (visitorContext), null);
-			rootnode.Accept (new ApplyPropertiesVisitor (visitorContext, true), null);
+			rootnode.Accept(new XamlNodeVisitor((node, parent) => node.Parent = parent), null); //set parents for {StaticResource}
+			rootnode.Accept(new ExpandMarkupsVisitor(visitorContext), null);
+			rootnode.Accept(new PruneIgnoredNodesVisitor(useDesignProperties), null);
+			if (useDesignProperties)
+				rootnode.Accept(new RemoveDuplicateDesignNodes(), null);
+			rootnode.Accept(new NamescopingVisitor(visitorContext), null); //set namescopes for {x:Reference}
+			rootnode.Accept(new CreateValuesVisitor(visitorContext), null);
+			rootnode.Accept(new RegisterXNamesVisitor(visitorContext), null);
+			rootnode.Accept(new FillResourceDictionariesVisitor(visitorContext), null);
+			rootnode.Accept(new ApplyPropertiesVisitor(visitorContext, true), null);
 		}
 
-		static string GetXamlForType(Type type)
+		static string GetXamlForType(Type type, out bool useDesignProperties)
 		{
+			useDesignProperties = false;
 			//the Previewer might want to provide it's own xaml for this... let them do that
 			//the check at the end is preferred (using ResourceLoader). keep this until all the previewers are updated
 
 			string xaml;
 #pragma warning disable 0618
-			if (ResourceLoader.ResourceProvider == null && (xaml = Internals.XamlLoader.XamlFileProvider?.Invoke(type)) != null)
+			if (ResourceLoader.ResourceProvider2 == null && (xaml = Internals.XamlLoader.XamlFileProvider?.Invoke(type)) != null)
 				return xaml;
 #pragma warning restore 0618
 
 			var assembly = type.GetTypeInfo().Assembly;
 			var resourceId = XamlResourceIdAttribute.GetResourceIdForType(type);
+
+			var rlr = ResourceLoader.ResourceProvider2?.Invoke(new ResourceLoader.ResourceLoadingQuery { AssemblyName = assembly.GetName(), ResourcePath = XamlResourceIdAttribute.GetPathForType(type) });
+			var alternateXaml = rlr?.ResourceContent;
+
+			if (alternateXaml != null) {
+				useDesignProperties = rlr.UseDesignProperties;
+				return alternateXaml;
+			}
 
 			if (resourceId == null)
 				return LegacyGetXamlForType(type);
@@ -168,12 +184,11 @@ namespace Xamarin.Forms.Xaml
 					xaml = null;
 			}
 
-			var alternateXaml = ResourceLoader.ResourceProvider?.Invoke(assembly.GetName(), XamlResourceIdAttribute.GetPathForType(type));
-			return alternateXaml ?? xaml;
+			return xaml;
 		}
 
 		//if the assembly was generated using a version of XamlG that doesn't outputs XamlResourceIdAttributes, we still need to find the resource, and load it
-		static readonly Dictionary<Type, string> XamlResources = new Dictionary<Type, string>();		
+		static readonly Dictionary<Type, string> XamlResources = new Dictionary<Type, string>();
 		static string LegacyGetXamlForType(Type type)
 		{
 			var assembly = type.GetTypeInfo().Assembly;
@@ -277,12 +292,31 @@ namespace Xamarin.Forms.Xaml
 
 		public class RuntimeRootNode : RootNode
 		{
-			public RuntimeRootNode(XmlType xmlType, object root, IXmlNamespaceResolver resolver) : base (xmlType, resolver)
+			public RuntimeRootNode(XmlType xmlType, object root, IXmlNamespaceResolver resolver) : base(xmlType, resolver)
 			{
 				Root = root;
 			}
 
 			public object Root { get; internal set; }
 		}
+
+		public struct FallbackTypeInfo
+		{
+			public string ClrNamespace { get; internal set; }
+			public string TypeName { get; internal set; }
+			public string AssemblyName { get; internal set; }
+			public string XmlNamespace { get; internal set; }
+		}
+
+		public struct CallbackTypeInfo
+		{
+			public string XmlNamespace { get; internal set; }
+			public string XmlTypeName { get; internal set; }
+
+		}
+
+		internal static Func<IList<FallbackTypeInfo>, Type, Type> FallbackTypeResolver { get; set; }
+		internal static Action<CallbackTypeInfo, object> ValueCreatedCallback  { get; set; }
+		internal static Func<CallbackTypeInfo, Type, Exception, object> InstantiationFailedCallback { get; set; }
 	}
 }

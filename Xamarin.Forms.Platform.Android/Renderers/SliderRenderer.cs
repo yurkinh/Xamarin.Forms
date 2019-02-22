@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use SliderRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public SliderRenderer()
 		{
 			AutoPackage = false;
@@ -44,11 +45,13 @@ namespace Xamarin.Forms.Platform.Android
 		void SeekBar.IOnSeekBarChangeListener.OnStartTrackingTouch(SeekBar seekBar)
 		{
 			_isTrackingChange = true;
+			((ISliderController)Element)?.SendDragStarted();
 		}
 
 		void SeekBar.IOnSeekBarChangeListener.OnStopTrackingTouch(SeekBar seekBar)
 		{
 			_isTrackingChange = false;
+			((ISliderController)Element)?.SendDragCompleted();
 		}
 
 		protected override SeekBar CreateNativeControl()
