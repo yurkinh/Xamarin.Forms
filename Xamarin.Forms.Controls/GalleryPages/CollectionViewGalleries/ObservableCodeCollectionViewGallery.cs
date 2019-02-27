@@ -31,7 +31,7 @@
 				ItemTemplate = itemTemplate
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems);
+			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.ObservableCollection);
 
 			var remover = new ItemRemover(collectionView);
 			var adder = new ItemAdder(collectionView);
