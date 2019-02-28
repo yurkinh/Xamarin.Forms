@@ -152,11 +152,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var ctx = Context;
 					nativeListView = CreateNativeControl();
-					if (Forms.IsLollipopOrNewer)
-						nativeListView.NestedScrollingEnabled = true;
 					_refresh = new SwipeRefreshLayout(ctx);
 					_refresh.SetOnRefreshListener(this);
-					_refresh.AddView(nativeListView, LayoutParams.MatchParent);
+					_refresh.AddView(nativeListView, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent));
 					SetNativeControl(nativeListView, _refresh);
 
 					_headerView = new Container(ctx);
