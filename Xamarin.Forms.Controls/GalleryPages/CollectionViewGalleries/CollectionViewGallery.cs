@@ -29,7 +29,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		void AddCollectionViewFlag()
 		{
 			var current = Device.Flags;
-			var target = new List<string>(current);
+			
+			var target = current == null ? new List<string>() : new List<string>(current);
 			target.Add("CollectionView_Experimental");
 
 			Device.SetFlags(target.ToArray());
