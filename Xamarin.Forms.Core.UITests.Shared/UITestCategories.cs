@@ -44,5 +44,6 @@
 		public const string Focus = "Focus";
 		public const string ManualReview = "ManualReview";
 		public const string Performance = "Performance";
+		public const string Visual = "Visual";
 	}
 }

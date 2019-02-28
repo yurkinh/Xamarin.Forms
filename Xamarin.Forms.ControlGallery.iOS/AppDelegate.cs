@@ -160,7 +160,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 #if DEBUG
 			Xamarin.Calabash.Start();
 #endif
-			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
+
+			// Forms.SetFlags("CollectionView_Experimental", "Shell_Experimental");
+
 			Forms.Init();
 			FormsMaps.Init();
 			FormsMaterial.Init();
