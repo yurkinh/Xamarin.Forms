@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected internal IWebViewController ElementController => Element;
 		protected internal bool IgnoreSourceChanges { get; set; }
+		protected internal bool Loading { get; set; }
 
 		public WebViewRenderer(Context context) : base(context)
 		{
@@ -42,7 +43,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LoadUrl(string url)
 		{
-			Control.LoadUrl(url);
+			if (SendNavigating(url))
+			{
+				Loading = true;
+				Control.LoadUrl(url);
+			}
+		}
+
+		protected internal bool SendNavigating(string url)
+		{
+			if (url == AssetBaseUrl)
+				return false;
+
+			var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
+			ElementController.SendNavigating(args);
+			UpdateCanGoBackForward();
+			return !args.Cancel;
 		}
 
 		protected override void Dispose(bool disposing)
