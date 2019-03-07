@@ -15,6 +15,13 @@ namespace Embedding.XF
 		public Page3()
 		{
 			InitializeComponent();
+			Appearing += Page3Appearing;
+		}
+
+		async void Page3Appearing(object sender, EventArgs e)
+		{
+			await WelcomeLabel.TranslateTo(500, 500);
+			await WelcomeLabel.TranslateTo(0, 0);
 		}
 	}
 }

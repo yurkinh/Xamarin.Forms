@@ -39,7 +39,9 @@
 					Content="Navigate To Forms Page 4" Click="NavToFormsPage4" />
 			<Button HorizontalAlignment="Center" Margin="5"
 					Content="Navigate To Alerts and ActionSheets" Click="NavToAlertsAndActionSheets" />
-		</StackPanel>
+            <Button HorizontalAlignment="Center" Margin="5"
+                    Content="Open New Window" Click="NewWindow" />
+        </StackPanel>
 		
 		
 	</Grid>

@@ -4,7 +4,7 @@
              x:Class="Embedding.XF.Page3">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Page 3 (a XF Page)" TextColor="Red"/>
+            <Label Text="Welcome to Page 3 (a XF Page)" TextColor="Red" x:Name="WelcomeLabel"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
