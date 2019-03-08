@@ -26,19 +26,13 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	internal abstract class WindowsBasePlatformServices : IPlatformServices
 	{
-		readonly CoreDispatcher _dispatcher;
-
-		protected WindowsBasePlatformServices(CoreDispatcher dispatcher)
+		protected WindowsBasePlatformServices()
 		{
-			if (dispatcher == null)
-				throw new ArgumentNullException(nameof(dispatcher));
-
-			_dispatcher = dispatcher;
 		}
 
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 		}
 
 		public Ticker CreateTicker()
@@ -115,7 +109,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return new WindowsIsolatedStorage(ApplicationData.Current.LocalFolder);
 		}
 
-		public bool IsInvokeRequired => !_dispatcher.HasThreadAccess;
+		public bool IsInvokeRequired => !Window.Current.Dispatcher.HasThreadAccess;
 
 		public string RuntimePlatform => Device.UWP;
 
