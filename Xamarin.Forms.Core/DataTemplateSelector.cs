@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 					throw new NotSupportedException(
 						"RecycleElementAndDataTemplate requires DataTemplate activated with ctor taking a type.");
 
-				_dataTemplates[item?.GetType()] = dataTemplate;
+				_dataTemplates[item.GetType()] = dataTemplate;
 			}
 
 			return dataTemplate;
