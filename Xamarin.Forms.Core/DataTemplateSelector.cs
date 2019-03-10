@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 			if (container is ListView listView)
 				recycle = listView.CachingStrategy.HasFlag(ListViewCachingStrategy.RecycleElementAndDataTemplate);
 
-			if (recycle && _dataTemplates.TryGetValue(item?.GetType(), out var dataTemplate))
+			if (recycle && _dataTemplates.TryGetValue(item.GetType(), out var dataTemplate))
 				return dataTemplate;
 
 			dataTemplate = OnSelectTemplate(item, container);
