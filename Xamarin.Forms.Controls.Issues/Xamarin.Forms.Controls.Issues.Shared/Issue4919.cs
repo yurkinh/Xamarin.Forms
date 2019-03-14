@@ -1,4 +1,4 @@
-﻿using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -11,13 +11,24 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var url = "https://www.microsoft.com/";
 			var cancel = true;
+			var log = new Label
+			{
+				VerticalOptions = LayoutOptions.StartAndExpand,
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				Text = ""
+			};
 			var webView = new WebView()
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				Source = url
 			};
-			webView.Navigating += (_, e) => e.Cancel = cancel;
+			webView.Navigating += (_, e) =>
+			{
+				e.Cancel = cancel;
+				var resultText = cancel ? "[Canceled]" : "[OK]";
+				log.Text += $"{resultText} {e.Url}{System.Environment.NewLine}";
+			};
 
 			Content = new StackLayout
 			{
@@ -34,6 +45,12 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = "Toggle cancel navigation",
 						Command = new Command(() => cancel = !cancel)
+					},
+					new ScrollView
+					{
+						VerticalOptions = LayoutOptions.EndAndExpand,
+						HorizontalOptions = LayoutOptions.FillAndExpand,
+						Content = log
 					}
 				}
 			};
