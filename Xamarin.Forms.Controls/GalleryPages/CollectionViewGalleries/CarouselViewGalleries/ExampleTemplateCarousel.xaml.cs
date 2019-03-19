@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
+	[Preserve(AllMembers = true)]
 	public partial class ExampleTemplateCarousel
 	{
 		double initialY = -1;
