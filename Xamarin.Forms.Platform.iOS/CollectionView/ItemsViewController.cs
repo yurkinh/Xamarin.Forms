@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// Grab the first item from the new ItemsSource and create a usable source for the UICollectionView
 				// from that
 				var firstItem = new List<object> { enumerator.Current };
-				_itemsSource = ItemsSourceFactory.Create(firstItem, CollectionView);
+				_itemsSource = ItemsSourceFactory.Create(firstItem, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 
 				// Insert that item into the UICollectionView
 				// TODO ezhart When we implement grouping, this will need to be the index of the first actual item

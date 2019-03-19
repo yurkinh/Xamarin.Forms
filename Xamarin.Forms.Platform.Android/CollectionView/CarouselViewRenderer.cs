@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 		Context _context;
 		ScrollListener _scrollListener;
 		protected CarouselView Carousel;
+		protected ICarouselViewController CarouselViewController => Carousel;
 		bool _isSwipeEnabled;
 		bool _isUpdatingPositionFromForms;
 
@@ -131,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (context == null)
 				throw new InvalidOperationException("Visible item not found");
 
-			Carousel.SetCurrentItem(context);
+			CarouselViewController.SetCurrentItem(context);
 		}
 
 		void UpdateSpacing()
