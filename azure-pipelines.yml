@@ -19,16 +19,13 @@ variables:
   value: 'false'
 - name: provisioning
   value: 'true'
-- name: AppleCodesignIdentity
-  value: ''
-- name: AppleCodesignIdentityUrl
-  value: ''
-- name: AppleCodesignProfileUrl
-  value: ''
+- name: provisioningSign
+  value: 'true'
 - name: ProvisionatorExecutablePath
   value: 'Xamarin.Forms.Build/provisionator.sh'
 - group: Xamarin.Forms
 - group: XQA Secrets
+- group: xamops-azdev-secrets
 
 trigger:
   branches:
@@ -100,8 +97,9 @@ jobs:
       - msbuild
       - Xamarin.iOS
   variables:
-    provisioningOSX : true
-    provisioningSign : $(provisioning)
+    provisioningOSX : $(provisioning)
+    provisionator.osxPath : 'build/provisioning/provisioning.csx'
+    provisionator.signPath : 'build/provisioning/provisioning_sign.csx'
   steps:
      - template: build/steps/build-osx.yml
 

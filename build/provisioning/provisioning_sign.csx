@@ -6,7 +6,9 @@ using Serilog;
 if (!IsMac)
   return;
 
-Log.Information ("Identity : " + Env(""APPLECODESIGNIDENTITYURL""));
-Log.Information ("Profile : " + Env(""APPLECODESIGNPROFILEURL""));
-AppleCodesignIdentity("iPhone Developer: Xamarin QA (JP4JS5NR3R)",Env("APPLECODESIGNIDENTITYURL"));
+Console.WriteLine(Env("APPLECODESIGNIDENTITYURL"));
+Console.WriteLine(Env("APPLECODESIGNIDENTITY"));
+Console.WriteLine(Env("APPLECODESIGNPROFILEURL"));
+  
+AppleCodesignIdentity(Env("APPLECODESIGNIDENTITY"),Env("APPLECODESIGNIDENTITYURL"));
 AppleCodesignProfile(Env("APPLECODESIGNPROFILEURL"));
