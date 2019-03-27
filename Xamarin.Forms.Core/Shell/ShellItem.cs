@@ -127,14 +127,23 @@ namespace Xamarin.Forms
 			return result;
 		}
 
-		internal static ShellItem GetShellItemFromRouteName(string route)
+		internal static ShellItem GetOrCreateShellItemFromRouteName(string route, string parentRoute)
 		{
-			var shellContent = new ShellContent { Route = route, Content = Routing.GetOrCreateContent(route) };
-			var result = new ShellItem();
-			var shellSection = new ShellSection();
-			shellSection.Items.Add(shellContent);
-			result.Route = Routing.GenerateImplicitRoute(shellSection.Route);
-			result.Items.Add(shellSection);
+			var content = Routing.GetOrCreateContent(route);
+			var shellSection = new ShellSection
+			{
+				Items = {
+					new ShellContent {
+						Route = route,
+						Content = content
+					}
+				}
+			};
+			var result = new ShellItem
+			{
+				Route = parentRoute,
+				Items = { shellSection }
+			};
 			result.SetBinding(TitleProperty, new Binding(nameof(Title), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(IconProperty, new Binding(nameof(Icon), BindingMode.OneWay, source: shellSection));
 			result.SetBinding(FlyoutDisplayOptionsProperty, new Binding(nameof(FlyoutDisplayOptions), BindingMode.OneTime, source: shellSection));

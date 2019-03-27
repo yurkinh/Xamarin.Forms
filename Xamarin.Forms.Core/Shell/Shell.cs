@@ -388,13 +388,36 @@ namespace Xamarin.Forms
 			var expectedShellRoute = Routing.GetRoute(this) ?? string.Empty;
 			if (expectedShellRoute != shellRoute)
 				throw new NotImplementedException();
-			else
-				parts.RemoveAt(0);
 
+			var shellItemRoute = parts[1];
+			await GoToPart(parts, queryData);
+
+			if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
+			{
+				var shellItem = ShellItem.GetOrCreateShellItemFromRouteName(shellItemRoute, Routing.GetRoute(this));
+
+				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
+
+				if (CurrentItem != shellItem)
+					SetValueFromRenderer(CurrentItemProperty, shellItem);
+
+				if (parts.Count > 1 && shellItem.Items[0].Items[0].Content is Shell shellContent)
+					await shellContent.GoToPart(parts, queryData);
+			}
+			_accumulateNavigatedEvents = false;
+
+			// this can be null in the event that no navigation actually took place!
+			if (_accumulatedEvent != null)
+				OnNavigated(_accumulatedEvent);
+		}
+
+		async Task GoToPart(List<string> parts, Dictionary<string, string> queryData)
+		{
+			var items = Items;
+			parts.RemoveAt(0);
 			var shellItemRoute = parts[0];
 			ApplyQueryAttributes(this, queryData, false);
 
-			var items = Items;
 			for (int i = 0; i < items.Count; i++)
 			{
 				var shellItem = items[i];
@@ -409,29 +432,11 @@ namespace Xamarin.Forms
 						parts.RemoveAt(0);
 
 					if (parts.Count > 0)
-						await ((IShellItemController)shellItem).GoToPart(parts, queryData);
+						await((IShellItemController)shellItem).GoToPart(parts, queryData);
 
 					break;
 				}
 			}
-
-			if (Routing.CompareWithRegisteredRoutes(shellItemRoute))
-			{
-				var shellItem = ShellItem.GetShellItemFromRouteName(shellItemRoute);
-
-				ApplyQueryAttributes(shellItem, queryData, parts.Count == 1);
-
-				if (CurrentItem != shellItem)
-					SetValueFromRenderer(CurrentItemProperty, shellItem);
-
-				if (parts.Count > 0)
-					await ((IShellItemController)shellItem).GoToPart(parts, queryData);
-			}
-			_accumulateNavigatedEvents = false;
-
-			// this can be null in the event that no navigation actually took place!
-			if (_accumulatedEvent != null)
-				OnNavigated(_accumulatedEvent);
 		}
 
 		internal static void ApplyQueryAttributes(Element element, IDictionary<string, string> query, bool isLastItem)

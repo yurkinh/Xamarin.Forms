@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Controls.XamStore
 				Text = "Navigate to",
 				VerticalOptions = LayoutOptions.CenterAndExpand
 			}, 0, 16);
-			var navEntry = new Entry { Text = "demo/demo" };
+			var navEntry = new Entry { Text = "d/store/games" };
 			grid.Children.Add(navEntry, 1, 16);
 			grid.Children.Add(MakeButton("GO!",
 				async () => await Shell.CurrentShell.GoToAsync(navEntry.Text, true)),

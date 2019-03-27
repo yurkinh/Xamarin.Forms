@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			CurrentItem =  _storeItem;
 			Routing.RegisterRoute("demo", typeof(DemoShellPage));
-			Routing.RegisterRoute("demo/demo", typeof(DemoShellPage));
+			Routing.RegisterRoute("d", typeof(StoreShell));
 		}
 
 		//bool allow = false;
