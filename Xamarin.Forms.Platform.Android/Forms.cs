@@ -244,7 +244,7 @@ namespace Xamarin.Forms
 
 			if (!IsInitialized)
 			{
-				if (maybeOptions != null)
+				if (maybeOptions.HasValue)
 				{
 					var options = maybeOptions.Value;
 					var handlers = options.Handlers;
