@@ -103,7 +103,11 @@ namespace Xamarin.Forms.Material.Android
 			}
 		}
 
-		public override float Elevation { get; set; }
+		public override void Draw(Canvas canvas)
+		{
+			ElevationHelper.SetElevation(this, Element, 0);
+			base.Draw(canvas);
+		}
 
 		protected override void Dispose(bool disposing)
 		{
