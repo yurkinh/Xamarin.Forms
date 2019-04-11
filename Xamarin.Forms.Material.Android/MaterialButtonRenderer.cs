@@ -103,6 +103,8 @@ namespace Xamarin.Forms.Material.Android
 			}
 		}
 
+		public override float Elevation { get; set; }
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
