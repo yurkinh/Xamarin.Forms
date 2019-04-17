@@ -12,7 +12,7 @@ namespace Xamarin.Forms
 			return new SortedDictionary<int, List<ITabStopElement>>(TabIndexExtensions.GetTabIndexesOnParentPage(element, out countChildrensWithTabStopWithoutThis));
 		}
 
-		public static IDictionary<int, List<ITabStopElement>> GetTabIndexesOnParentPage(this ITabStopElement element, out int countChildrensWithTabStopWithoutThis)
+		public static IDictionary<int, List<ITabStopElement>> GetTabIndexesOnParentPage(this ITabStopElement element, out int countChildrensWithTabStopWithoutThis, bool checkContainsElement = true)
 		{
 			countChildrensWithTabStopWithoutThis = 0;
 
@@ -34,7 +34,7 @@ namespace Xamarin.Forms
 				if (descendant is ITabStopElement visualElement && visualElement.IsTabStop)
 					childrensWithTabStop.Add(visualElement);
 			}
-			if (!childrensWithTabStop.Contains(element))
+			if (checkContainsElement && !childrensWithTabStop.Contains(element))
 				return null;
 
 			countChildrensWithTabStopWithoutThis = childrensWithTabStop.Count - 1;
