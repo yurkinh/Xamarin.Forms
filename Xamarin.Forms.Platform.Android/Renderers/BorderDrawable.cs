@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		float PaddingLeft
 		{
-			get { return (_paddingLeft / 2f) + _shadowDx - _shadowRadius; }
+			get { return (_paddingLeft / 2f) + _shadowDx; }
 			set { _paddingLeft = value; }
 		}
 
@@ -178,35 +178,12 @@ namespace Xamarin.Forms.Platform.Android
 			using (var canvas = new Canvas(bitmap))
 			{
 				DrawBackground(canvas, width, height, pressed);
+
 				if (_drawOutlineWithBackground)
 					DrawOutline(canvas, width, height);
 			}
 
 			return bitmap;
-		}
-
-		void DrawBackground(Canvas canvas, int width, int height, bool pressed)
-		{
-			using (var paint = new Paint { AntiAlias = true })
-			using (var path = new Path())
-			{
-				float borderRadius = ConvertCornerRadiusToPixels();
-
-				RectF rect = new RectF(0, 0, width, height);
-
-				float borderWidth = _convertToPixels(BorderWidth);
-				float inset = borderWidth / 2;
-
-				rect.Inset(PaddingLeft + inset, PaddingTop + inset);
-
-				path.AddRoundRect(rect, borderRadius, borderRadius, Path.Direction.Cw);
-
-				paint.Color = pressed ? PressedBackgroundColor.ToAndroid() : BackgroundColor.ToAndroid();
-				paint.SetStyle(Paint.Style.Fill);
-				paint.SetShadowLayer(_shadowRadius, _shadowDx, _shadowDy, _shadowColor);
-
-				canvas.DrawPath(path, paint);
-			}
 		}
 
 		float ConvertCornerRadiusToPixels()
@@ -226,25 +203,55 @@ namespace Xamarin.Forms.Platform.Android
 			return rect;
 		}
 
-		public void DrawOutline(Canvas canvas, int width, int height)
+		RectF createRect(int width, int height)
+		{
+			RectF rect = new RectF(0, 0, width, height);
+			rect.Inset(PaddingLeft, PaddingTop);
+			return rect;
+		}
+		RectF createRectOutline(int width, int height)
+		{
+			RectF rect = new RectF(0, 0, width, height);
+			float borderWidth = _convertToPixels(BorderWidth);
+			rect.Inset(PaddingLeft, PaddingTop);
+			rect.Inset(borderWidth / 2, borderWidth / 2);
+			return rect;
+		}
+
+		void DrawBackground(Canvas canvas, int width, int height, bool pressed)
 		{
 			using (var paint = new Paint { AntiAlias = true })
 			using (var path = new Path())
 			{
-				float borderWidth = _convertToPixels(BorderElement.BorderWidth);
-
-				// adjust border radius so outer edge of stroke is same radius as border radius of background
 				float borderRadius = Math.Max(ConvertCornerRadiusToPixels(), 0);
 
-				RectF rect = new RectF(0, 0, width, height);
-				rect.Inset(PaddingLeft + _shadowDx, PaddingTop + _shadowDy);
+				RectF rect = createRect(width, height);
+
+				float borderWidth = _convertToPixels(BorderWidth);
+				float inset = borderWidth / 2;
 
 				path.AddRoundRect(rect, borderRadius, borderRadius, Path.Direction.Cw);
+				paint.Color = pressed ? PressedBackgroundColor.ToAndroid() : BackgroundColor.ToAndroid();
+				paint.SetStyle(Paint.Style.Fill);
+				paint.SetShadowLayer(_shadowRadius, _shadowDx, _shadowDy, _shadowColor);
+				canvas.DrawPath(path, paint);
+			}
+		}
+
+		public void DrawOutline(Canvas canvas, int width, int height)
+		{
+			using (var paint = new Paint { AntiAlias = true })
+			{
+				float borderWidth = _convertToPixels(BorderElement.BorderWidth);
+				// adjust border radius so outer edge of stroke is same radius as border radius of background
+				float borderRadius = Math.Max(ConvertCornerRadiusToPixels(), 0);
+				borderRadius = (float)borderRadius - (float)borderWidth / 2.0F;
+
+				RectF rect = createRectOutline(width, height);
 				paint.StrokeWidth = borderWidth;
 				paint.SetStyle(Paint.Style.Stroke);
 				paint.Color = BorderColor.ToAndroid();
-
-				canvas.DrawPath(path, paint);
+				canvas.DrawRoundRect(rect, borderRadius, borderRadius, paint);
 			}
 		}
 	}
