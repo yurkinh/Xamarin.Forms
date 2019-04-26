@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 		ImageView _bgImage;
         View _flyoutHeader;
         int _actionBarHeight;
+        ScrollLayoutManager _layoutManager;
 
         public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
         {
@@ -78,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 			var adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
 			recycler.SetPadding(0, (int)context.ToPixels(20), 0, 0);
 			recycler.SetClipToPadding(false);
-			recycler.SetLayoutManager(new LinearLayoutManager(context, (int)Orientation.Vertical, false));
+			recycler.SetLayoutManager(_layoutManager = new LinearLayoutManager(context, (int)Orientation.Vertical, false));
 			recycler.SetAdapter(adapter);
 
 			var metrics = context.Resources.DisplayMetrics;
@@ -105,6 +106,7 @@ namespace Xamarin.Forms.Platform.Android
             _shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
 
             UpdateFlyoutBackground();
+			UpdateVerticalScroll();
         }
 
 		void OnFlyoutHeaderMeasureInvalidated(object sender, EventArgs e)
@@ -127,7 +129,13 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateFlyoutBackground();
+			else if (e.Is(Shell.FlyoutVerticalScrollProperty))
+				UpdateVerticalScroll();
         }
+
+		void UpdateVerticalScroll()
+			=> _layoutManager.ScrollVertically = _shellContext.Shell.FlyoutVerticalScroll;
+
 
 		protected virtual void UpdateFlyoutBackground()
 		{
@@ -258,6 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 
                     _headerView.Dispose();
                     _rootView.Dispose();
+                    _layoutManager?.Dispose();
                     _defaultBackgroundColor?.Dispose();
 					_bgImage?.Dispose();
 				}
@@ -268,7 +277,8 @@ namespace Xamarin.Forms.Platform.Android
 				_rootView = null;
                 _headerView = null;
                 _shellContext = null;
-                _disposed = true;
+				_layoutManager = null;
+				_disposed = true;
             }
 
 			base.Dispose(disposing);
@@ -307,5 +317,15 @@ namespace Xamarin.Forms.Platform.Android
 				View.Layout(new Rectangle(paddingLeft, paddingTop, width, height));
 			}
 		}
+	}
+
+	internal class ScrollLayoutManager : LinearLayoutManager
+	{
+		public bool ScrollVertically { get; set; } = true;
+
+		public ScrollLayoutManager(Context context, int orientation, bool reverseLayout) : base(context, orientation, reverseLayout)
+		{ }
+
+		public override bool CanScrollVertically() => ScrollVertically;
 	}
 }

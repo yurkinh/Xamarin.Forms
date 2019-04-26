@@ -37,6 +37,14 @@ namespace Xamarin.Forms.Platform.iOS
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateBackground();
+			else if (e.Is(Shell.FlyoutVerticalScrollProperty))
+				UpdateVerticalScroll();
+		}
+
+		protected virtual void UpdateVerticalScroll()
+		{
+			if (_tableViewController?.TableView != null)
+				_tableViewController.TableView.ScrollEnabled = _shellContext.Shell.FlyoutVerticalScroll;
 		}
 
 		protected virtual void UpdateBackground()
@@ -133,6 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 
 			UpdateBackground();
+			UpdateVerticalScroll();
 		}
 
 		public override void ViewWillAppear(bool animated)
