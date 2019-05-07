@@ -41,6 +41,10 @@
     <Compile Update="GalleryPages\CollectionViewGalleries\EmptyViewGalleries\EmptyViewLoadSimulateGallery.xaml.cs">
       <DependentUpon>EmptyViewLoadSimulateGallery.xaml</DependentUpon>
       </Compile>
+    <Compile Update="GalleryPages\CollectionViewGalleries\ScrollModeGalleries\ScrollModeTestGallery.xaml.cs">
+	  <DependentUpon>ScrollModeTestGallery.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="GalleryPages\CollectionViewGalleries\SelectionGalleries\PreselectedItemsGallery.xaml.cs">
       <DependentUpon>PreselectedItemsGallery.xaml</DependentUpon>
     </Compile>
