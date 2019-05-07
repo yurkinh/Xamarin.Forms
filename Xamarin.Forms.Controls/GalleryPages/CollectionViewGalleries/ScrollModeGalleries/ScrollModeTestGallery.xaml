@@ -13,14 +13,17 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Button x:Name="ScrollToMiddle" Text="Scroll To Middle" Grid.Row="1" HeightRequest="50" Clicked="ScrollToMiddle_Clicked" />
-            <Button x:Name="AddItemAbove" Text="Add Item Above" Grid.Row="2" HeightRequest="50" Clicked="AddItemAbove_Clicked" />
-            <Button x:Name="AddItemBelow" Text="Add Item Below" Grid.Row="3" HeightRequest="50" Clicked="AddItemBelow_Clicked" />
-            <Button x:Name="AddItemToEnd" Text="Add Item To End" Grid.Row="4" HeightRequest="50" Clicked="AddItemToEnd_Clicked" />
+            <Button x:Name="ScrollToMiddle" FontSize="10" AutomationId="ScrollToMiddle" Text="Scroll To Middle" 
+                    Grid.Row="1" HeightRequest="40" Clicked="ScrollToMiddle_Clicked" />
+            <Button x:Name="AddItemAbove" FontSize="10" AutomationId="AddItemAbove" Text="Add Item Above" Grid.Row="2" 
+                    HeightRequest="40" Clicked="AddItemAbove_Clicked" />
+            <Button x:Name="AddItemBelow" FontSize="10" AutomationId="AddItemBelow" Text="Add Item Below" Grid.Row="3"
+                    HeightRequest="40" Clicked="AddItemBelow_Clicked" />
+            <Button x:Name="AddItemToEnd" FontSize="10" AutomationId="AddItemToEnd" Text="Add Item To End" Grid.Row="4"
+                    HeightRequest="40" Clicked="AddItemToEnd_Clicked" />
 
-            <CollectionView x:Name="CollectionView" Grid.Row="5">
-                
-            </CollectionView>
+            <CollectionView x:Name="CollectionView" Grid.Row="5" />
+
         </Grid>
     </ContentPage.Content>
 </ContentPage>

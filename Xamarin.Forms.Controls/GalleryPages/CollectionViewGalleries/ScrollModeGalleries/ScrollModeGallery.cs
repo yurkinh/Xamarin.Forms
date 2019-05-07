@@ -20,12 +20,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("Keep Items in View", () =>
-							new ScrollModeTestGallery(), Navigation),
-						GalleryBuilder.NavButton("Keep Scroll Offset", () =>
-							new ScrollModeTestGallery(), Navigation),
-						GalleryBuilder.NavButton("Keep Last Item In View", () =>
-							new ScrollModeTestGallery(), Navigation),
+						GalleryBuilder.NavButton("Scroll Modes Testing", () =>
+							new ScrollModeTestGallery(), Navigation)
 					}
 				}
 			};

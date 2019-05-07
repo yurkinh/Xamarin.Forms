@@ -18,13 +18,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 		{
 			InitializeComponent();
 
+			var scrollModeSelector = new EnumSelector<ItemsUpdatingScrollMode>(() => CollectionView.ItemsUpdatingScrollMode,
+			mode => CollectionView.ItemsUpdatingScrollMode = mode);
+
+			Grid.Children.Add(scrollModeSelector);
+
 			CollectionView.ItemTemplate = ExampleTemplates.PhotoTemplate();
 			CollectionView.ItemsSource = _demoFilteredItemSource.Items;
 		}
 
 		private void ScrollToMiddle_Clicked(object sender, EventArgs e)
 		{
-			
+			CollectionView.ScrollTo(_demoFilteredItemSource.Items.Count / 2, animate: false);
 		}
 
 		private void AddItemAbove_Clicked(object sender, EventArgs e)
@@ -39,7 +44,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 
 		private void AddItemToEnd_Clicked(object sender, EventArgs e)
 		{
-
+			_demoFilteredItemSource.Items.Add(
+				new CollectionViewGalleryTestItem(DateTime.Now, 
+				"Added item", 
+				"coffee.png", 
+				_demoFilteredItemSource.Items.Count));
 		}
 	}
 }
