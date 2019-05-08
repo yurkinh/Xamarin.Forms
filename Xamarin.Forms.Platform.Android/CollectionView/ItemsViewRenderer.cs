@@ -458,27 +458,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateItemsUpatingScrollMode()
 		{
-			// TODO ezhart ItemsUpdatingScrollMode
-
-			// Change the dataChangeViewObserver to be ON if ItemsUpdateScrollMode is KeepLastItemInView (may need it for scroll offset, too, later)
-			// So it's on if there's an emptyview or if KeepLastItemInView mode is on (_watchingForEmpty will probably change its name)
-			// When there's a data change, always scroll to the end.
-
 			if (ItemsViewAdapter == null || ItemsView == null)
 			{
 				return;
 			}
 
-			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView)
 			{
-				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
+				// Keeping the current items in view is the default, so we don't need to watch for data changes
+				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
 			}
 			else
 			{
-				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
+				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
 			}
-
-			AdjustScrollForItemUpdate();
 		}
 
 		protected virtual void ReconcileFlowDirectionAndLayout()
@@ -579,7 +572,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void AdjustScrollForItemUpdate()
 		{
-			System.Diagnostics.Debug.WriteLine($">>>>> AdjustScrollForItemUpdate");
+			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			{
+				ScrollTo(new ScrollToRequestEventArgs(ItemsViewAdapter.ItemCount, 0,
+					Xamarin.Forms.ScrollToPosition.MakeVisible, true));
+			}
+			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
+			{
+				// TODO ezhart Implement this
+
+			}
 		}
 	}
 }
