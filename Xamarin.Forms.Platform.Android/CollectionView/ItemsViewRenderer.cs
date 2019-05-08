@@ -30,8 +30,8 @@ namespace Xamarin.Forms.Platform.Android
 		ScrollHelper _scrollHelper;
 
 		EmptyViewAdapter _emptyViewAdapter;
-		DataChangeObserver _dataChangeViewObserver;
-		bool _watchingForEmpty;
+		readonly DataChangeObserver _emptyCollectionObserver;
+		readonly DataChangeObserver _itemsUpdateScrollObserver;
 
 		RecyclerView.ItemDecoration _itemDecoration;
 
@@ -41,6 +41,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
+
+			_emptyCollectionObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
+			_itemsUpdateScrollObserver = new DataChangeObserver(AdjustScrollForItemUpdate);
 		}
 
 		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
@@ -179,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 					? LinearLayoutManager.Horizontal
 					: LinearLayoutManager.Vertical,
 				false);
-		}
+		} 
 
 		void OnElementChanged(ItemsView oldElement, ItemsView newElement)
 		{
@@ -213,6 +216,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateAdapter();
 			}
+			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
+			{
+				UpdateItemsUpatingScrollMode();
+			}
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -227,6 +234,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateAdapter();
 
+			// Set up any properties which require observing data changes in the adapter
+			UpdateItemsUpatingScrollMode();
 			UpdateEmptyView();
 		}
 
@@ -330,10 +339,26 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ItemsViewAdapter != null)
 			{
-				Unwatch(ItemsViewAdapter);
-				
-				SetAdapter(null);
+				// Stop watching for empty items or scroll adjustments
+				_emptyCollectionObserver.Stop(ItemsViewAdapter);
+				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
+			}
 
+			// Unhook whichever adapter is active
+			SetAdapter(null);
+			
+			if (_emptyViewAdapter != null)
+			{
+				_emptyViewAdapter.Dispose();
+			}
+			
+			if (_itemsUpdateScrollObserver != null)
+			{
+				_itemsUpdateScrollObserver.Dispose();
+			}
+
+			if (ItemsViewAdapter != null)
+			{
 				ItemsViewAdapter.Dispose();
 			}
 
@@ -421,15 +446,39 @@ namespace Xamarin.Forms.Platform.Android
 
 				_emptyViewAdapter.EmptyView = emptyView;
 				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
-
-				Watch(ItemsViewAdapter);
+				_emptyCollectionObserver.Start(ItemsViewAdapter);
 			}
 			else
 			{
-				Unwatch(ItemsViewAdapter);
+				_emptyCollectionObserver.Stop(ItemsViewAdapter);
 			}
 
 			UpdateEmptyViewVisibility();
+		}
+
+		protected virtual void UpdateItemsUpatingScrollMode()
+		{
+			// TODO ezhart ItemsUpdatingScrollMode
+
+			// Change the dataChangeViewObserver to be ON if ItemsUpdateScrollMode is KeepLastItemInView (may need it for scroll offset, too, later)
+			// So it's on if there's an emptyview or if KeepLastItemInView mode is on (_watchingForEmpty will probably change its name)
+			// When there's a data change, always scroll to the end.
+
+			if (ItemsViewAdapter == null || ItemsView == null)
+			{
+				return;
+			}
+
+			if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepLastItemInView)
+			{
+				_itemsUpdateScrollObserver.Start(ItemsViewAdapter);
+			}
+			else
+			{
+				_itemsUpdateScrollObserver.Stop(ItemsViewAdapter);
+			}
+
+			AdjustScrollForItemUpdate();
 		}
 
 		protected virtual void ReconcileFlowDirectionAndLayout()
@@ -518,6 +567,7 @@ namespace Xamarin.Forms.Platform.Android
 				SwapAdapter(_emptyViewAdapter, true);
 
 				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
+				// TODO Also, cache whether the empty view is visible so we don't have to call SwapAdapter when count goes from >0 to also >0
 				SetLayoutManager(new LinearLayoutManager(Context));
 			}
 			else
@@ -525,6 +575,11 @@ namespace Xamarin.Forms.Platform.Android
 				SwapAdapter(ItemsViewAdapter, true);
 				SetLayoutManager(SelectLayoutManager(_layout));
 			}
+		}
+
+		internal void AdjustScrollForItemUpdate()
+		{
+			System.Diagnostics.Debug.WriteLine($">>>>> AdjustScrollForItemUpdate");
 		}
 	}
 }
