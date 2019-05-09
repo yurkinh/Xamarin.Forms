@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ScrollModeTestGallery : ContentPage
 	{
-		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(200);
+		readonly DemoFilteredItemSource _demoFilteredItemSource = new DemoFilteredItemSource(20);
 
 		public ScrollModeTestGallery()
 		{
@@ -29,17 +29,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 
 		private void ScrollToMiddle_Clicked(object sender, EventArgs e)
 		{
-			CollectionView.ScrollTo(_demoFilteredItemSource.Items.Count / 2, animate: false);
+			CollectionView.ScrollTo(_demoFilteredItemSource.Items.Count / 2, position: ScrollToPosition.Start, animate: false);
 		}
 
 		private void AddItemAbove_Clicked(object sender, EventArgs e)
 		{
+			var index = (_demoFilteredItemSource.Items.Count / 2) - 1;
 
+			_demoFilteredItemSource.Items.Insert(index,
+				new CollectionViewGalleryTestItem(DateTime.Now,
+				"Inserted item",
+				"coffee.png",
+				index));
 		}
 
 		private void AddItemBelow_Clicked(object sender, EventArgs e)
 		{
+			var index = (_demoFilteredItemSource.Items.Count / 2) + 2;
 
+			_demoFilteredItemSource.Items.Insert(index,
+				new CollectionViewGalleryTestItem(DateTime.Now,
+				"Inserted item",
+				"coffee.png",
+				index));
 		}
 
 		private void AddItemToEnd_Clicked(object sender, EventArgs e)
