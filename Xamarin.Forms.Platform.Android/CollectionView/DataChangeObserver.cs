@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			Observing = false;
 		}
-
+		 
 		public override void OnChanged()
 		{
 			base.OnChanged();

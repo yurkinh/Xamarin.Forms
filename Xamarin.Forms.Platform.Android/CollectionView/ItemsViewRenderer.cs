@@ -27,15 +27,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		IItemsLayout _layout;
 		SnapManager _snapManager;
-		ScrollHelper _scrollHelper;
 
 		EmptyViewAdapter _emptyViewAdapter;
 		readonly DataChangeObserver _emptyCollectionObserver;
 		readonly DataChangeObserver _itemsUpdateScrollObserver;
-
+		ScrollHelper _scrollHelper;
 		RecyclerView.ItemDecoration _itemDecoration;
 
-		public ItemsViewRenderer(Context context) : base(context)
+		ScrollHelper ScrollHelper => _scrollHelper = _scrollHelper ?? new ScrollHelper(this);
+
+		// RecyclerView doesn't provide a way to add scrollbars from code; you have to do it from a layout or style
+		// So we're providing a collectionViewStyle with scrollbars pre-added here
+		public ItemsViewRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.collectionViewStyle))
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
 
@@ -44,9 +47,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			_emptyCollectionObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
 			_itemsUpdateScrollObserver = new DataChangeObserver(AdjustScrollForItemUpdate);
-		}
 
-		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
+			// By default, we're going to leave the scroll bars off for now (this is the default for RecyclerView)
+			// At some point, we'll be supporting turning these on/off (maybe controlling fading) on all the platforms,
+			// and then we can move this into the appropriate property handlers
+			// See https://github.com/xamarin/Xamarin.Forms/issues/6053
+			VerticalScrollBarEnabled = false;
+			HorizontalScrollBarEnabled = false;
+		}
 
 		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
 
@@ -579,8 +587,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (ItemsView.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
 			{
-				// TODO ezhart Implement this
-
+				ScrollHelper.UndoNextScrollAdjustment();
 			}
 		}
 	}
