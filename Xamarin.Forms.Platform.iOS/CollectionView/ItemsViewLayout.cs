@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CoreGraphics;
@@ -14,6 +15,11 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _determiningCellSize;
 		bool _disposed;
 		bool _needCellSizeUpdate;
+		bool _adjustContentOffset;
+		CGSize _adjustmentSize0;
+		CGSize _adjustmentSize1;
+
+		public ItemsUpdatingScrollMode ItemsUpdatingScrollMode { get; set; }
 
 		protected ItemsViewLayout(ItemsLayout itemsLayout)
 		{
@@ -360,7 +366,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return SnapHelpers.AdjustContentOffset(CollectionView.ContentOffset, currentItem.Frame, viewport, alignment,
 				ScrollDirection);
 		}
-
+		
 		protected virtual void UpdateItemSpacing()
 		{
 			if (_itemsLayout == null)
@@ -369,6 +375,84 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			InvalidateLayout();
+		}
+		
+		public override void PrepareLayout()
+		{
+			base.PrepareLayout();
+			TrackOffsetAdjustment();
+		}
+
+		public override void PrepareForCollectionViewUpdates(UICollectionViewUpdateItem[] updateItems)
+		{
+			base.PrepareForCollectionViewUpdates(updateItems);
+
+			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepScrollOffset)
+			{
+				// This is the default behavior for iOS, so no need for us to do anything
+				return;
+			}
+
+			if (ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView)
+			{
+				// Find the first visible item
+				var firstPath = CollectionView.IndexPathsForVisibleItems.FindFirst();
+
+				// Determine whether any of the new items will be "before" the first visible item
+				foreach (var item in updateItems)
+				{
+					if (item.UpdateAction == UICollectionUpdateAction.Delete
+						|| item.UpdateAction == UICollectionUpdateAction.Insert
+						|| item.UpdateAction == UICollectionUpdateAction.Move)
+					{
+						if (item.IndexPathAfterUpdate.IsLessThanOrEqualToPath(firstPath))
+						{
+							// If any of these items will end up "before" the first visible item, then the content will
+							// shift; we'll have to adjust for that later in TargetContentOffsetForProposedContentOffset
+							_adjustContentOffset = true;
+							return;
+						}
+					}
+				}
+			}
+		}
+
+		public override CGPoint TargetContentOffsetForProposedContentOffset(CGPoint proposedContentOffset)
+		{
+			if (_adjustContentOffset)
+			{
+				var newOffset = proposedContentOffset + ComputeOffsetAdjustment();
+
+				_adjustContentOffset = false;
+				return newOffset;
+			}
+
+			return base.TargetContentOffsetForProposedContentOffset(proposedContentOffset);
+		}
+
+		void TrackOffsetAdjustment()
+		{
+			// Keep track of the previous sizes of the CollectionView content so we can adjust the viewport
+			// offsets if we're in ItemsUpdatingScrollMode.KeepItemsInView
+
+			if (_adjustmentSize0.IsEmpty)
+			{
+				_adjustmentSize0 = CollectionViewContentSize;
+			}
+			else if (_adjustmentSize1.IsEmpty)
+			{
+				_adjustmentSize1 = CollectionViewContentSize;
+			}
+			else
+			{
+				_adjustmentSize0 = _adjustmentSize1;
+				_adjustmentSize1 = CollectionViewContentSize;
+			}
+		}
+
+		CGSize ComputeOffsetAdjustment()
+		{
+			return CollectionViewContentSize - _adjustmentSize0;
 		}
 	}
 }
