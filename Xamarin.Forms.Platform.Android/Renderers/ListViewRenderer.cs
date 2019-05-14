@@ -9,6 +9,7 @@ using Xamarin.Forms.Internals;
 using System;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Android.Widget;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -23,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isAttached;
 		ScrollToRequestedEventArgs _pendingScrollTo;
 
-		SwipeRefreshLayout _refresh;
+		SwipeRefreshLayoutWithFixedNestedScrolling _refresh;
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
@@ -152,7 +153,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var ctx = Context;
 					nativeListView = CreateNativeControl();
-					_refresh = new SwipeRefreshLayout(ctx);
+					if (Forms.IsLollipopOrNewer)
+						nativeListView.NestedScrollingEnabled = true;
+					_refresh = new SwipeRefreshLayoutWithFixedNestedScrolling(ctx);
 					_refresh.SetOnRefreshListener(this);
 					_refresh.AddView(nativeListView, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent));
 					SetNativeControl(nativeListView, _refresh);
@@ -519,6 +522,55 @@ namespace Xamarin.Forms.Platform.Android
 
 				_child.View.Measure(widthMeasureSpec, heightMeasureSpec);
 				SetMeasuredDimension(widthSpec, heightSpec);
+			}
+		}
+
+		class SwipeRefreshLayoutWithFixedNestedScrolling : SwipeRefreshLayout
+		{
+			float _touchSlop;
+			float _initialDownY;
+			bool _nestedScrollAccepted;
+			bool _nestedScrollCalled;
+
+			public SwipeRefreshLayoutWithFixedNestedScrolling(Context ctx) : base(ctx)
+			{
+				_touchSlop = ViewConfiguration.Get(ctx).ScaledTouchSlop;
+			}
+
+			public override bool OnInterceptTouchEvent(MotionEvent ev)
+			{
+				if (ev.Action == MotionEventActions.Down)
+					_initialDownY = ev.GetAxisValue(Axis.Y);
+
+				var isBeingDragged = base.OnInterceptTouchEvent(ev);
+
+				if (!isBeingDragged && ev.Action == MotionEventActions.Move && _nestedScrollAccepted && !_nestedScrollCalled)
+				{
+					var y = ev.GetAxisValue(Axis.Y);
+					var dy = (y - _initialDownY) / 2;
+					isBeingDragged = dy > _touchSlop;
+				}
+
+				return isBeingDragged;
+			}
+
+			public override void OnNestedScrollAccepted(AView child, AView target, [GeneratedEnum] ScrollAxis axes)
+			{
+				base.OnNestedScrollAccepted(child, target, axes);
+				_nestedScrollAccepted = true;
+				_nestedScrollCalled = false;
+			}
+
+			public override void OnStopNestedScroll(AView child)
+			{
+				base.OnStopNestedScroll(child);
+				_nestedScrollAccepted = false;
+			}
+
+			public override void OnNestedScroll(AView target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed)
+			{
+				base.OnNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+				_nestedScrollCalled = true;
 			}
 		}
 	}

@@ -10,8 +10,12 @@
               RefreshCommand="{Binding Command}">
         <ListView.ItemTemplate>
             <DataTemplate>
-                <TextCell Text="{Binding Val}" />
-            </DataTemplate>
+				<ViewCell>
+					<ScrollView>
+						<Label Text="{Binding Val}" MaxLines="100" HorizontalTextAlignment="Center" TextColor="White" FontSize="14" />
+					</ScrollView>
+				</ViewCell>
+			</DataTemplate>
         </ListView.ItemTemplate>
     </ListView>
 </ContentPage>

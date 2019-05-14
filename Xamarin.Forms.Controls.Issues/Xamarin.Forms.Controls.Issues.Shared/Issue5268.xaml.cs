@@ -1,5 +1,6 @@
 ﻿#if APP
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -16,6 +17,8 @@ namespace Xamarin.Forms.Controls.Issues
 			public string Val { get; set; }
 		}
 
+		string GenerateLongString() => string.Join(" \n", Enumerable.Range(0, 50).Select(i => $"{Sources.Count} item"));
+
 		public ObservableCollection<SrcItem> Sources { get; }
 		public ICommand Command { get; }
 
@@ -24,14 +27,14 @@ namespace Xamarin.Forms.Controls.Issues
 			InitializeComponent();
 			Sources = new ObservableCollection<SrcItem>();
 			Command = new Command(AddData);
-			Sources.Add(new SrcItem { Val = "gstql!! - " + Sources.Count });
+			Sources.Add(new SrcItem { Val = GenerateLongString() });
 			MyListView.BindingContext = this;
 		}
 
 		void AddData()
 		{
 			IsBusy = true;
-			Sources.Add(new SrcItem { Val = "gstql!! - " + Sources.Count });
+			Sources.Add(new SrcItem { Val = GenerateLongString() });
 			IsBusy = false;
 		}
 	}
