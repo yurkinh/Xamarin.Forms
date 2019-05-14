@@ -39,7 +39,6 @@
     <EmbeddedResource Include="BuildNumber.txt" />
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <Compile Update="GalleryPages\BindableLayoutGalleryPage.xaml.cs">
       <DependentUpon>BindableLayoutGalleryPage.xaml</DependentUpon>
     </Compile>
@@ -112,6 +111,7 @@
     <EmbeddedResource Update="GalleryPages\ControlTemplateXamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <PackageReference Include="Xam.Plugin.DeviceInfo" Version="4.2.0-beta" />
   </ItemGroup>
   <Target Name="CreateControllGalleryConfig" BeforeTargets="Build">
     <CreateItem Include="blank.config">
