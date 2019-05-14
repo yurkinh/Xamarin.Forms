@@ -66,6 +66,25 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public static float GetFontSizeNormal(Context context)
+		{
+			float size = 50;
+			if (!IsLollipopOrNewer)
+				return size;
+
+			// Android 5.0+
+			//this doesn't seem to work
+			using (var value = new TypedValue())
+			{
+				if (context.Theme.ResolveAttribute(Resource.Attribute.TextSize, value, true)) 
+				{
+					size = value.Data;
+				}
+			}
+
+			return size;
+		}
+
 		public static Color GetColorButtonNormal(Context context)
 		{
 			if (!_ColorButtonNormalSet)
@@ -99,18 +118,18 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void SetTitleBarVisibility(AndroidTitleBarVisibility visibility)
 		{
-			if ((Activity)Context == null)
+			if (Context.GetActivity() == null)
 				throw new NullReferenceException("Must be called after Xamarin.Forms.Forms.Init() method");
 
 			if (visibility == AndroidTitleBarVisibility.Never)
 			{
-				if (!((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
-					((Activity)Context).Window.AddFlags(WindowManagerFlags.Fullscreen);
+				if (!Context.GetActivity().Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
+					Context.GetActivity().Window.AddFlags(WindowManagerFlags.Fullscreen);
 			}
 			else
 			{
-				if (((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
-					((Activity)Context).Window.ClearFlags(WindowManagerFlags.Fullscreen);
+				if (Context.GetActivity().Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
+					Context.GetActivity().Window.ClearFlags(WindowManagerFlags.Fullscreen);
 			}
 		}
 
@@ -285,21 +304,15 @@ namespace Xamarin.Forms
 		{
 			bool _disposed;
 			readonly Context _formsActivity;
-			readonly Size _pixelScreenSize;
-			readonly double _scalingFactor;
+			Size _scaledScreenSize;
+			Size _pixelScreenSize;
+			double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
 			public AndroidDeviceInfo(Context formsActivity)
 			{
-				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
-				{
-					_scalingFactor = display.Density;
-					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
-					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
-				}
-
-				CheckOrientationChanged(formsActivity.Resources.Configuration.Orientation);
+				CheckOrientationChanged(formsActivity);
 
 				// This will not be an implementation of IDeviceInfoProvider when running inside the context
 				// of layoutlib, which is what the Android Designer does.
@@ -316,7 +329,7 @@ namespace Xamarin.Forms
 				get { return _pixelScreenSize; }
 			}
 
-			public override Size ScaledScreenSize { get; }
+			public override Size ScaledScreenSize => _scaledScreenSize;
 
 			public override double ScalingFactor
 			{
@@ -346,17 +359,31 @@ namespace Xamarin.Forms
 				base.Dispose(disposing);
 			}
 
-			void CheckOrientationChanged(Orientation orientation)
+			void UpdateScreenMetrics(Context formsActivity)
 			{
+				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
+				{
+					_scalingFactor = display.Density;
+					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
+					_scaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
+				}
+			}
+
+			void CheckOrientationChanged(Context formsActivity)
+			{
+				var orientation = formsActivity.Resources.Configuration.Orientation;
+
 				if (!_previousOrientation.Equals(orientation))
 					CurrentOrientation = orientation.ToDeviceOrientation();
 
 				_previousOrientation = orientation;
+
+				UpdateScreenMetrics(formsActivity);
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
-				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
+				CheckOrientationChanged(_formsActivity);
 			}
 		}
 
@@ -560,9 +587,9 @@ namespace Xamarin.Forms
 			{
 				double myValue;
 
-				if (TryGetTextAppearance(themeDefault, out myValue))
+				if (TryGetTextAppearance(themeDefault, out myValue) && myValue > 0)
 					return myValue;
-				if (TryGetTextAppearance(deviceDefault, out myValue))
+				if (TryGetTextAppearance(deviceDefault, out myValue) && myValue > 0)
 					return myValue;
 				return defaultValue;
 			}

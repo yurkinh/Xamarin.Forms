@@ -80,9 +80,11 @@ namespace Xamarin.Forms.Xaml
 							else //Attached BP
 								name = new XmlName(reader.NamespaceURI, reader.LocalName);
 
+							INode prop = null;
 							if (reader.IsEmptyElement)
-								throw new XamlParseException($"Unexpected empty element '<{reader.Name}/>'", (IXmlLineInfo)reader);
-							var prop = ReadNode(reader);
+								Debug.WriteLine($"Unexpected empty element '<{reader.Name} />'", (IXmlLineInfo)reader);
+							else
+								prop = ReadNode(reader);
 							if (prop != null)
 								node.Properties.Add(name, prop);
 						}
@@ -153,13 +155,7 @@ namespace Xamarin.Forms.Xaml
 
 						var attributes = ParseXamlAttributes(reader, out xmlns);
 						var prefixes = PrefixesToIgnore(xmlns);
-
-						IList<XmlType> typeArguments = null;
-						if (attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments))
-						{
-							typeArguments =
-								((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>;
-						}
+						var typeArguments = GetTypeArguments(attributes);
 
 						node = new ElementNode(new XmlType(elementNsUri, elementName, typeArguments), elementNsUri,
 							reader as IXmlNamespaceResolver, elementXmlInfo.LineNumber, elementXmlInfo.LinePosition);
@@ -184,6 +180,15 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 			throw new XamlParseException("Closing PropertyElement expected", (IXmlLineInfo)reader);
+		}
+
+		internal static IList<XmlType> GetTypeArguments(XmlReader reader) => GetTypeArguments(ParseXamlAttributes(reader, out _));
+
+		static IList<XmlType> GetTypeArguments(IList<KeyValuePair<XmlName, INode>> attributes)
+		{
+			return attributes.Any(kvp => kvp.Key == XmlName.xTypeArguments)
+				? ((ValueNode)attributes.First(kvp => kvp.Key == XmlName.xTypeArguments).Value).Value as IList<XmlType>
+				: null;
 		}
 
 		static IList<KeyValuePair<XmlName, INode>> ParseXamlAttributes(XmlReader reader, out IList<KeyValuePair<string,string>> xmlns)
@@ -333,7 +338,9 @@ namespace Xamarin.Forms.Xaml
 		public static Type GetElementType(XmlType xmlType, IXmlLineInfo xmlInfo, Assembly currentAssembly,
 			out XamlParseException exception)
 		{
+#if NETSTANDARD2_0
 			bool hasRetriedNsSearch = false;
+#endif
 			IList<XamlLoader.FallbackTypeInfo> potentialTypes;
 
 #if NETSTANDARD2_0
