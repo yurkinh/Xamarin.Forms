@@ -9,7 +9,10 @@
     <Import_RootNamespace>Xamarin.Forms.Controls.Issues</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\GarbageCollectionHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5555.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla59172.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlagTestHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5766.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4684.xaml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4992.xaml.cs">
@@ -454,6 +457,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4600.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5252.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5057.xaml.cs">
       <DependentUpon>Issue5057.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -462,7 +466,17 @@
       <DependentUpon>Issue5003.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5695.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5535.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5949.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5949_1.xaml.cs">
+      <DependentUpon>Issue5949_1.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5949_2.xaml.cs">
+      <DependentUpon>Issue5949_2.xaml</DependentUpon>      
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5793.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue6130.xaml.cs">
       <SubType>Code</SubType>
@@ -925,11 +939,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3318.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4493.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5172.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5204.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2204.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4356.cs">
       <DependentUpon>Issue4356.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue5951.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Github6021.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5132.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5888.cs" />
   </ItemGroup>
@@ -1186,6 +1202,18 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4915.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5949_1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue5949_2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

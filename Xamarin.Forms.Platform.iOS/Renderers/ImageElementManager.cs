@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
-using UIKit;
 using Xamarin.Forms.Internals;
 
+#if __MOBILE__
+using UIKit;
+using NativeImage = UIKit.UIImage;
 namespace Xamarin.Forms.Platform.iOS
+#else
+using AppKit;
+using CoreAnimation;
+using NativeImage = AppKit.NSImage;
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
 	public static class ImageElementManager
 	{
@@ -71,8 +76,11 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return;
 			}
-
+#if __MOBILE__
 			Control.ContentMode = imageElement.Aspect.ToUIViewContentMode();
+#else
+			Control.Layer.ContentsGravity = imageElement.Aspect.ToNSViewContentMode();
+#endif
 		}
 
 		public static void SetOpacity(IImageVisualElementRenderer renderer, IImageElement imageElement)
@@ -84,8 +92,11 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return;
 			}
-
+#if __MOBILE__
 			Control.Opaque = imageElement.IsOpaque;
+#else
+			(Control as FormsNSImageView)?.SetIsOpaque(imageElement.IsOpaque);
+#endif
 		}
 
 		public static async Task SetImage(IImageVisualElementRenderer renderer, IImageElement imageElement, Image oldElement = null)
@@ -141,7 +152,7 @@ namespace Xamarin.Forms.Platform.iOS
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
 
-		internal static async Task<UIImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<NativeImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null || source.IsEmpty)
 				return null;
@@ -152,7 +163,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			try
 			{
-				return await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale, cancelationToken: cancellationToken);
+
+
+#if __MOBILE__
+				float scale = (float)UIScreen.MainScreen.Scale;
+#else
+				float scale = (float)NSScreen.MainScreen.BackingScaleFactor;
+#endif
+
+				return await handler.LoadImageAsync(source, scale: scale, cancelationToken: cancellationToken);
 			}
 			catch (OperationCanceledException)
 			{
@@ -166,6 +185,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
+#if __MOBILE__
 		internal static Task ApplyNativeImageAsync(this IShellContext shellContext, BindableObject bindable, BindableProperty imageSourceProperty, Action<UIImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
@@ -173,13 +193,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return renderer.ApplyNativeImageAsync(bindable, imageSourceProperty, onSet, onLoading, cancellationToken);
 		}
-
-		internal static Task ApplyNativeImageAsync(this IVisualElementRenderer renderer, BindableProperty imageSourceProperty, Action<UIImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+#endif
+		internal static Task ApplyNativeImageAsync(this IVisualElementRenderer renderer, BindableProperty imageSourceProperty, Action<NativeImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return renderer.ApplyNativeImageAsync(null, imageSourceProperty, onSet, onLoading, cancellationToken);
 		}
 
-		internal static async Task ApplyNativeImageAsync(this IVisualElementRenderer renderer, BindableObject bindable, BindableProperty imageSourceProperty, Action<UIImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task ApplyNativeImageAsync(this IVisualElementRenderer renderer, BindableObject bindable, BindableProperty imageSourceProperty, Action<NativeImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
@@ -233,7 +253,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static async Task ApplyNativeImageAsync(this BindableObject bindable, BindableProperty imageSourceProperty, Action<UIImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task ApplyNativeImageAsync(this BindableObject bindable, BindableProperty imageSourceProperty, Action<NativeImage> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = bindable ?? throw new ArgumentNullException(nameof(bindable));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
