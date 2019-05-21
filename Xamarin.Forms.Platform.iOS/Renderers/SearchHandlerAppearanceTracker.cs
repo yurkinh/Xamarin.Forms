@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultPlaceholderTintColor;
 		bool _hasCustomBackground;
 		UIColor _defaultBackgroundColor;
+		UIView[] _defaultBackgroundSubViews;
 		SearchHandler _searchHandler;
 		UISearchBar _uiSearchBar;
 		UIToolbar _numericAccessoryView;
@@ -126,6 +127,17 @@ namespace Xamarin.Forms.Platform.iOS
 				backgroundView.Layer.CornerRadius = 0;
 				backgroundView.ClipsToBounds = false;
 				backgroundView.BackgroundColor = _defaultBackgroundColor;
+				if (_defaultBackgroundSubViews != null)
+				{
+					foreach (var subBg in _defaultBackgroundSubViews)
+						backgroundView.AddSubview(subBg);
+				}
+			}
+			else if (backgroundView.Subviews.Length > 0)
+			{
+				_defaultBackgroundSubViews = backgroundView.Subviews;
+				foreach (var subBg in backgroundView.Subviews)
+					subBg.RemoveFromSuperview();
 			}
 
 			_hasCustomBackground = true;

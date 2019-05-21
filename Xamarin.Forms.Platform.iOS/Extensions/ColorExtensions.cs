@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public static CGColor ToCGColor(this Color color)
 		{
 #if __MOBILE__
-			return color.ToUIColor().CGColor;
+			return new CGColor(CGColorSpace.CreateGenericRgb(), new nfloat[] { (float)color.R, (float)color.G, (float)color.B, (float)color.A });
 #else
             return color.ToNSColor().CGColor;
 #endif
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		public static UIColor ToUIColor(this Color color)
 		{
-			return new UIColor((float)color.R, (float)color.G, (float)color.B, (float)color.A);
+			return UIColor.FromCGColor(color.ToCGColor());
 		}
 
 		public static UIColor ToUIColor(this Color color, Color defaultColor)
