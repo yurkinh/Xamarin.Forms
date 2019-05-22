@@ -42,8 +42,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void KeepScrollOffset()
 		{
-			RunningApp.WaitForElement("KeepItemsInView");
-			RunningApp.Tap("KeepItemsInView");
+			RunningApp.WaitForElement("SelectScrollMode");
+			RunningApp.Tap("SelectScrollMode");
 			RunningApp.Tap("KeepScrollOffset");
 
 			RunningApp.WaitForElement("ScrollToMiddle");
@@ -56,8 +56,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void KeepLastItemInView()
 		{
-			RunningApp.WaitForElement("KeepItemsInView");
-			RunningApp.Tap("KeepItemsInView");
+			RunningApp.WaitForElement("SelectScrollMode");
+			RunningApp.Tap("SelectScrollMode");
 			RunningApp.Tap("KeepLastItemInView");
 
 			RunningApp.WaitForElement("ScrollToMiddle");
