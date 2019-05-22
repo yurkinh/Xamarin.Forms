@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	public enum ItemsUpdatingScrollMode
 	{
-		KeepItemsInView,
+		KeepItemsInView = 0,
 		KeepScrollOffset,
 		KeepLastItemInView
 	}
