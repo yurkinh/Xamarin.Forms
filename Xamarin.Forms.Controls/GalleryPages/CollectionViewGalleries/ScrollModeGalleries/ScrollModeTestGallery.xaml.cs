@@ -27,12 +27,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 			CollectionView.ItemsSource = _demoFilteredItemSource.Items;
 		}
 
-		private void ScrollToMiddle_Clicked(object sender, EventArgs e)
+		void ScrollToMiddle_Clicked(object sender, EventArgs e)
 		{
 			CollectionView.ScrollTo(_demoFilteredItemSource.Items.Count / 2, position: ScrollToPosition.Start, animate: false);
 		}
 
-		private void AddItemAbove_Clicked(object sender, EventArgs e)
+		void AddItemAbove_Clicked(object sender, EventArgs e)
 		{
 			var index = (_demoFilteredItemSource.Items.Count / 2) - 1;
 
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 				index));
 		}
 
-		private void AddItemBelow_Clicked(object sender, EventArgs e)
+		void AddItemBelow_Clicked(object sender, EventArgs e)
 		{
 			var index = (_demoFilteredItemSource.Items.Count / 2) + 2;
 
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ScrollMode
 				index));
 		}
 
-		private void AddItemToEnd_Clicked(object sender, EventArgs e)
+		void AddItemToEnd_Clicked(object sender, EventArgs e)
 		{
 			_demoFilteredItemSource.Items.Add(
 				new CollectionViewGalleryTestItem(DateTime.Now, 

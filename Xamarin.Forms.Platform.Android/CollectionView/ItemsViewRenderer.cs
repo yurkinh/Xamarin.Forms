@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
 			{
-				UpdateItemsUpatingScrollMode();
+				UpdateItemsUpdatingScrollMode();
 			}
 		}
 
@@ -243,7 +243,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAdapter();
 
 			// Set up any properties which require observing data changes in the adapter
-			UpdateItemsUpatingScrollMode();
+			UpdateItemsUpdatingScrollMode();
 			UpdateEmptyView();
 		}
 
@@ -464,7 +464,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEmptyViewVisibility();
 		}
 
-		protected virtual void UpdateItemsUpatingScrollMode()
+		protected virtual void UpdateItemsUpdatingScrollMode()
 		{
 			if (ItemsViewAdapter == null || ItemsView == null)
 			{

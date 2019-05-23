@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 			_recyclerView = recyclerView;
 		}
 
-		// Used by the renderer to maintain scoll offset when using ItemsUpdatingScrollMode KeepScrollOffset
+		// Used by the renderer to maintain scroll offset when using ItemsUpdatingScrollMode KeepScrollOffset
 		public void UndoNextScrollAdjustment()
 		{
 			// Don't start tracking the scroll offsets until we really need to
