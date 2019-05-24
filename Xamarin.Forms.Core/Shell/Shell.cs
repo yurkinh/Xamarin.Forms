@@ -568,11 +568,19 @@ namespace Xamarin.Forms
 		bool _accumulateNavigatedEvents;
 		View _flyoutHeaderView;
 
+		public new IPlatformElementConfiguration<T, Shell> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		readonly Lazy<PlatformConfigurationRegistry<Shell>> _platformConfigurationRegistry;
+
 		public Shell()
 		{
 			Navigation = new NavigationImpl(this);
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
 			Route = Routing.GenerateImplicitRoute("shell");
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Shell>>(() => new PlatformConfigurationRegistry<Shell>(this));
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;

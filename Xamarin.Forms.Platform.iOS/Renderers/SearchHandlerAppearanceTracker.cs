@@ -2,6 +2,7 @@
 using CoreGraphics;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -127,17 +128,27 @@ namespace Xamarin.Forms.Platform.iOS
 				backgroundView.Layer.CornerRadius = 0;
 				backgroundView.ClipsToBounds = false;
 				backgroundView.BackgroundColor = _defaultBackgroundColor;
-				if (_defaultBackgroundSubViews != null)
+				if (_defaultBackgroundSubViews != null && backgroundView.Subviews.Length == 0)
 				{
 					foreach (var subBg in _defaultBackgroundSubViews)
 						backgroundView.AddSubview(subBg);
 				}
 			}
-			else if (backgroundView.Subviews.Length > 0)
+			else
 			{
-				_defaultBackgroundSubViews = backgroundView.Subviews;
-				foreach (var subBg in backgroundView.Subviews)
-					subBg.RemoveFromSuperview();
+				if (backgroundView.Subviews.Length > 0)
+					_defaultBackgroundSubViews = backgroundView.Subviews;
+
+				if (Shell.Current?.On<PlatformConfiguration.iOS>().GetSearchPureBackgroundEnabled() ?? true)
+				{
+					foreach (var subBg in backgroundView.Subviews)
+						subBg.RemoveFromSuperview();
+				}
+				else if (_defaultBackgroundSubViews != null && backgroundView.Subviews.Length == 0)
+				{
+					foreach (var subBg in _defaultBackgroundSubViews)
+						backgroundView.AddSubview(subBg);
+				}
 			}
 
 			_hasCustomBackground = true;

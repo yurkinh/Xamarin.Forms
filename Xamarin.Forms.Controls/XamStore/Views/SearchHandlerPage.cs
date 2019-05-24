@@ -24,7 +24,10 @@ namespace Xamarin.Forms.Controls.XamStore
 
 			var searchHandlerKey = nameof(SearchHandler);
 
-			TestedTypes.Add(SearchHandlerKey, (AddSearchHandler, new NamedAction[] { new NamedAction { Name = nameof(Focus), Action = FocusUnfocusSearchHandler } }));
+			TestedTypes.Add(SearchHandlerKey, (AddSearchHandler, new [] {
+					new NamedAction { Name = nameof(Focus), Action = FocusUnfocusSearchHandler },
+ 					new NamedAction { Name = "Switch Pure Bg", Action = PureBgSearchHandler }
+ 				}));
 
 			_searchHandler = TestedTypes[SearchHandlerKey].ctor() as SearchHandler;
 
@@ -56,6 +59,15 @@ namespace Xamarin.Forms.Controls.XamStore
 				sh.Unfocus();
 			else
 				sh.Focus();
+		}
+
+		void PureBgSearchHandler(object searchHandler)
+		{
+			if (searchHandler is SearchHandler sh)
+			{
+				var isPureBg = Shell.Current.On<iOS>().GetSearchPureBackgroundEnabled();
+				Shell.Current.On<iOS>().SetSearchPureBackgroundEnabled(!isPureBg);
+			}
 		}
 
 		void ShowHideSearchHandler()
