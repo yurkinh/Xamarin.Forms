@@ -4,7 +4,7 @@ using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ScrollHelper
+	internal class ScrollHelper : RecyclerView.OnScrollListener
 	{
 		readonly RecyclerView _recyclerView;
 		Action _pendingScrollAdjustment;
@@ -29,7 +29,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_maintainingScrollOffsets)
 			{
 				_maintainingScrollOffsets = true;
-				_recyclerView.ScrollChange += ScrollChange;
+				//_recyclerView.ScrollChange += ScrollChange;
+				_recyclerView.AddOnScrollListener(this);
 			}
 
 			_undoNextScrollAdjustment = true;
@@ -194,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 			_recyclerView.ScrollBy(offset, 0);
 		}
 
-		void ScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs args)
+		void TrackOffsets()
 		{
 			var newXOffset = _recyclerView.ComputeHorizontalScrollOffset();
 			var newYOffset = _recyclerView.ComputeVerticalScrollOffset();
@@ -217,6 +218,12 @@ namespace Xamarin.Forms.Platform.Android
 				_lastDeltaX = 0;
 				_lastDeltaY = 0;
 			}
+		}
+
+		public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
+		{
+			base.OnScrolled(recyclerView, dx, dy);
+			TrackOffsets();
 		}
 
 	}
