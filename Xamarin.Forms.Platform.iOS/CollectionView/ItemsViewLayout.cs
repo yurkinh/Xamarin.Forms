@@ -469,6 +469,11 @@ namespace Xamarin.Forms.Platform.iOS
 					|| item.UpdateAction == UICollectionUpdateAction.Insert
 					|| item.UpdateAction == UICollectionUpdateAction.Move)
 				{
+					if (item.IndexPathAfterUpdate == null)
+					{
+						continue;
+					}
+
 					if (item.IndexPathAfterUpdate.IsLessThanOrEqualToPath(firstPath))
 					{
 						// If any of these items will end up "before" the first visible item, then the items will shift
