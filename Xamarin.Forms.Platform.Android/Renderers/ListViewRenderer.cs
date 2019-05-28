@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isAttached;
 		ScrollToRequestedEventArgs _pendingScrollTo;
 
-		SwipeRefreshLayoutWithFixedNestedScrolling _refresh;
+		SwipeRefreshLayout _refresh;
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
@@ -103,6 +103,9 @@ namespace Xamarin.Forms.Platform.Android
 			return new Size(40, 40);
 		}
 
+		protected virtual SwipeRefreshLayout CreateNativePullToRefresh(Context context)
+			=> new SwipeRefreshLayoutWithFixedNestedScrolling(context);
+
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
@@ -155,7 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 					nativeListView = CreateNativeControl();
 					if (Forms.IsLollipopOrNewer)
 						nativeListView.NestedScrollingEnabled = true;
-					_refresh = new SwipeRefreshLayoutWithFixedNestedScrolling(ctx);
+					_refresh = CreateNativePullToRefresh(ctx);
 					_refresh.SetOnRefreshListener(this);
 					_refresh.AddView(nativeListView, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent));
 					SetNativeControl(nativeListView, _refresh);
