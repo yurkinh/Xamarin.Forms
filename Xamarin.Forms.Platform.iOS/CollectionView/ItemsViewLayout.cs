@@ -462,6 +462,12 @@ namespace Xamarin.Forms.Platform.iOS
 			// Find the first visible item
 			var firstPath = collectionView.IndexPathsForVisibleItems.FindFirst();
 
+			if (firstPath == null)
+			{
+				// No visible items to shift
+				return false;
+			}
+
 			// Determine whether any of the new items will be "before" the first visible item
 			foreach (var item in updateItems)
 			{
