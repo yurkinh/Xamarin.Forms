@@ -13,7 +13,7 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Packages ##
 
-Platform/Feature               | Package name                              | Stable (3.0.0 branch)     |Nightly Feed [Azure](https://nugetized.blob.core.windows.net/xamforms-nightly/index.json)  (master branch)
+Platform/Feature               | Package name                              | Stable (3.0.0 branch)     |Nightly Feed [Azure](https://aka.ms/xf-ci/index.json)  (master branch)
 -----------------------|-------------------------------------------|-----------------------------|-------------------------
 Core             | `Xamarin.Forms` | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms/)| 
 Maps                 | `Xamarin.Forms.Maps`    | [![NuGet](https://img.shields.io/nuget/v/Xamarin.Forms.Maps.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Xamarin.Forms.Maps/) |
@@ -29,7 +29,7 @@ If you want to use the latest dev build then you should read [this blog post](ht
   <configuration>
     <packageSources>
       <clear />
-      <add key="xamarin-ci" value="https://nugetized.blob.core.windows.net/xamforms-nightly/index.json" />
+      <add key="xamarin-ci" value="https://aka.ms/xf-ci/index.json" />
       <add key="NuGet.org" value="https://api.nuget.org/v3/index.json" />
     </packageSources>
   </configuration>
