@@ -10,7 +10,7 @@ variables:
 - name: SolutionFile
   value: Xamarin.Forms.sln
 - name: BuildVersion
-  value: $[counter('$(Build.SourceBranchName)_counter', 1)]
+  value: $[counter('$(Build.SourceBranchName)_counter', 3000000)]
 - name: MONO_VERSION
   value: 5_18_1
 - name: XCODE_VERSION
