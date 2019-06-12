@@ -10,7 +10,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public CarouselViewLayout(ListItemsLayout itemsLayout, CarouselView carouselView) : base(itemsLayout)
 		{
-			UniformSize = true;
 			_carouselView = carouselView;
 		}
 

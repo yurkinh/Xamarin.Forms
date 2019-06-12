@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ObservableItemsSource(INotifyCollectionChanged itemSource, UICollectionView collectionView)
 		{
 			_collectionView = collectionView;
-			_itemsSource = itemSource;
+			_itemsSource = (IList)itemSource;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
