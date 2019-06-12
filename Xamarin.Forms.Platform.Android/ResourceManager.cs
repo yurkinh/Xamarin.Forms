@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 
-		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
+		internal static Task ApplyDrawableAsync(this IVisualElementRenderer renderer,
 												BindableObject bindable,
 												BindableProperty imageSourceProperty,
 												Context context,
@@ -134,6 +134,37 @@ namespace Xamarin.Forms.Platform.Android
 												CancellationToken cancellationToken = default(CancellationToken))
 		{
 			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
+			Func<bool> isRendererReady = () => (renderer is IDisposedState disposed && disposed.IsDisposed) || renderer.View == null;
+			return ApplyDrawableInternalAsync(bindable ?? renderer.Element,
+										imageSourceProperty,
+										context,
+										onSet,
+										onLoading,
+										isRendererReady,
+										cancellationToken);
+		}
+
+		internal static async Task ApplyDrawableAsync(this Context context,
+												BindableObject bindable,
+												BindableProperty imageSourceProperty,
+												Action<Drawable> onSet,
+												Action<bool> onLoading = null,
+												CancellationToken cancellationToken = default(CancellationToken))
+		{
+
+			await ApplyDrawableInternalAsync(bindable, imageSourceProperty, context, onSet, onLoading, null, cancellationToken);
+		}
+
+
+		static async Task ApplyDrawableInternalAsync(
+												BindableObject element,
+												BindableProperty imageSourceProperty,
+												Context context,
+												Action<Drawable> onSet,
+												Action<bool> onLoading = null,
+												Func<bool> isRendererDisposed = null,
+												CancellationToken cancellationToken = default(CancellationToken))
+		{
 			_ = context ?? throw new ArgumentNullException(nameof(context));
 			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
 			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
@@ -141,8 +172,6 @@ namespace Xamarin.Forms.Platform.Android
 			// TODO: it might be good to make sure the renderer has not been disposed
 
 			// make sure things are good before we start
-			var element = bindable ?? renderer.Element;
-
 			if (element == null)
 				return;
 
@@ -170,14 +199,8 @@ namespace Xamarin.Forms.Platform.Android
 						else
 							returnValue = cacheObject as Drawable;
 
-						if (renderer is IDisposedState disposed && disposed.IsDisposed)
-							return;
-
-						// we are back, so update the working element
-						element = bindable ?? renderer.Element;
-
 						// makse sure things are good now that we are back
-						if (element == null || renderer.View == null)
+						if (element == null || isRendererDisposed != null && isRendererDisposed())
 							return;
 
 						// only set if we are still on the same image
@@ -192,14 +215,7 @@ namespace Xamarin.Forms.Platform.Android
 
 						using (var drawable = await context.GetFormsDrawableAsync(initialSource, cancellationToken))
 						{
-							if (renderer is IDisposedState disposed && disposed.IsDisposed)
-								return;
-
-							// we are back, so update the working element
-							element = bindable ?? renderer.Element;
-
-							// makse sure things are good now that we are back
-							if (element == null || renderer.View == null)
+							if (element == null || isRendererDisposed != null && isRendererDisposed())
 								return;
 
 							// only set if we are still on the same image
@@ -225,17 +241,6 @@ namespace Xamarin.Forms.Platform.Android
 				onSet(null);
 				onLoading?.Invoke(false);
 			}
-		}
-
-		internal static async Task ApplyDrawableAsync(this Context context,
-												BindableObject bindable,
-												BindableProperty imageSourceProperty,
-												Action<Drawable> onSet,
-												Action<bool> onLoading = null,
-												CancellationToken cancellationToken = default(CancellationToken))
-		{
-
-			await ApplyDrawableAsync(null, bindable, imageSourceProperty, context, onSet, onLoading, cancellationToken);
 		}
 
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)
