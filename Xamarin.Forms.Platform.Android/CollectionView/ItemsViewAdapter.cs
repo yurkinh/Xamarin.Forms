@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Platform.Android
 			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
 
 			ItemsView = itemsView;
-			_createView = createView;
 			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, this));
 
 			if (_createItemContentView == null)
@@ -90,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (disposing)
 				{
-					ItemsSource?.Dispose();
+					//ItemsSource?.Dispose();
 				}
 
 				_disposed = true;

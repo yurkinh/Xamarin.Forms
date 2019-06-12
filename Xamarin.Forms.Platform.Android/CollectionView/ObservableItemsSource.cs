@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ObservableItemsSource(INotifyCollectionChanged itemSource, RecyclerView.Adapter adapter)
 		{
-			_itemsSource = itemSource;
+			_itemsSource = (IList)itemSource;
 			_adapter = adapter;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
