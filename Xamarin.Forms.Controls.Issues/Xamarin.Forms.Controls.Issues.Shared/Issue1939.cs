@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
+#if UITEST
+	[Ignore("Ignoring this test as it fails sometimes on TestCloud")]
+	[Category(UITestCategories.ManualReview)]
+#endif
 	[Issue(IssueTracker.Github, 1939, "ArgumentOutOfRangeException on clearing a group on a grouped ListView on Android", PlatformAffected.Android)]
 	public class Issue1939 : TestContentPage
 	{

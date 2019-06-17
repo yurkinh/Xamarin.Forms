@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Core.UITests
 	[TestFixture]
 	[Category(UITestCategories.ToolbarItem)]
 	[Category(UITestCategories.UwpIgnore)]
+	[Ignore("Ignoring this test as it fails sometimes on TestCloud")]
+	[NUnit.Framework.Category(UITestCategories.ManualReview)]
 	internal class ToolbarItemTests : BaseTestFixture
 	{
 		string btn1Id = "tb1";
