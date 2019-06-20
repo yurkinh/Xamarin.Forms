@@ -150,10 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null)
 				{
 					TearDownOldElement(Element as ItemsView);
-				}
 
-				if (Element != null)
-				{
 					if (Platform.GetRenderer(Element) == this)
 					{
 						Element.ClearValue(Platform.RendererProperty);
@@ -190,7 +187,7 @@ namespace Xamarin.Forms.Platform.Android
 					? LinearLayoutManager.Horizontal
 					: LinearLayoutManager.Vertical,
 				false);
-		} 
+		}
 
 		void OnElementChanged(ItemsView oldElement, ItemsView newElement)
 		{
@@ -220,10 +217,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateEmptyView();
 			}
-			else if (changedProperty.Is(ItemsView.ItemSizingStrategyProperty))
-			{
-				UpdateAdapter();
-			}
 			else if (changedProperty.Is(ItemsView.ItemsUpdatingScrollModeProperty))
 			{
 				UpdateItemsUpdatingScrollMode();
@@ -237,8 +230,10 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// Stop watching the old adapter to see if it's empty (if we are watching)
-			Unwatch(ItemsViewAdapter ?? GetAdapter());
+			// Stop watching the old adapter 
+			var adapter = ItemsViewAdapter ?? GetAdapter();
+			_emptyCollectionObserver.Stop(adapter);
+			_itemsUpdateScrollObserver.Stop(adapter);
 
 			UpdateAdapter();
 
@@ -249,41 +244,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateAdapter()
 		{
-			var oldItemViewAdapter = ItemsViewAdapter;
-
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView);
-
 			SwapAdapter(ItemsViewAdapter, true);
-
-			oldItemViewAdapter?.Dispose();
-		}
-
-		void Unwatch(Adapter adapter)
-		{
-			if (_watchingForEmpty && adapter != null && _dataChangeViewObserver != null)
-			{
-				adapter.UnregisterAdapterDataObserver(_dataChangeViewObserver);
-			}
-
-			_watchingForEmpty = false;
-		}
-
-		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
-		// TODO hartez 2018/11/05 22:37:42 Also, thinking all the EmptyView stuff should be moved to a helper	
-		void Watch(Adapter adapter)
-		{
-			if (_watchingForEmpty)
-			{
-				return;
-			}
-
-			if (_dataChangeViewObserver == null)
-			{
-				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
-			}
-
-			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
-			_watchingForEmpty = true;
 		}
 
 		protected virtual void SetUpNewElement(ItemsView newElement)
@@ -354,15 +316,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Unhook whichever adapter is active
 			SetAdapter(null);
-			
+
 			if (_emptyViewAdapter != null)
 			{
 				_emptyViewAdapter.Dispose();
-			}
-			
-			if (_itemsUpdateScrollObserver != null)
-			{
-				_itemsUpdateScrollObserver.Dispose();
 			}
 
 			if (ItemsViewAdapter != null)
