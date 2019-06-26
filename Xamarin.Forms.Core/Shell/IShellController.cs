@@ -43,5 +43,7 @@ namespace Xamarin.Forms
 		bool RemoveFlyoutBehaviorObserver(IFlyoutBehaviorObserver observer);
 
 		void UpdateCurrentState(ShellNavigationSource source);
+
+		IReadOnlyList<ShellItem> GetItems();
 	}
 }

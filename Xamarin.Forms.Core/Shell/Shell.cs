@@ -339,6 +339,7 @@ namespace Xamarin.Forms
 
 			OnNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 		}
+		IReadOnlyList<ShellItem> IShellController.GetItems() => ((ShellItemCollection)Items).VisibleItems;
 
 		public static Shell Current => Application.Current?.MainPage as Shell;
 
@@ -716,18 +717,27 @@ namespace Xamarin.Forms
 
 			foreach (var shellItem in Items)
 			{
+				if (!shellItem.IsVisible)
+					continue;
+
 				if (shellItem.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 				{
 					IncrementGroup();
 
 					foreach (var shellSection in shellItem.Items)
 					{
+						if (!shellSection.IsVisible)
+							continue;
+
 						if (shellSection.FlyoutDisplayOptions == FlyoutDisplayOptions.AsMultipleItems)
 						{
 							IncrementGroup();
 
 							foreach (var shellContent in shellSection.Items)
 							{
+								if (!shellContent.IsVisible)
+									continue;
+
 								currentGroup.Add(shellContent);
 								if (shellContent == shellSection.CurrentItem)
 								{

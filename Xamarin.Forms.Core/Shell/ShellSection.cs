@@ -131,6 +131,28 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Pop);
 		}
 
+		IReadOnlyList<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
+
+		int IShellSectionController.IndexOf(ShellContent content)
+		{
+			int index = 0;
+			foreach (var item in (this as IShellSectionController).GetItems())
+			{
+				if (item == content)
+					return index;
+
+				index++;
+			}
+
+			return -1;
+		}
+
+		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
+		{
+			add { ((ShellContentCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellContentCollection)Items).VisibleItemsChanged -= value; }
+		}
+
 		#endregion IShellSectionController
 
 		#region IPropertyPropagationController
@@ -158,7 +180,7 @@ namespace Xamarin.Forms
 			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
 			Navigation = new NavigationImpl(this);
 		}
-
+				
 		public ShellContent CurrentItem
 		{
 			get { return (ShellContent)GetValue(CurrentItemProperty); }

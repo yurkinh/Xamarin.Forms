@@ -7,7 +7,57 @@ namespace Xamarin.Forms
 {
 	internal sealed class ShellContentCollection : IList<ShellContent>, INotifyCollectionChanged
 	{
+		public event NotifyCollectionChangedEventHandler VisibleItemsChanged;
 		ObservableCollection<ShellContent> _inner = new ObservableCollection<ShellContent>();
+		ObservableCollection<ShellContent> _visibleContents = new ObservableCollection<ShellContent>();
+
+		public IReadOnlyList<ShellContent> VisibleItems { get; }
+
+		public ShellContentCollection()
+		{
+			_inner.CollectionChanged += InnerCollectionChanged;
+			VisibleItems = new ReadOnlyCollection<ShellContent>(_visibleContents);
+			_visibleContents.CollectionChanged += (_, args) =>
+			{
+				VisibleItemsChanged?.Invoke(VisibleItems, args);
+			};
+		}
+
+		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+			{
+				foreach (ShellContent element in e.NewItems)
+				{
+					element.PropertyChanged += OnElementPropertyChanged;
+
+					if (element.IsVisible)
+						_visibleContents.Add(element);
+				}
+			}
+
+			if (e.OldItems != null)
+			{
+				foreach (ShellContent element in e.OldItems)
+				{
+					element.PropertyChanged -= OnElementPropertyChanged;
+					if (element.IsVisible)
+						_visibleContents.Remove(element);
+				}
+			}
+		}
+
+		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if(e.PropertyName == BaseShellItem.IsVisibleProperty.PropertyName)
+			{
+				var content = (ShellContent)sender;
+				if (content.IsVisible)
+					_visibleContents.Add(content);
+				else
+					_visibleContents.Remove(content);
+			}
+		}
 
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
 		{
