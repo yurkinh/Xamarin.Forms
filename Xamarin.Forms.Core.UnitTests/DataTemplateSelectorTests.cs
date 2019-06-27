@@ -70,6 +70,16 @@ namespace Xamarin.Forms.Core.UnitTests
 			readonly DataTemplate templateNull;
 		}
 
+		class TestHFDTS : DataTemplateSelector
+		{
+			protected override DataTemplate OnSelectTemplate (object item, BindableObject container)
+			{
+				if (item is null)
+					return new DataTemplate(typeof(Entry));
+				return new DataTemplate(typeof(Label));
+			}
+		}
+
 		[Test]
 		public void Constructor ()
 		{
@@ -104,10 +114,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			listView.Header = 0d;
 			listView.Footer = "footer";
 
-			listView.HeaderTemplate = new TestDTS ();
-			listView.FooterTemplate = new TestDTS ();
-			Assert.IsInstanceOf<ViewCell> (listView.HeaderElement);
-			Assert.IsInstanceOf<EntryCell> (listView.HeaderElement);
+			listView.HeaderTemplate = new TestHFDTS ();
+			listView.FooterTemplate = new TestHFDTS ();
+
+			// the list view does not yet pass data to the templates
+			// thus the values are always null
+			Assert.IsInstanceOf<Entry> (listView.HeaderElement);
+			Assert.IsInstanceOf<Entry> (listView.HeaderElement);
 		}
 
 		[Test]
