@@ -110,9 +110,6 @@
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
-    <Compile Include="CollectionView\EmptySource.cs" />
-    <Compile Include="CollectionView\IItemsViewSource.cs" />
-    <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewCell.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
     <Compile Include="CollectionView\HorizontalDefaultCell.cs" />

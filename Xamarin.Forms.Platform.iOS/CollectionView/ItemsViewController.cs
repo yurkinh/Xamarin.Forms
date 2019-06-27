@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public ItemsViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			_itemsView = itemsView;
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 			
 			// If we already have data, the UICollectionView will have items and we'll be safe to call
 			// ReloadData if the ItemsSource changes in the future (see UpdateItemsSource for more).
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateItemsSourceAndReload()
 		{
-			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 			CollectionView.ReloadData();
 			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// Grab the first item from the new ItemsSource and create a usable source for the UICollectionView
 				// from that
 				var firstItem = new List<object> { enumerator.Current };
-				_itemsSource = ItemsSourceFactory.Create(firstItem, CollectionView);
+				_itemsSource = ItemsSourceFactory.Create(firstItem, itemsSource => new ObservableItemsSource(itemsSource, CollectionView));
 
 				// Insert that item into the UICollectionView
 				// TODO ezhart When we implement grouping, this will need to be the index of the first actual item

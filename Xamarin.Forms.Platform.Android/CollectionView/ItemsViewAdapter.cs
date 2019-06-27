@@ -2,6 +2,7 @@ using System;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Widget;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
@@ -24,8 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			ItemsView = itemsView;
 			_createItemContentView = createItemContentView;
-			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
-
+			ItemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, itemsSource => new ObservableItemsSource(itemsSource, this));
 			if (_createItemContentView == null)
 			{
 				_createItemContentView = (view, context) => new ItemContentView(context);

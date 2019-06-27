@@ -12,12 +12,12 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly IList _itemsSource;
 		bool _disposed;
 
-		public ObservableItemsSource(IList itemSource, UICollectionView collectionView)
+		public ObservableItemsSource(INotifyCollectionChanged itemSource, UICollectionView collectionView)
 		{
 			_collectionView = collectionView;
-			_itemsSource = itemSource;
+			_itemsSource = (IList)itemSource;
 
-			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
+			(itemSource).CollectionChanged += CollectionChanged;
 		}
 
 		public int Count => _itemsSource.Count;
