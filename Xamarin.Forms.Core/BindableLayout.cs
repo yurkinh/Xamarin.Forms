@@ -186,16 +186,14 @@ namespace Xamarin.Forms
 
 		View CreateItemView(object item, Layout<View> layout, DataTemplate dataTemplate)
 		{
-			if (dataTemplate != null)
+			var view = (View)dataTemplate?.CreateContent(item, layout);
+			if (view != null)
 			{
-				var view = (View)dataTemplate.CreateContent(item, layout);
 				view.BindingContext = item;
 				return view;
 			}
-			else
-			{
-				return new Label() { Text = item?.ToString() };
-			}
+
+			return new Label() { Text = item?.ToString() };
 		}
 
 		void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

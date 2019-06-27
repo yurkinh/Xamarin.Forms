@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 		// NOTE: we don't call base as this is a proxy object that does not need to be bound
 		//       and we do not actually make use of any of the base functionality
 		internal override object OnCreateContent(object item, BindableObject container) =>
-			SelectTemplate(item, container).CreateContent();
+			SelectTemplate(item, container)?.CreateContent(item, container);
 
 		public DataTemplate SelectTemplate(object item, BindableObject container)
 		{
