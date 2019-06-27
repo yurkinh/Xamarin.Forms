@@ -1,6 +1,8 @@
-﻿namespace Xamarin.Forms.Platform.iOS
+﻿using UIKit;
+
+namespace Xamarin.Forms.Platform.iOS
 {
-	public class CarouselViewRenderer
+	public class CarouselViewRenderer : ItemsViewRenderer
 	{
 		public CarouselViewRenderer()
 		{
