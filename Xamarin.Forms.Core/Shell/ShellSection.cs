@@ -322,10 +322,11 @@ namespace Xamarin.Forms
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
-			if (CurrentItem == null && Items.Contains(child))
+			if (CurrentItem == null && ((IShellSectionController)this).GetItems().Contains(child))
 				SetValueFromRenderer(CurrentItemProperty, child);
 
-			UpdateDisplayedPage();
+			if(CurrentItem != null)
+				UpdateDisplayedPage();
 		}
 
 		protected override void OnChildRemoved(Element child)

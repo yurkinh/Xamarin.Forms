@@ -341,6 +341,12 @@ namespace Xamarin.Forms
 		}
 		IReadOnlyList<ShellItem> IShellController.GetItems() => ((ShellItemCollection)Items).VisibleItems;
 
+		event NotifyCollectionChangedEventHandler IShellController.ItemsCollectionChanged
+		{
+			add { ((ShellItemCollection)Items).VisibleItemsChanged += value; }
+			remove { ((ShellItemCollection)Items).VisibleItemsChanged -= value; }
+		}
+
 		public static Shell Current => Application.Current?.MainPage as Shell;
 
 
@@ -575,6 +581,17 @@ namespace Xamarin.Forms
 			Navigation = new NavigationImpl(this);
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
 			Route = Routing.GenerateImplicitRoute("shell");
+
+			((IShellController)this).ItemsCollectionChanged += (s, e) =>
+			{
+				if (e.NewItems != null && CurrentItem == null && e.NewItems.Count > 0)
+				{
+					if (e.NewItems[0] is ShellItem shellItem && !(shellItem is MenuShellItem))
+					{
+						((IShellController)this).OnFlyoutItemSelected(shellItem);
+					}
+				}
+			};
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
@@ -787,16 +804,6 @@ namespace Xamarin.Forms
 				return true;
 			}
 			return false;
-		}
-
-		protected override void OnChildAdded(Element child)
-		{
-			base.OnChildAdded(child);
-
-			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
-			{
-				((IShellController)this).OnFlyoutItemSelected(shellItem);
-			}
 		}
 
 		protected override void OnChildRemoved(Element child)
