@@ -163,6 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			Profile.FrameBegin("OnCreate");
 			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
@@ -172,10 +173,10 @@ namespace Xamarin.Forms.Platform.Android
 				savedInstanceState?.Remove("android:support:fragments");
 			}
 
-			Profile.FrameBegin("OnCreate Xamarin.Android");
+			Profile.FramePartition("base");
 			base.OnCreate(savedInstanceState);
-			Profile.FrameEnd();
 
+			Profile.FramePartition("SetSupportActionBar");
 			AToolbar bar;
 			if (ToolbarResource != 0)
 			{
@@ -188,9 +189,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetSupportActionBar(bar);
 
+			Profile.FramePartition("SetContentView");
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
+			Profile.FramePartition("OnStateChanged");
 			Xamarin.Forms.Application.ClearCurrent();
 
 			_previousState = _currentState;
@@ -198,6 +201,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnStateChanged();
 
+			Profile.FramePartition("Lollipop flags");
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
@@ -209,6 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Listen for the device going into power save mode so we can handle animations being disabled
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
 			}
+			Profile.FrameEnd();
 		}
 
 		protected override void OnDestroy()
