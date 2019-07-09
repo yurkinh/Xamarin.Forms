@@ -219,7 +219,7 @@ namespace Xamarin.Forms.Platform.Android
 				SetElement(null);
 				Tracker?.Dispose();
 				Tracker = null;
-				RemoveAllViewsInLayout();
+				this.RemoveChildViews();
 				_container?.Dispose();
 				_container = null;
 			}

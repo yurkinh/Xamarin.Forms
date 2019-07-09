@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (ChildCount > 0)
 					GetChildAt(0).Dispose();
-				RemoveAllViewsInLayout();
+				this.RemoveChildViews();
 				_childView = null;
 			}
 		}

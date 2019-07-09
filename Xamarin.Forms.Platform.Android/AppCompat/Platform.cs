@@ -435,7 +435,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (disposing && !_disposed)
 				{
 					_disposed = true;
-					RemoveAllViewsInLayout();
+					this.RemoveChildViews();
 					if (_renderer != null)
 					{
 						_renderer.Dispose();

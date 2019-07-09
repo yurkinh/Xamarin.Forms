@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing && Element != null && Element.Children.Count > 0)
 			{
-				RemoveAllViewsInLayout();
+				this.RemoveChildViews();
 				foreach (Page pageToRemove in Element.Children)
 				{
 					IVisualElementRenderer pageRenderer = Platform.GetRenderer(pageToRemove);

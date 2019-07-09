@@ -93,5 +93,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			view.ClipToOutline = value;
 		}
+
+		public static void RemoveChildViews(this ViewGroup view)
+		{
+			//for(int i = view.ChildCount; i < )
+		}
 	}
 }
