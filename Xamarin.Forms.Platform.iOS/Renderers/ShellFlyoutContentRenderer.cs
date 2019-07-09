@@ -43,8 +43,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateVerticalScroll()
 		{
-			if (_tableViewController?.TableView != null)
-				_tableViewController.TableView.ScrollEnabled = _shellContext.Shell.FlyoutVerticalScroll;
+			if (_tableViewController?.TableView == null)
+				return;
+
+			switch (_shellContext.Shell.FlyoutVerticalScroll)
+			{
+				case ScrollMode.Auto:
+				case ScrollMode.Enabled:
+					_tableViewController.TableView.ScrollEnabled = true;
+					break;
+				case ScrollMode.Disabled:
+					_tableViewController.TableView.ScrollEnabled = false;
+					break;
+			}
 		}
 
 		protected virtual void UpdateBackground()

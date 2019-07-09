@@ -134,7 +134,21 @@ namespace Xamarin.Forms.Platform.Android
         }
 
 		void UpdateVerticalScroll()
-			=> _layoutManager.ScrollVertically = _shellContext.Shell.FlyoutVerticalScroll;
+		{
+			if (_layoutManager == null)
+				return;
+
+			switch (_shellContext.Shell.FlyoutVerticalScroll)
+			{
+				case ScrollMode.Auto:
+				case ScrollMode.Enabled:
+					_layoutManager.ScrollVertically = true;
+					break;
+				case ScrollMode.Disabled:
+					_layoutManager.ScrollVertically = false;
+					break;
+			}
+		}
 
 
 		protected virtual void UpdateFlyoutBackground()
