@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnDestroy();
 
-			_shellPageContainer.RemoveAllViews();
+			_shellPageContainer.RemoveAllViewsInLayout();
 			_renderer?.Dispose();
 			_root?.Dispose();
 			_toolbarTracker.Dispose();

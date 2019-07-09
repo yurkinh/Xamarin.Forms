@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				RemoveAllViews();
+				RemoveAllViewsInLayout();
 				foreach (Page pageToRemove in Element.Children)
 				{
 					IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
