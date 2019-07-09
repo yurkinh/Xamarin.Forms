@@ -173,19 +173,22 @@ namespace Xamarin.Forms.Platform.Android
 				savedInstanceState?.Remove("android:support:fragments");
 			}
 
-			Profile.FramePartition("base");
+			Profile.FramePartition("Xamarin.Android");
 			base.OnCreate(savedInstanceState);
 
-			Profile.FramePartition("SetSupportActionBar");
 			AToolbar bar;
 			if (ToolbarResource != 0)
 			{
+				Profile.FramePartition("Inflate ToolbarResource");
 				bar = LayoutInflater.Inflate(ToolbarResource, null).JavaCast<AToolbar>();
 				if (bar == null)
 					throw new InvalidOperationException("ToolbarResource must be set to a Android.Support.V7.Widget.Toolbar");
 			}
 			else
+			{
+				Profile.FramePartition("Allocate Toolbar");
 				bar = new AToolbar(this);
+			}
 
 			SetSupportActionBar(bar);
 
@@ -199,20 +202,21 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnCreate;
 
-			OnStateChanged();
+			if (_application != null)
+				OnStateChanged();
 
-			Profile.FramePartition("Lollipop flags");
+			Profile.FramePartition("Forms.IsLollipopOrNewer");
 			if (Forms.IsLollipopOrNewer)
 			{
 				// Allow for the status bar color to be changed
+				Profile.FramePartition("Set DrawsSysBarBkgrnds");
 				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
-			}
 
-			if (Forms.IsLollipopOrNewer)
-			{
 				// Listen for the device going into power save mode so we can handle animations being disabled
+				Profile.FramePartition("Allocate PowerSaveModeReceiver");
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
 			}
+
 			Profile.FrameEnd();
 		}
 
