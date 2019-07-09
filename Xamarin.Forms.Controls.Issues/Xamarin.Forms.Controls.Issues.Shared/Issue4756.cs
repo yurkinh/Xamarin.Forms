@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			FlowDirection = FlowDirection.RightToLeft;
 			FlyoutHeader = new StackLayout();
-			FlyoutVerticalScroll = false;
+			FlyoutVerticalScroll = ScrollMode.Disabled;
 			for (int i = 0; i < 20; i++)
 				Items.Add(GenerateItem(i.ToString()));
 		}
@@ -38,7 +38,11 @@ namespace Xamarin.Forms.Controls.Issues
 							Content = new Button
 							{
 								Text = "Switch FlyoutVerticalScroll",
-								Command = new Command(() => FlyoutVerticalScroll = !FlyoutVerticalScroll)
+								Command = new Command(() =>								
+									FlyoutVerticalScroll = FlyoutVerticalScroll == ScrollMode.Disabled
+										? ScrollMode.Enabled
+										: ScrollMode.Disabled
+								)
 							}
 						}
 					}
