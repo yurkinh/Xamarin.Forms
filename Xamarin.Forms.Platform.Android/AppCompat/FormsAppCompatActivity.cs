@@ -172,7 +172,9 @@ namespace Xamarin.Forms.Platform.Android
 				savedInstanceState?.Remove("android:support:fragments");
 			}
 
+			Profile.FrameBegin("OnCreate Xamarin.Android");
 			base.OnCreate(savedInstanceState);
+			Profile.FrameEnd();
 
 			AToolbar bar;
 			if (ToolbarResource != 0)
