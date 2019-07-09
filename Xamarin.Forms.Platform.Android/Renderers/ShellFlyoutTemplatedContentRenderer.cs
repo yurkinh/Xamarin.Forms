@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 			var adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
 			recycler.SetPadding(0, (int)context.ToPixels(20), 0, 0);
 			recycler.SetClipToPadding(false);
-			recycler.SetLayoutManager(_layoutManager = new LinearLayoutManager(context, (int)Orientation.Vertical, false));
+			recycler.SetLayoutManager(_layoutManager = new ScrollLayoutManager(context, (int)Orientation.Vertical, false));
 			recycler.SetAdapter(adapter);
 
 			var metrics = context.Resources.DisplayMetrics;
