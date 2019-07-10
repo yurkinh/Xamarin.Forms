@@ -1,5 +1,6 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -20,13 +21,21 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			FlowDirection = FlowDirection.RightToLeft;
 			FlyoutHeader = new StackLayout();
-			FlyoutVerticalScroll = ScrollMode.Disabled;
-			for (int i = 0; i < 20; i++)
+			FlyoutVerticalScrollMode = ScrollMode.Disabled;
+			for (int i = 0; i < 10; i++)
 				Items.Add(GenerateItem(i.ToString()));
 		}
 
 		ShellItem GenerateItem(string title)
 		{
+			var picker = new Picker
+			{
+				ItemsSource = Enum.GetNames(typeof(ScrollMode)),
+				Title = "FlyoutVerticalScrollMode",
+				SelectedItem = FlyoutVerticalScrollMode.ToString()
+			};
+			picker.SelectedIndexChanged += (_, e) => FlyoutVerticalScrollMode = (ScrollMode)picker.SelectedIndex;
+
 			var section = new ShellSection
 			{
 				Items =
@@ -35,14 +44,28 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Content = new ContentPage
 						{
-							Content = new Button
+							Content = new StackLayout
 							{
-								Text = "Switch FlyoutVerticalScroll",
-								Command = new Command(() =>								
-									FlyoutVerticalScroll = FlyoutVerticalScroll == ScrollMode.Disabled
-										? ScrollMode.Enabled
-										: ScrollMode.Disabled
-								)
+								Children = {
+									new Button
+									{
+										Text = "Add ShellItem",
+										Command = new Command(() => Items.Add(GenerateItem(Items.Count.ToString())))
+									},
+									new Button
+									{
+										Text = "Remove ShellItem",
+										Command = new Command(() => {
+											if (Items.Count > 1)
+												Items.RemoveAt(0);
+										})
+									},
+									new Label
+									{
+										Text = "FlyoutVerticalScrollMode"
+									},
+									picker
+								}
 							}
 						}
 					}

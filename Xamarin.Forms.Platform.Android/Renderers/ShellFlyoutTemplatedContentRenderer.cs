@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.Android
             _shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
 
             UpdateFlyoutBackground();
-			UpdateVerticalScroll();
+			UpdateVerticalScrollMode();
         }
 
 		void OnFlyoutHeaderMeasureInvalidated(object sender, EventArgs e)
@@ -129,27 +129,15 @@ namespace Xamarin.Forms.Platform.Android
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateFlyoutBackground();
-			else if (e.Is(Shell.FlyoutVerticalScrollProperty))
-				UpdateVerticalScroll();
+			else if (e.Is(Shell.FlyoutVerticalScrollModeProperty))
+				UpdateVerticalScrollMode();
         }
 
-		void UpdateVerticalScroll()
+		void UpdateVerticalScrollMode()
 		{
-			if (_layoutManager == null)
-				return;
-
-			switch (_shellContext.Shell.FlyoutVerticalScroll)
-			{
-				case ScrollMode.Auto:
-				case ScrollMode.Enabled:
-					_layoutManager.ScrollVertically = true;
-					break;
-				case ScrollMode.Disabled:
-					_layoutManager.ScrollVertically = false;
-					break;
-			}
+			if (_layoutManager != null)
+				_layoutManager.ScrollVertically = _shellContext.Shell.FlyoutVerticalScrollMode;
 		}
-
 
 		protected virtual void UpdateFlyoutBackground()
 		{
@@ -335,11 +323,31 @@ namespace Xamarin.Forms.Platform.Android
 
 	internal class ScrollLayoutManager : LinearLayoutManager
 	{
-		public bool ScrollVertically { get; set; } = true;
+		public ScrollMode ScrollVertically { get; set; } = ScrollMode.Auto;
 
 		public ScrollLayoutManager(Context context, int orientation, bool reverseLayout) : base(context, orientation, reverseLayout)
-		{ }
+		{
+		}
 
-		public override bool CanScrollVertically() => ScrollVertically;
+		int GetVisibleChildCount()
+		{
+			var firstVisibleIndex = FindFirstCompletelyVisibleItemPosition();
+			var lastVisibleIndex = FindLastCompletelyVisibleItemPosition();
+			return lastVisibleIndex - firstVisibleIndex + 1;
+		}
+
+		public override bool CanScrollVertically()
+		{
+			switch (ScrollVertically)
+			{
+				case ScrollMode.Disabled:
+					return false;
+				case ScrollMode.Enabled:
+					return true;
+				default:
+				case ScrollMode.Auto:
+					return ChildCount > GetVisibleChildCount();
+			}
+		}
 	}
 }

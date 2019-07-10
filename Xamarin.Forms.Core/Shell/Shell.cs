@@ -565,8 +565,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FlyoutIconProperty =
 			BindableProperty.Create(nameof(FlyoutIcon), typeof(ImageSource), typeof(Shell), null);
 
-		public static readonly BindableProperty FlyoutVerticalScrollProperty =
-			BindableProperty.Create(nameof(FlyoutVerticalScroll), typeof(ScrollMode), typeof(Shell), ScrollMode.Auto);
+		public static readonly BindableProperty FlyoutVerticalScrollModeProperty =
+			BindableProperty.Create(nameof(FlyoutVerticalScrollMode), typeof(ScrollMode), typeof(Shell), ScrollMode.Auto);
 
 		ShellNavigatedEventArgs _accumulatedEvent;
 		bool _accumulateNavigatedEvents;
@@ -579,10 +579,10 @@ namespace Xamarin.Forms
 			Route = Routing.GenerateImplicitRoute("shell");
 		}
 
-		public ScrollMode FlyoutVerticalScroll
+		public ScrollMode FlyoutVerticalScrollMode
 		{
-			get => (ScrollMode)GetValue(FlyoutVerticalScrollProperty);
-			set => SetValue(FlyoutVerticalScrollProperty, value);
+			get => (ScrollMode)GetValue(FlyoutVerticalScrollModeProperty);
+			set => SetValue(FlyoutVerticalScrollModeProperty, value);
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
