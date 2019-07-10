@@ -133,7 +133,6 @@ namespace Xamarin.Forms.Platform.iOS
 			};
 
 			UpdateBackground();
-			//UpdateVerticalScrollMode();
 		}
 
 		public override void ViewWillAppear(bool animated)
