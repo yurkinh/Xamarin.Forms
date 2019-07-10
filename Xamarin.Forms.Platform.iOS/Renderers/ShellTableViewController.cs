@@ -63,9 +63,8 @@ namespace Xamarin.Forms.Platform.iOS
 					var firstCellRect = TableView.RectForRowAtIndexPath(pathToFirstRow);
 					var firstCellIsVisible = TableView.Bounds.Contains(firstCellRect);
 
-					var lastSectionIndex = TableView.NumberOfSections() - 1; // last section
-					var lastRowIndex = TableView.NumberOfRowsInSection(lastSectionIndex) - 1; // last row
-					var pathToLastRow = Foundation.NSIndexPath.FromRowSection(lastRowIndex, lastSectionIndex);
+					var lastRowIndex = NMath.Max(0, TableView.NumberOfRowsInSection(0) - 1);
+					var pathToLastRow = Foundation.NSIndexPath.FromRowSection(lastRowIndex, 0);
 					var cellRect = TableView.RectForRowAtIndexPath(pathToLastRow);
 					var lastCellIsVisible = TableView.Bounds.Contains(cellRect);
 

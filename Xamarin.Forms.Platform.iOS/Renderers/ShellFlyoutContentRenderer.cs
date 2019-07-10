@@ -37,36 +37,6 @@ namespace Xamarin.Forms.Platform.iOS
 				Shell.FlyoutBackgroundImageProperty,
 				Shell.FlyoutBackgroundImageAspectProperty))
 				UpdateBackground();
-			//else if (e.Is(Shell.FlyoutVerticalScrollModeProperty))
-			//	UpdateVerticalScrollMode();
-		}
-
-		protected virtual void UpdateVerticalScrollMode()
-		{
-			var tableView = _tableViewController.TableView;
-			if (tableView == null)
-				return;
-
-			switch (_shellContext.Shell.FlyoutVerticalScrollMode)
-			{
-				case ScrollMode.Auto:
-					var lastSectionIndex = tableView.NumberOfSections() - 1; // last section
-					var lastRowIndex = tableView.NumberOfRowsInSection(lastSectionIndex) - 1; // last row
-					var pathToLastRow = Foundation.NSIndexPath.FromRowSection(lastRowIndex, lastSectionIndex);
-					var cellRect = tableView.RectForRowAtIndexPath(pathToLastRow);
-					var lastCellIsVisible = tableView.Bounds.Contains(cellRect);
-
-					var pathToFirstRow = Foundation.NSIndexPath.FromRowSection(0, 0);
-					var firstCellRect = tableView.RectForRowAtIndexPath(pathToFirstRow);
-					var firstCellIsVisible = tableView.Bounds.Contains(firstCellRect);
-					break;
-				case ScrollMode.Enabled:
-					tableView.ScrollEnabled = true;
-					break;
-				case ScrollMode.Disabled:
-					tableView.ScrollEnabled = false;
-					break;
-			}
 		}
 
 		protected virtual void UpdateBackground()
