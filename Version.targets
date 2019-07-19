@@ -51,7 +51,11 @@
         <_Parameter2>$(PackageVersion)</_Parameter2>
       </AssemblyAttribute>
     </ItemGroup>
-
+    <ItemGroup>
+       <XamarinFormsVersionFile Include="../XamarinFormsVersionFile.txt"/>
+       <XamarinFormsVersionLine Include="$(PackageVersion)"/>
+    </ItemGroup>
+    <WriteLinesToFile File="@(XamarinFormsVersionFile)" Lines="@(XamarinFormsVersionLine)" Overwrite="true" />
     <Message Condition="$(CI)" Importance="high" Text="##vso[build.updatebuildnumber]$(PackageVersion)"/>
     <Message Condition="$(CI)" Importance="high" Text="##vso[task.setvariable variable=XamarinFormsPackageVersion;isOutput=true;]$(PackageVersion)"/>
   </Target>
