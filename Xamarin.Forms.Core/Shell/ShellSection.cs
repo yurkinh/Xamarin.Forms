@@ -134,19 +134,8 @@ namespace Xamarin.Forms
 
 		IReadOnlyList<ShellContent> IShellSectionController.GetItems() => ((ShellContentCollection)Items).VisibleItems;
 
-		int IShellSectionController.IndexOf(ShellContent content)
-		{
-			int index = 0;
-			foreach (var item in (this as IShellSectionController).GetItems())
-			{
-				if (item == content)
-					return index;
-
-				index++;
-			}
-
-			return -1;
-		}
+		int IShellSectionController.IndexOf(ShellContent content) =>
+			(ShellSectionController.GetItems() as ReadOnlyCollection<ShellContent>).IndexOf(content);
 
 		event NotifyCollectionChangedEventHandler IShellSectionController.ItemsCollectionChanged
 		{

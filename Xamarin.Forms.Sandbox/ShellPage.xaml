@@ -4,7 +4,7 @@
              x:Class="Xamarin.Forms.Sandbox.ShellPage">
 
     <FlyoutItem Title="Sandbox">
-        <Tab Title="Tab">
+        <Tab Title="Tab" IsVisible="False">
             <ShellContent Title="Visible">
                 <ContentPage>
                     <StackLayout>
@@ -20,8 +20,8 @@
                 </ContentPage>
             </ShellContent>
         </Tab>
-        <Tab Title="NotVisible" IsVisible="False">
-            <ShellContent>
+        <Tab Title="NotVisible">
+            <ShellContent IsVisible="False">
                 <ContentPage>
                     <StackLayout>
                         <Button Text="I am a Button"  Clicked="Button_Clicked" />
@@ -30,7 +30,7 @@
             </ShellContent>
         </Tab>
     </FlyoutItem>
-    <FlyoutItem Title="SandboxDisabled" IsEnabled="False">
+    <FlyoutItem Title="SandboxDisabled">
         <Tab>
             <ShellContent>
                 <ContentPage>
