@@ -29,6 +29,7 @@ namespace Xamarin.Forms
 
 		#region IShellSectionController
 
+		IShellSectionController ShellSectionController => this;
 		readonly List<(object Observer, Action<Page> Callback)> _displayedPageObservers =
 			new List<(object Observer, Action<Page> Callback)>();
 		readonly List<IShellContentInsetObserver> _observers = new List<IShellContentInsetObserver>();
@@ -72,7 +73,7 @@ namespace Xamarin.Forms
 			ShellContent shellContent = request.Request.Content;
 
 			if (shellContent == null)
-				shellContent = Items[0];
+				shellContent = ShellSectionController.GetItems()[0];
 
 			if (request.Request.GlobalRoutes.Count > 0)
 			{
@@ -177,7 +178,7 @@ namespace Xamarin.Forms
 
 		public ShellSection()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += ItemsCollectionChanged;
+			ShellSectionController.ItemsCollectionChanged += ItemsCollectionChanged;
 			Navigation = new NavigationImpl(this);
 		}
 				
@@ -334,7 +335,8 @@ namespace Xamarin.Forms
 			base.OnChildRemoved(child);
 			if (CurrentItem == child)
 			{
-				if (Items.Count == 0)
+				var items = ShellSectionController.GetItems();
+				if (items.Count == 0)
 					ClearValue(CurrentItemProperty);
 				else
 				{
@@ -342,7 +344,7 @@ namespace Xamarin.Forms
 					Device.BeginInvokeOnMainThread(() =>
 					{
 						if (CurrentItem == null)
-							SetValueFromRenderer(CurrentItemProperty, Items[0]);
+							SetValueFromRenderer(CurrentItemProperty, items[0]);
 					});
 				}
 			}

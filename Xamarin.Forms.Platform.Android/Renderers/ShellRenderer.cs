@@ -227,7 +227,7 @@ namespace Xamarin.Forms.Platform.Android
 			((IShellController)shell).AddAppearanceObserver(this, shell);
 
 			// Previewer Hack
-			if(AndroidContext.GetActivity() != null)
+			if(AndroidContext.GetActivity() != null && shell.CurrentItem != null)
 				SwitchFragment(FragmentManager, _frameLayout, shell.CurrentItem, false);
 		}
 
