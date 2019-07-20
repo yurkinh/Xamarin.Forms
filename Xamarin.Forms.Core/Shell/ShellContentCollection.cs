@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -31,8 +32,9 @@ namespace Xamarin.Forms
 				{
 					element.PropertyChanged += OnElementPropertyChanged;
 
-					if (element.IsVisible)
-						_visibleContents.Add(element);
+					if (element is IShellContentController controller)
+						controller.IsPageVisibleChanged += OnIsPageVisibleChanged;
+					CheckVisibility(element);
 				}
 			}
 
@@ -43,19 +45,47 @@ namespace Xamarin.Forms
 					element.PropertyChanged -= OnElementPropertyChanged;
 					if (element.IsVisible)
 						_visibleContents.Remove(element);
+
+					if (element is IShellContentController controller)
+						controller.IsPageVisibleChanged -= OnIsPageVisibleChanged;
 				}
 			}
+		}
+
+		void OnIsPageVisibleChanged(object sender, EventArgs e)
+		{
+			CheckVisibility((ShellContent)sender);
 		}
 
 		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if(e.PropertyName == BaseShellItem.IsVisibleProperty.PropertyName)
+				CheckVisibility((ShellContent)sender);
+		}
+
+		void CheckVisibility(ShellContent shellContent)
+		{
+			if (shellContent.IsVisible && shellContent is IShellContentController controller)
 			{
-				var content = (ShellContent)sender;
-				if (content.IsVisible)
-					_visibleContents.Add(content);
+				// Assume incoming page will be visible
+				if (controller.Page == null)
+				{
+					if (!_visibleContents.Contains(shellContent))
+						_visibleContents.Add(shellContent);
+				}
+				else if(controller.Page.IsVisible)
+				{
+					if (!_visibleContents.Contains(shellContent))
+						_visibleContents.Add(shellContent);
+				}
 				else
-					_visibleContents.Remove(content);
+				{
+					_visibleContents.Remove(shellContent);
+				}
+			}
+			else if (_visibleContents.Contains(shellContent))
+			{
+				_visibleContents.Remove(shellContent);
 			}
 		}
 

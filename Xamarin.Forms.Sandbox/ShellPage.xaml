@@ -21,8 +21,8 @@
             </ShellContent>
         </Tab>
         <Tab Title="NotVisible">
-            <ShellContent IsVisible="False">
-                <ContentPage>
+            <ShellContent>
+                <ContentPage  IsVisible="False">
                     <StackLayout>
                         <Button Text="I am a Button"  Clicked="Button_Clicked" />
                     </StackLayout>
