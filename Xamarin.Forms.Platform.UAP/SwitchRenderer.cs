@@ -95,8 +95,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 					foreach (var timeline in state.Storyboard.Children.OfType<ObjectAnimationUsingKeyFrames>())
 					{
-						var property = Storyboard.GetTargetProperty(timeline);
-						var target = Storyboard.GetTargetName(timeline);
+						var property = Windows.UI.Xaml.Media.Animation.Storyboard.GetTargetProperty(timeline);
+						var target = Windows.UI.Xaml.Media.Animation.Storyboard.GetTargetName(timeline);
 						if (target == "SwitchKnobBounds" && property == "Fill")
 						{
 							var frame = timeline.KeyFrames.First();
@@ -138,8 +138,8 @@ namespace Xamarin.Forms.Platform.UWP
 				.First(g => g.Name == "CommonStates")
 				.States.First(s => s.Name == "PointerOver")
 				.Storyboard.Children.OfType<ObjectAnimationUsingKeyFrames>().First(
-					t => Storyboard.GetTargetName(t) == "SwitchKnobOn" &&
-						 Storyboard.GetTargetProperty(t) == "Fill")
+					t => Windows.UI.Xaml.Media.Animation.Storyboard.GetTargetName(t) == "SwitchKnobOn" &&
+						 Windows.UI.Xaml.Media.Animation.Storyboard.GetTargetProperty(t) == "Fill")
 				.KeyFrames.First();
 
 			if (_originalThumbOnBrush == null)

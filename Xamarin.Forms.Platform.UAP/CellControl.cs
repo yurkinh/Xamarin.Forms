@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var visualStates = vState.Storyboard.Children;
 			foreach (ObjectAnimationUsingKeyFrames item in visualStates)
 			{
-				if ((string)item.GetValue(Storyboard.TargetNameProperty) == "SwitchKnobBounds")
+				if ((string)item.GetValue(Windows.UI.Xaml.Media.Animation.Storyboard.TargetNameProperty) == "SwitchKnobBounds")
 				{
 					item.KeyFrames[0].Value = color;
 					break;

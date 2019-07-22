@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.UWP
 				// On the phone, this is a dummy animation we've added to the closed state in the VSM
 				// Since it finishes immediately, we can use its Completed event to signal that the 
 				// closing animation has started 
-				var closedSignalAnimation = closedState?.Storyboard.Children[0] as DoubleAnimation;
+				var closedSignalAnimation = closedState?.Storyboard.Children[0] as Windows.UI.Xaml.Media.Animation.DoubleAnimation;
 
 				if (closedSignalAnimation != null)
 				{
