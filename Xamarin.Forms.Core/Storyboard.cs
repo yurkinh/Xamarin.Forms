@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 	public class Storyboard : Timeline
 	{
 		Dictionary<VisualElement, List<Animation>> _animationsPerElement = new Dictionary<VisualElement, List<Animation>>();
-		List<Animation> _runningAnimations = new List<Animation>();	
+		List<Animation> _runningAnimations = new List<Animation>();
 		public TimelineCollection Children { get; }
 		public static readonly BindableProperty TargetNameProperty = BindableProperty.CreateAttached("TargetName", typeof(VisualElement), typeof(Timeline), null);
 
@@ -18,6 +18,7 @@ namespace Xamarin.Forms
 		public static void SetTarget(BindableObject bindable, VisualElement value)
 		{
 			bindable.SetValue(TargetNameProperty, value);
+			SetInheritedBindingContext(bindable, value?.BindingContext);
 		}
 
 		public static VisualElement GetTarget(BindableObject bindable)
@@ -42,11 +43,14 @@ namespace Xamarin.Forms
 
 		public void Add(Timeline animation)
 		{
+			animation.Parent = this;
+			SetInheritedBindingContext(animation, BindingContext);
 			Children.Add(animation);
 		}
 
 		public void Remove(Timeline animation)
 		{
+			animation.Parent = null;
 			Children.Remove(animation);
 		}
 
@@ -64,11 +68,11 @@ namespace Xamarin.Forms
 					var animationTarget = Storyboard.GetTarget(timeline);
 					if (animationTarget == null)
 						animationTarget = defaultTarget;
-					
+
 					var animationTargetProperty = Storyboard.GetTargetProperty(timeline);
 					if (animationTargetProperty == null)
 						animationTargetProperty = defaultTargetProperty;
-					
+
 					var initialValue = animationTarget.GetValue(animationTargetProperty);
 
 					var finalValue = timeline.To;
@@ -87,7 +91,7 @@ namespace Xamarin.Forms
 					//mainAnimation.Add(animation.BeginTime, 1, newAnimation);
 					maxDuration = Math.Max(maxDuration, timeline.Duration);
 
-					if(!_animationsPerElement.ContainsKey(animationTarget))
+					if (!_animationsPerElement.ContainsKey(animationTarget))
 					{
 						var list = new List<Animation>();
 						list.Add(newAnimation);
@@ -99,6 +103,20 @@ namespace Xamarin.Forms
 					}
 				}
 
+				if (item is DoubleAnimation doubleAnimation)
+				{
+					var animationTarget = Storyboard.GetTarget(doubleAnimation);
+					if (animationTarget == null)
+						animationTarget = defaultTarget;
+
+					var animationTargetProperty = Storyboard.GetTargetProperty(doubleAnimation);
+					if (animationTargetProperty == null)
+						animationTargetProperty = defaultTargetProperty;
+
+					//maxDuration = Math.Max(maxDuration, doubleAnimation.Duration);
+					AddToInternalAnimationList(doubleAnimation, animationTarget, animationTargetProperty);
+				}
+
 			}
 
 			foreach (var anim in _animationsPerElement)
@@ -107,17 +125,65 @@ namespace Xamarin.Forms
 				foreach (var animation in anim.Value)
 				{
 					elementAnimation.Add(0, 1, animation);
-			
+
 				}
 				_runningAnimations.Add(elementAnimation);
 				elementAnimation.Commit(anim.Key, "ChildAnimations", 16, maxDuration, finished: (v, c) => Completed?.Invoke(this, new EventArgs()));
 			}
 			//
 		}
+
+		void AddToInternalAnimationList(DoubleAnimation doubleAnimation, VisualElement animationTarget, BindableProperty animationTargetProperty, Animation newAnimation = null)
+		{
+			if (animationTarget == null)
+				throw new InvalidOperationException("You didn't specify a Target");
+
+
+			if (animationTarget == null)
+				throw new InvalidOperationException("You didn't specify a Target");
+
+			//not sure 
+			Element.SetInheritedBindingContext(doubleAnimation, animationTarget.BindingContext);
+			var initialValue = (double)animationTarget.GetValue(animationTargetProperty);
+
+			var finalValue = (double)doubleAnimation.To;
+			if(newAnimation == null)
+			{
+				newAnimation = new Animation(v =>
+				{
+					animationTarget.SetValue(animationTargetProperty, v);
+				}, initialValue, finalValue, doubleAnimation.Easing, () => doubleAnimation?.Completed?.Invoke(this, new EventArgs()));
+
+			}
+
+			//mainAnimation.Add(animation.BeginTime, 1, newAnimation);
+
+			if (!_animationsPerElement.ContainsKey(animationTarget))
+			{
+				var list = new List<Animation>();
+				list.Add(newAnimation);
+				_animationsPerElement.Add(animationTarget, list);
+			}
+			else
+			{
+				_animationsPerElement[animationTarget].Add(newAnimation);
+			}
+		}
+
 		public void End()
 		{
-			
+
 		}
+
+		public static string GetTargetName(object t)
+		{
+			throw new NotImplementedException();
+		}
+
+		//Storyboard.SetTarget(animOpacity, Control_);
+		//  Storyboard.SetTarget(animTransform, Control_);
+		//  Storyboard.SetTargetProperty(animOpacity, new PropertyPath("Opacity"));
+		//  Storyboard.SetTargetProperty(animTransform, new PropertyPath(
 
 		//public void Pause();
 		//public void Resume();
@@ -135,7 +201,7 @@ namespace Xamarin.Forms
 		T InterpolateTo(T from, T target, double interpolation);
 	}
 
-	public class Animation<T> : Timeline where T : IInterpolatable<T>
+	public abstract class Animation<T> : Timeline where T : IInterpolatable<T>
 	{
 		public T From { get; set; }
 		public T To { get; set; }
@@ -143,8 +209,21 @@ namespace Xamarin.Forms
 
 	public class DoubleAnimation : Timeline
 	{
-		public double From { get; set; }
-		public double To { get; set; }
+		public static readonly BindableProperty FromProperty = BindableProperty.Create(nameof(From), typeof(double), typeof(DoubleAnimation), .0);
+
+		public static readonly BindableProperty ToProperty = BindableProperty.Create(nameof(To), typeof(double), typeof(DoubleAnimation), .0);
+
+		public double From
+		{
+			get { return (double)GetValue(FromProperty); }
+			set { SetValue(FromProperty, value); }
+		}
+
+		public double To
+		{
+			get { return (double)GetValue(ToProperty); }
+			set { SetValue(ToProperty, value); }
+		}
 	}
 
 	public abstract class Timeline : VisualElement

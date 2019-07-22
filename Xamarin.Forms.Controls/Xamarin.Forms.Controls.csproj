@@ -53,6 +53,9 @@
     <Compile Update="ShellContentTest.xaml.cs">
       <DependentUpon>ShellContentTest.xaml</DependentUpon>
     </Compile>
+    <EmbeddedResource Update="FramerMotion.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="GalleryPages\BindableLayoutGalleryPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

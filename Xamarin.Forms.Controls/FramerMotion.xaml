@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Xamarin.Forms.Controls.FramerMotion">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".3*"></ColumnDefinition>
+                <ColumnDefinition Width=".7*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <StackLayout Orientation="Horizontal">
+                <Label Text="SCALE: "></Label>
+                <Entry Text="{Binding Source={x:Reference Name=slider}, Path=Value}"/>
+                <Stepper Value="{Binding Source={x:Reference Name=slider}, Path=Value}"></Stepper>
+                <Slider x:Name="slider" Maximum="5" Minimum="1" Value="{Binding SliderValue}" WidthRequest="100" />
+            </StackLayout>
+            <AbsoluteLayout Grid.Column="1" Grid.RowSpan="4" WidthRequest="1000" HeightRequest="1000" BackgroundColor="Purple">
+                <BoxView  x:Name="boxView" CornerRadius="25" WidthRequest="100" HeightRequest="100"  BackgroundColor="White" AbsoluteLayout.LayoutBounds="150,150,100,100" >
+                    <BoxView.Resources>
+                        <Storyboard x:Key="animateScale">
+                            <DoubleAnimation To="{Binding SliderValue}"   Storyboard.TargetProperty="BoxView.Scale" ></DoubleAnimation>
+                        </Storyboard>
+                    </BoxView.Resources>
+
+                </BoxView>
+            </AbsoluteLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
