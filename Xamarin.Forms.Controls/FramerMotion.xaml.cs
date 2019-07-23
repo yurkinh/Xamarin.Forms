@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Controls
 		{
 			InitializeComponent();
 			BindingContext = this;
-			//cheatting 
 			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
 			if (storyBoard != null)
 			{
@@ -28,8 +27,8 @@ namespace Xamarin.Forms.Controls
 
 		protected override void OnAppearing()
 		{
-			X = (int)(layout.Width) / 2;
-			Y = (int)(layout.Height) / 2;
+			sliderX.Maximum = 600;
+			sliderY.Maximum = 600;
 			base.OnAppearing();
 		}
 

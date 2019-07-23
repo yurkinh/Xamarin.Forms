@@ -89,27 +89,17 @@
                               Path=Value,
                               StringFormat='X: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-                <Stepper Value="{Binding X}"
-                         Maximum="200"
-                         Minimum="0" />
+                <Stepper Value="{Binding X}" />
             </Frame>
-            <Slider x:Name="sliderX"
-                    Maximum="{Binding Source={x:Reference layout}, Path=Width}"
-                    Minimum="0"
-                    Value="{Binding X, Mode=TwoWay}" />
+            <Slider x:Name="sliderX" Value="{Binding X, Mode=TwoWay}" />
 
             <Label Text="{Binding Source={x:Reference sliderY},
                               Path=Value,
                               StringFormat='Y: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-                <Stepper Value="{Binding Y}"
-                         Maximum="{Binding Source={x:Reference layout}, Path=Height}"
-                         Minimum="0" />
+                <Stepper Value="{Binding Y}"/>
             </Frame>
-            <Slider x:Name="sliderY"
-                    Maximum="200"
-                    Minimum="0"
-                    Value="{Binding Y, Mode=TwoWay}" />
+            <Slider x:Name="sliderY" Value="{Binding Y, Mode=TwoWay}" />
 
 
             <Label Text="{Binding Source={x:Reference slider},
