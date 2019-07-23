@@ -5,83 +5,101 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              Visual="Material"
-             xmlns:l="clr-namespace:Xamarin.Forms.Controls"
              x:Class="Xamarin.Forms.Controls.FramerMotion">
     <ContentPage.Resources>
         <Style TargetType="Label">
             <Setter Property="TextColor"
                     Value="LightGray" />
             <Setter Property="Margin"
-                    Value="0,20,0,10" />
-        </Style>
-        <Style TargetType="Entry">
-            <Setter Property="TextColor"
-                    Value="LightGray" />
+                    Value="50,20,0,10" />
+         
             <Setter Property="WidthRequest"
-                    Value="100" />
+                    Value="110"></Setter>
+            <Setter Property="HeightRequest"
+                    Value="30"></Setter>
         </Style>
         <Style TargetType="Slider">
             <Setter Property="MaximumTrackColor"
                     Value="#909090" />
             <Setter Property="MinimumTrackColor"
                     Value="#909090" />
-            <Setter Property="WidthRequest"
-                    Value="200" />
             <Setter Property="Margin"
                     Value="0,10,0,10" />
+            <Setter Property="FlexLayout.Basis"
+                    Value="200" />
+        </Style>
+        <Style TargetType="Frame"
+               x:Key="stepperWrapper">
+            <Setter Property="BackgroundColor"
+                    Value="#909090" />
+            <Setter Property="Padding"
+                    Value="2" />
+            <Setter Property="VerticalOptions"
+                    Value="Center" />
+            <Setter Property="Margin"
+                    Value="20,10,50,0" />
+            <Setter Property="FlexLayout.Basis"
+                    Value="200" />
+        </Style>
+        <Style TargetType="Frame"
+               x:Key="boxViewItem">
+            <Setter Property="CornerRadius"
+                    Value="25" />
+            <Setter Property="WidthRequest"
+                    Value="100" />
+            <Setter Property="HeightRequest"
+                    Value="100" />
         </Style>
     </ContentPage.Resources>
     <FlexLayout Direction="Column">
         <FlexLayout FlexLayout.Grow="1">
-            <AbsoluteLayout BackgroundColor="Purple"
+            <RelativeLayout BackgroundColor="Purple"
                             FlexLayout.Grow="1">
-                <l:Div x:Name="boxView">
-                    <l:Div.Resources>
+                <Frame x:Name="boxView"
+                       Style="{StaticResource boxViewItem}"
+                       RelativeLayout.XConstraint="100"
+                       RelativeLayout.YConstraint="100">
+                    <Frame.Resources>
                         <Storyboard x:Key="animateScale">
                             <DoubleAnimation To="{Binding SliderValue}"
                                              Storyboard.TargetProperty="BoxView.Scale"></DoubleAnimation>
                             <DoubleAnimation To="{Binding Rotation}"
                                              Storyboard.TargetProperty="BoxView.Rotation"></DoubleAnimation>
                         </Storyboard>
-                    </l:Div.Resources>
+                    </Frame.Resources>
 
-                </l:Div>
-            </AbsoluteLayout>
+                </Frame>
+            </RelativeLayout>
             <FlexLayout
                 FlexLayout.Basis="300"
                 FlexLayout.Order="-1"
                 BackgroundColor="#151515"
-                Direction="Column"
-                AlignItems="Center"
-                JustifyContent="Start">
+                Direction="Row"
+                Wrap="Wrap"
+                AlignContent="Start"
+                AlignItems="Start"
+                JustifyContent="Center">
                 <Label Text="{Binding Source={x:Reference slider},
                               Path=Value,
                               StringFormat='Scale: {0:F0}'}" />
-                <StackLayout Orientation="Horizontal">
-                    <Entry Text="{Binding Source={x:Reference slider}, Path=Value}" />
-                    <Frame BackgroundColor="#909090"
-                           Padding="2">
-                        <Stepper Value="{Binding Source={x:Reference Name=slider}, Path=Value}" />
-                    </Frame>
-                </StackLayout>
+
+                <Frame Style="{StaticResource stepperWrapper}">
+                    <Stepper Value="{Binding SliderValue}" />
+                </Frame>
 
                 <Slider x:Name="slider"
                         Maximum="5"
                         Minimum="1"
                         Value="{Binding SliderValue, Mode=TwoWay}" />
+
                 <Label Text="{Binding Source={x:Reference sliderRotation},
                               Path=Value,
-                              StringFormat='Rotation {0:F0}'}"
-                       HorizontalOptions="FillAndExpand" />
-                <StackLayout Orientation="Horizontal">
-                    <Entry Text="{Binding Source={x:Reference sliderRotation}, Path=Value}" />
-
-                    <Frame BackgroundColor="#909090"
-                           Padding="2">
-                        <Stepper Value="{Binding Source={x:Reference Name=sliderRotation}, Path=Value}" />
-
-                    </Frame>
-                </StackLayout>
+                              StringFormat='Rotation {0:F0}'}" />
+                <Frame Style="{StaticResource stepperWrapper}">
+                    <Stepper
+                        Maximum="360"
+                        Value="{Binding Rotation}" />
+                </Frame>
                 <Slider x:Name="sliderRotation"
                         Maximum="360"
                         Minimum="0"

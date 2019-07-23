@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Controls
 
 		protected override void OnAppearing()
 		{
+			//cheatting 
 			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
 			if (storyBoard != null)
 			{
@@ -36,22 +37,24 @@ namespace Xamarin.Forms.Controls
 			get => _sliderValue;
 			set
 			{
-				if (Math.Abs(value - _sliderValue) < 0)
+				var val = Math.Round(value, 2);
+				if (Math.Abs(val - _sliderValue) <= 0)
 					return;
-				_sliderValue = value;
+				_sliderValue = val;
 				OnPropertyChanged();
 			}
 		}
 
-		double _rotation = 0;
+		double _rotation;
 		public double Rotation
 		{
 			get => _rotation;
 			set
 			{
-				if(Math.Abs(value - _rotation) < 0)
+				var val = Math.Round(value, 2);
+				if (Math.Abs(val - _rotation) <= 0)
 					return;
-				_rotation = value;
+				_rotation = val;
 				OnPropertyChanged();
 			}
 		}
@@ -62,12 +65,10 @@ namespace Xamarin.Forms.Controls
 			get => _x;
 			set
 			{
-				if (Math.Abs(value - _x) < 0)
+				if (Math.Abs(value - _x) <= 0)
 					return;
 				_x = value;
 				OnPropertyChanged();
-
-				StartStoryboard();
 			}
 		}
 
@@ -77,42 +78,11 @@ namespace Xamarin.Forms.Controls
 			get => y;
 			set
 			{
-				if (Math.Abs(value - y) < 0)
+				if (Math.Abs(value - y) <= 0)
 					return;
 				_x = value;
 				OnPropertyChanged();
-
-				StartStoryboard();
 			}
-		}
-
-		void StartStoryboard()
-		{
-			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
-			if (storyBoard != null)
-			{
-				storyBoard.Duration = 130;
-				storyBoard.Easing = Easing.SpringIn;
-				Storyboard.SetTarget(storyBoard, boxView);
-				storyBoard.Begin();
-			}
-		}
-	}
-
-	public class Div : BoxView
-	{
-		public Div()
-		{
-			AnchorX = 0.5;
-
-			AnchorY = 0.5;
-
-			CornerRadius = 25;
-
-			BackgroundColor = Color.White;
-
-			AbsoluteLayout.SetLayoutFlags(this, AbsoluteLayoutFlags.PositionProportional);
-			AbsoluteLayout.SetLayoutBounds(this, new Rectangle(0.5, 0.5, 100, 100));
 		}
 	}
 }
