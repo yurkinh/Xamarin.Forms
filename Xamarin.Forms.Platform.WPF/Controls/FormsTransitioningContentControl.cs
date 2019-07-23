@@ -59,10 +59,10 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		internal const string PreviousContentPresentationSitePartName = "PreviousContentPresentationSite";
 		internal const string CurrentContentPresentationSitePartName = "CurrentContentPresentationSite";
 
-		private System.Windows.Controls.ContentPresenter currentContentPresentationSite;
-		private System.Windows.Controls.ContentPresenter previousContentPresentationSite;
-		private bool allowIsTransitioningPropertyWrite;
-		private Storyboard currentTransition;
+		System.Windows.Controls.ContentPresenter currentContentPresentationSite;
+		System.Windows.Controls.ContentPresenter previousContentPresentationSite;
+		bool allowIsTransitioningPropertyWrite;
+		System.Windows.Media.Animation.Storyboard currentTransition;
 
 		public event RoutedEventHandler TransitionCompleted;
 
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			set { this.SetValue(RestartTransitionOnContentChangeProperty, value); }
 		}
 
-		private static void OnIsTransitioningPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		static void OnIsTransitioningPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var source = (FormsTransitioningContentControl)d;
 
@@ -126,22 +126,22 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			}
 		}
 
-		private Storyboard CurrentTransition
+		System.Windows.Media.Animation.Storyboard CurrentTransition
 		{
-			get { return this.currentTransition; }
+			get { return currentTransition; }
 			set
 			{
 				// decouple event
-				if (this.currentTransition != null)
+				if (currentTransition != null)
 				{
-					this.currentTransition.Completed -= this.OnTransitionCompleted;
+					currentTransition.Completed -= OnTransitionCompleted;
 				}
 
-				this.currentTransition = value;
+				currentTransition = value;
 
-				if (this.currentTransition != null)
+				if (currentTransition != null)
 				{
-					this.currentTransition.Completed += this.OnTransitionCompleted;
+					currentTransition.Completed += OnTransitionCompleted;
 				}
 			}
 		}
@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			}
 
 			// find new transition
-			Storyboard newStoryboard = source.GetStoryboard(newTransition);
+			System.Windows.Media.Animation.Storyboard newStoryboard = source.GetStoryboard(newTransition);
 
 			// unable to find the transition.
 			if (newStoryboard == null)
@@ -236,7 +236,7 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			}
 
 			// hookup currenttransition
-			Storyboard transition = this.GetStoryboard(this.Transition);
+			System.Windows.Media.Animation.Storyboard transition = this.GetStoryboard(this.Transition);
 			this.CurrentTransition = transition;
 			if (transition == null)
 			{
@@ -319,10 +319,10 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			}
 		}
 
-		private void OnTransitionCompleted(object sender, EventArgs e)
+		void OnTransitionCompleted(object sender, EventArgs e)
 		{
 			var clockGroup = sender as ClockGroup;
-			this.AbortTransition();
+			AbortTransition();
 			if (clockGroup == null || clockGroup.CurrentState == ClockState.Stopped)
 			{
 				this.TransitionCompleted?.Invoke(this, new RoutedEventArgs());
@@ -333,21 +333,21 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 		{
 			// go to normal state and release our hold on the old content.
 			System.Windows.VisualStateManager.GoToState(this, NormalState, false);
-			this.IsTransitioning = false;
-			if (this.previousContentPresentationSite != null)
+			IsTransitioning = false;
+			if (previousContentPresentationSite != null)
 			{
-				this.previousContentPresentationSite.ContentTemplate = null;
-				this.previousContentPresentationSite.Content = null;
+				previousContentPresentationSite.ContentTemplate = null;
+				previousContentPresentationSite.Content = null;
 			}
 		}
 
-		private Storyboard GetStoryboard(TransitionType newTransition)
+		System.Windows.Media.Animation.Storyboard GetStoryboard(TransitionType newTransition)
 		{
 			System.Windows.VisualStateGroup presentationGroup = VisualStates.TryGetVisualStateGroup(this, PresentationGroup);
-			Storyboard newStoryboard = null;
+			System.Windows.Media.Animation.Storyboard newStoryboard = null;
 			if (presentationGroup != null)
 			{
-				var transitionName = this.GetTransitionName(newTransition);
+				var transitionName = GetTransitionName(newTransition);
 				newStoryboard = presentationGroup.States
 												 .OfType<System.Windows.VisualState>()
 												 .Where(state => state.Name == transitionName)
@@ -357,7 +357,7 @@ namespace Xamarin.Forms.Platform.WPF.Controls
 			return newStoryboard;
 		}
 
-		private string GetTransitionName(TransitionType transition)
+		string GetTransitionName(TransitionType transition)
 		{
 			switch (transition)
 			{
