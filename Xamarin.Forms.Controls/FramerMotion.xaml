@@ -4,8 +4,33 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             Visual="Material"
              xmlns:l="clr-namespace:Xamarin.Forms.Controls"
              x:Class="Xamarin.Forms.Controls.FramerMotion">
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="TextColor"
+                    Value="LightGray" />
+            <Setter Property="Margin"
+                    Value="0,20,0,10" />
+        </Style>
+        <Style TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="LightGray" />
+            <Setter Property="WidthRequest"
+                    Value="100" />
+        </Style>
+        <Style TargetType="Slider">
+            <Setter Property="MaximumTrackColor"
+                    Value="#909090" />
+            <Setter Property="MinimumTrackColor"
+                    Value="#909090" />
+            <Setter Property="WidthRequest"
+                    Value="200" />
+            <Setter Property="Margin"
+                    Value="0,10,0,10" />
+        </Style>
+    </ContentPage.Resources>
     <FlexLayout Direction="Column">
         <FlexLayout FlexLayout.Grow="1">
             <AbsoluteLayout BackgroundColor="Purple"
@@ -29,30 +54,39 @@
                 Direction="Column"
                 AlignItems="Center"
                 JustifyContent="Start">
-                <Label TextColor="White"
-                       Margin="20"
-                       Text="{Binding Source={x:Reference slider},
+                <Label Text="{Binding Source={x:Reference slider},
                               Path=Value,
                               StringFormat='Scale: {0:F0}'}" />
-                <Stepper
-                    Value="{Binding Source={x:Reference Name=slider}, Path=Value}" />
+                <StackLayout Orientation="Horizontal">
+                    <Entry Text="{Binding Source={x:Reference slider}, Path=Value}" />
+                    <Frame BackgroundColor="#909090"
+                           Padding="2">
+                        <Stepper Value="{Binding Source={x:Reference Name=slider}, Path=Value}" />
+                    </Frame>
+                </StackLayout>
+
                 <Slider x:Name="slider"
                         Maximum="5"
-                        MaximumTrackColor="#909090"
                         Minimum="1"
                         Value="{Binding SliderValue, Mode=TwoWay}" />
-                <Label TextColor="White"
-                       Margin="20"
-                       Text="{Binding Source={x:Reference sliderRotation},
+                <Label Text="{Binding Source={x:Reference sliderRotation},
                               Path=Value,
                               StringFormat='Rotation {0:F0}'}"
                        HorizontalOptions="FillAndExpand" />
-                <Stepper Value="{Binding Source={x:Reference Name=sliderRotation}, Path=Value}" />
+                <StackLayout Orientation="Horizontal">
+                    <Entry Text="{Binding Source={x:Reference sliderRotation}, Path=Value}" />
+
+                    <Frame BackgroundColor="#909090"
+                           Padding="2">
+                        <Stepper Value="{Binding Source={x:Reference Name=sliderRotation}, Path=Value}" />
+
+                    </Frame>
+                </StackLayout>
                 <Slider x:Name="sliderRotation"
-                        Margin="0,5,0,0"
                         Maximum="360"
                         Minimum="0"
                         Value="{Binding Rotation, Mode=TwoWay}" />
+
             </FlexLayout>
 
         </FlexLayout>
