@@ -4,35 +4,57 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             xmlns:l="clr-namespace:Xamarin.Forms.Controls"
              x:Class="Xamarin.Forms.Controls.FramerMotion">
-    <ContentPage.Content>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".3*"></ColumnDefinition>
-                <ColumnDefinition Width=".7*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <StackLayout Orientation="Horizontal">
-                <Label Text="SCALE: "></Label>
-                <Entry Text="{Binding Source={x:Reference Name=slider}, Path=Value}"/>
-                <Stepper Value="{Binding Source={x:Reference Name=slider}, Path=Value}"></Stepper>
-                <Slider x:Name="slider" Maximum="5" Minimum="1" Value="{Binding SliderValue}" WidthRequest="100" />
-            </StackLayout>
-            <AbsoluteLayout Grid.Column="1" Grid.RowSpan="4" WidthRequest="1000" HeightRequest="1000" BackgroundColor="Purple">
-                <BoxView  x:Name="boxView" CornerRadius="25" WidthRequest="100" HeightRequest="100"  BackgroundColor="White" AbsoluteLayout.LayoutBounds="150,150,100,100" >
-                    <BoxView.Resources>
+    <FlexLayout Direction="Column">
+        <FlexLayout FlexLayout.Grow="1">
+            <AbsoluteLayout BackgroundColor="Purple"
+                            FlexLayout.Grow="1">
+                <l:Div x:Name="boxView">
+                    <l:Div.Resources>
                         <Storyboard x:Key="animateScale">
-                            <DoubleAnimation To="{Binding SliderValue}"   Storyboard.TargetProperty="BoxView.Scale" ></DoubleAnimation>
+                            <DoubleAnimation To="{Binding SliderValue}"
+                                             Storyboard.TargetProperty="BoxView.Scale"></DoubleAnimation>
+                            <DoubleAnimation To="{Binding Rotation}"
+                                             Storyboard.TargetProperty="BoxView.Rotation"></DoubleAnimation>
                         </Storyboard>
-                    </BoxView.Resources>
+                    </l:Div.Resources>
 
-                </BoxView>
+                </l:Div>
             </AbsoluteLayout>
-        </Grid>
-    </ContentPage.Content>
+            <FlexLayout
+                FlexLayout.Basis="300"
+                FlexLayout.Order="-1"
+                BackgroundColor="#151515"
+                Direction="Column"
+                AlignItems="Center"
+                JustifyContent="Start">
+                <Label TextColor="White"
+                       Margin="20"
+                       Text="{Binding Source={x:Reference slider},
+                              Path=Value,
+                              StringFormat='Scale: {0:F0}'}" />
+                <Stepper
+                    Value="{Binding Source={x:Reference Name=slider}, Path=Value}" />
+                <Slider x:Name="slider"
+                        Maximum="5"
+                        MaximumTrackColor="#909090"
+                        Minimum="1"
+                        Value="{Binding SliderValue, Mode=TwoWay}" />
+                <Label TextColor="White"
+                       Margin="20"
+                       Text="{Binding Source={x:Reference sliderRotation},
+                              Path=Value,
+                              StringFormat='Rotation {0:F0}'}"
+                       HorizontalOptions="FillAndExpand" />
+                <Stepper Value="{Binding Source={x:Reference Name=sliderRotation}, Path=Value}" />
+                <Slider x:Name="sliderRotation"
+                        Margin="0,5,0,0"
+                        Maximum="360"
+                        Minimum="0"
+                        Value="{Binding Rotation, Mode=TwoWay}" />
+            </FlexLayout>
+
+        </FlexLayout>
+    </FlexLayout>
 </ContentPage>
