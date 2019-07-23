@@ -15,11 +15,13 @@ namespace Xamarin.Forms.Controls
 		public FramerMotion()
 		{
 			InitializeComponent();
-			BindingContext = this;
+			BindingContext = this;		
 		}
 
 		protected override void OnAppearing()
 		{
+			//X = (int)(layout.Width) / 2;
+			//Y = (int)(layout.Height) / 2;
 			//cheatting 
 			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
 			if (storyBoard != null)
@@ -65,22 +67,22 @@ namespace Xamarin.Forms.Controls
 			get => _x;
 			set
 			{
-				if (Math.Abs(value - _x) <= 0)
+				if (_x == value)
 					return;
 				_x = value;
 				OnPropertyChanged();
 			}
 		}
 
-		readonly int y;
+		int _y;
 		public int Y
 		{
-			get => y;
+			get => _y;
 			set
 			{
-				if (Math.Abs(value - y) <= 0)
+				if (_y == value)
 					return;
-				_x = value;
+				_y = value;
 				OnPropertyChanged();
 			}
 		}
