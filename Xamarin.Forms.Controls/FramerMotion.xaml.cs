@@ -15,13 +15,7 @@ namespace Xamarin.Forms.Controls
 		public FramerMotion()
 		{
 			InitializeComponent();
-			BindingContext = this;		
-		}
-
-		protected override void OnAppearing()
-		{
-			//X = (int)(layout.Width) / 2;
-			//Y = (int)(layout.Height) / 2;
+			BindingContext = this;
 			//cheatting 
 			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
 			if (storyBoard != null)
@@ -30,6 +24,12 @@ namespace Xamarin.Forms.Controls
 				storyBoard.Easing = Easing.SpringIn;
 				Storyboard.SetTarget(storyBoard, boxView);
 			}
+		}
+
+		protected override void OnAppearing()
+		{
+			X = (int)(layout.Width) / 2;
+			Y = (int)(layout.Height) / 2;
 			base.OnAppearing();
 		}
 

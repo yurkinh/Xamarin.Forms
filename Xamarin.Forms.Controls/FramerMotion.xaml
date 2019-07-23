@@ -94,7 +94,7 @@
                          Minimum="0" />
             </Frame>
             <Slider x:Name="sliderX"
-                    Maximum="200"
+                    Maximum="{Binding Source={x:Reference layout}, Path=Width}"
                     Minimum="0"
                     Value="{Binding X, Mode=TwoWay}" />
 
@@ -103,7 +103,7 @@
                               StringFormat='Y: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
                 <Stepper Value="{Binding Y}"
-                         Maximum="200"
+                         Maximum="{Binding Source={x:Reference layout}, Path=Height}"
                          Minimum="0" />
             </Frame>
             <Slider x:Name="sliderY"

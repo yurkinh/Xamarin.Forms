@@ -64,6 +64,42 @@ namespace Xamarin.Forms
 			Children.Remove(animation);
 		}
 
+		public void Begin(Timeline item)
+		{
+			_animationsPerElement.Clear();
+			_runningAnimations.Clear();
+			var maxDuration = Duration;
+			var defaultTarget = Storyboard.GetTarget(this);
+			var defaultTargetProperty = Storyboard.GetTargetProperty(this);
+
+
+			if (item is Animation<Color> timeline)
+			{
+				maxDuration = AddAnimationColor(maxDuration, defaultTarget, defaultTargetProperty, timeline);
+			}
+
+			if (item is DoubleAnimation doubleAnimation)
+			{
+				AddDoubleAnimation(defaultTarget, defaultTargetProperty, doubleAnimation);
+			}
+
+			if (item is PositionAnimation positionAnimation)
+			{
+				AddPositionAnimation(defaultTarget, defaultTargetProperty, positionAnimation);
+			}
+			foreach (var anim in _animationsPerElement)
+			{
+				var elementAnimation = new Animation();
+				foreach (var animation in anim.Value)
+				{
+					elementAnimation.Add(0, 1, animation);
+
+				}
+				_runningAnimations.Add(elementAnimation);
+				elementAnimation.Commit(anim.Key, "ChildAnimations", 16, maxDuration, finished: (v, c) => Completed?.Invoke(this, new EventArgs()));
+			}
+		}
+
 		public void Begin()
 		{
 			_animationsPerElement.Clear();
@@ -204,26 +240,23 @@ namespace Xamarin.Forms
 				{
 					Rectangle start = animationTarget.Bounds;
 					Func<double, Rectangle> computeBounds = null;
+					bool isX = animationTargetProperty.PropertyName.ToLower() == "x";
+					Point point = isX ? new Point(finalValue, start.Y) : new Point(start.X, finalValue);
+					var bounds = new Rectangle(point, start.Size);
 
-					if (animationTargetProperty.PropertyName.ToLower() == "x")
+					if (isX)
 					{
-						var point = new Point(finalValue, start.Y);
-						var bounds = new Rectangle(point, start.Size);
 						computeBounds = progress =>
 						{
 							double x = start.X + (bounds.X - start.X) * progress;
-							double y = start.Y;
+							double y = bounds.Y;
 							double w = bounds.Width;
 							double h = bounds.Height;
-
 							return new Rectangle(x, y, w, h);
 						};
 					}
-
-					if (animationTargetProperty.PropertyName.ToLower() == "y")
+					else
 					{
-						var point = new Point(start.X, finalValue);
-						var bounds = new Rectangle(point, start.Size);
 						computeBounds = progress =>
 						{
 							double x = start.X;
@@ -234,16 +267,12 @@ namespace Xamarin.Forms
 							return new Rectangle(x, y, w, h);
 						};
 					}
-					newAnimation = GetAnimateTo(animationTarget, 0, 1, (v, value) => v.Layout(computeBounds(value)));
+					newAnimation = GetAnimateTo(animationTarget, 0, 1, (v, value) => v.Layout(computeBounds(value)), animation.Easing ?? Easing);
 
 				}
 				else
 				{
-					newAnimation = new Animation(v =>
-					{
-						animationTarget.SetValue(animationTargetProperty, v);
-					}, (double)initialValue, finalValue, Easing,
-					() => animation?.Completed?.Invoke(this, new EventArgs()));
+					newAnimation = GetAnimateTo(animationTarget, initialValue, finalValue, (v, value) => animationTarget.SetValue(animationTargetProperty, value), animation.Easing ?? Easing);
 				}
 
 			}
@@ -418,12 +447,16 @@ namespace Xamarin.Forms
 		{
 			if (e.PropertyName == DoubleAnimation.ToProperty.PropertyName)
 			{
-				_parent.Begin();
+				_parent.Begin(sender as Timeline);
 			}
 		}
 
 		public void Clear()
 		{
+			foreach (var item in _timelines)
+			{
+				item.PropertyChanged -= AnimationPropertyChanged;
+			}
 			_timelines.Clear();
 		}
 
@@ -454,11 +487,13 @@ namespace Xamarin.Forms
 
 		public bool Remove(Timeline item)
 		{
+			item.PropertyChanged -= AnimationPropertyChanged;
 			return _timelines.Remove(item);
 		}
 
 		public void RemoveAt(int index)
 		{
+			_timelines[0].PropertyChanged -= AnimationPropertyChanged;
 			_timelines.RemoveAt(index);
 		}
 
