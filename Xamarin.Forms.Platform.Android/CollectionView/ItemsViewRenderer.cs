@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Platform.Android
 			AddOnScrollListener(_recyclerViewScrollListener);
 		}
 
-		void UpdateVerticalScrollBarVisibility()
+		protected virtual void UpdateVerticalScrollBarVisibility()
 		{
 			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
 				_defaultVerticalScrollVisibility = VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Platform.Android
 			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
 
-		void UpdateHorizontalScrollBarVisibility()
+		protected virtual void UpdateHorizontalScrollBarVisibility()
 		{
 			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
 				_defaultHorizontalScrollVisibility =
@@ -514,7 +514,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual int DeterminePosition(ScrollToRequestEventArgs args)
+		protected virtual int DetermineTargetPosition(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
@@ -537,8 +537,13 @@ namespace Xamarin.Forms.Platform.Android
 				RemoveItemDecoration(_itemDecoration);
 			}
 
-			_itemDecoration = new SpacingItemDecoration(_layout);
+			_itemDecoration = CreateSpacingDecoration(_layout);
 			AddItemDecoration(_itemDecoration);
+		}
+
+		protected virtual ItemDecoration CreateSpacingDecoration(IItemsLayout itemsLayout)
+		{
+			return new SpacingItemDecoration(itemsLayout);
 		}
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
@@ -548,7 +553,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
-			var position = DeterminePosition(args);
+			var position = DetermineTargetPosition(args);
 
 			if (args.IsAnimated)
 			{
