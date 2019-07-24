@@ -3,22 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty(nameof(Children))]
-	public class Storyboard : Timeline
+	public class Storyboard : Timeline, IList<Timeline>
 	{
 		Dictionary<VisualElement, List<Animation>> _animationsPerElement = new Dictionary<VisualElement, List<Animation>>();
 		List<Animation> _runningAnimations = new List<Animation>();
-		public TimelineCollection Children { get; }
+
+
+		List<Timeline> _timelines;
+
+		public List<Timeline> Children => _timelines;
+
+		public int Count => Children.Count;
+
+		public bool IsReadOnly => false;
+
+		public Timeline this[int index] { get => Children[index]; set => Children[index] = value; }
+
 		public static readonly BindableProperty TargetNameProperty = BindableProperty.CreateAttached("TargetName", typeof(VisualElement), typeof(Timeline), null,
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
 
 				foreach (var item in (bindable as Storyboard)?.Children)
 				{
-					(bindable as Storyboard).SetChildInheritedBindingContext(item, (newValue as VisualElement).BindingContext);
+					item.SetValue(BindingContextProperty, (newValue as VisualElement).BindingContext);
 				}
 
 			});
@@ -42,6 +54,17 @@ namespace Xamarin.Forms
 			bindable.SetValue(TargetPropertyProperty, value);
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+			foreach (var item in Children)
+			{
+				item.SetValue(BindingContextProperty, BindingContext);
+				//SetInheritedBindingContext(item, BindingContext);
+
+			}
+		}
+
 		public static BindableProperty GetTargetProperty(BindableObject bindable)
 		{
 			return (BindableProperty)bindable.GetValue(TargetPropertyProperty);
@@ -49,19 +72,7 @@ namespace Xamarin.Forms
 
 		public Storyboard()
 		{
-			Children = new TimelineCollection(this);
-		}
-
-		public void Add(Timeline animation)
-		{
-			Children.Add(animation);
-		}
-
-
-		public void Remove(Timeline animation)
-		{
-			animation.Parent = null;
-			Children.Remove(animation);
+			_timelines = new List<Timeline>();
 		}
 
 		public void Begin(Timeline item)
@@ -100,7 +111,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public void Begin()
+		public new void Begin()
 		{
 			_animationsPerElement.Clear();
 			_runningAnimations.Clear();
@@ -249,7 +260,7 @@ namespace Xamarin.Forms
 						computeBounds = progress =>
 						{
 							double x = start.X + (bounds.X - start.X) * progress;
-							double y = bounds.Y;
+							double y = animationTarget.Bounds.Y;
 							double w = bounds.Width;
 							double h = bounds.Height;
 							return new Rectangle(x, y, w, h);
@@ -259,7 +270,7 @@ namespace Xamarin.Forms
 					{
 						computeBounds = progress =>
 						{
-							double x = start.X;
+							double x = animationTarget.Bounds.X;
 							double y = start.Y + (bounds.Y - start.Y) * progress;
 							double w = bounds.Width;
 							double h = bounds.Height;
@@ -323,6 +334,70 @@ namespace Xamarin.Forms
 			throw new NotImplementedException();
 		}
 
+		void AnimationPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == DoubleAnimation.ToProperty.PropertyName ||
+				e.PropertyName == PositionAnimation.ToProperty.PropertyName)
+			{
+				Begin(sender as Timeline);
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _timelines.GetEnumerator();
+		}
+
+		public int IndexOf(Timeline item)
+		{
+			return Children.IndexOf(item);
+		}
+
+		public void Insert(int index, Timeline item)
+		{
+			Children.Insert(index, item);
+		}
+
+		public void Add(Timeline item)
+		{
+			Children.Add(item);
+			item.PropertyChanged += AnimationPropertyChanged;
+
+			//((IList<IAnimation>)Children).Add(item);
+		}
+
+		public bool Contains(Timeline item)
+		{
+			return Children.Contains(item);
+		}
+
+		public void CopyTo(Timeline[] array, int arrayIndex)
+		{
+			Children.CopyTo(array, arrayIndex);
+		}
+
+		public bool Remove(Timeline item)
+		{
+			item.PropertyChanged -= AnimationPropertyChanged;
+
+			return Children.Remove(item);
+		}
+
+		IEnumerator<Timeline> IEnumerable<Timeline>.GetEnumerator()
+		{
+			return Children.GetEnumerator();
+		}
+
+		public void RemoveAt(int index)
+		{
+			Children.RemoveAt(index);
+		}
+
+		public void Clear()
+		{
+			Children.Clear();
+		}
+
 		//Storyboard.SetTarget(animOpacity, Control_);
 		//  Storyboard.SetTarget(animTransform, Control_);
 		//  Storyboard.SetTargetProperty(animOpacity, new PropertyPath("Opacity"));
@@ -339,11 +414,21 @@ namespace Xamarin.Forms
 		object InterpolateTo(object from, object target, double interpolation);
 	}
 
+	public interface IAnimation
+	{
+		void Begin();
+	}
+
+	public interface IAnimation<T> : IAnimation
+	{
+		T From { get; set; }
+		T To { get; set; }
+	}
+
 	public interface IInterpolatable<T> : IInterpolatable
 	{
 		T InterpolateTo(T from, T target, double interpolation);
 	}
-
 
 	public abstract class Animation<T> : Timeline
 	{
@@ -351,9 +436,39 @@ namespace Xamarin.Forms
 		public abstract T To { get; set; }
 	}
 
+
+	public class AnimateExtension : BindableObject, IMarkupExtension<Timeline>
+	{
+	
+		public BindableProperty Property { set; get; }
+
+		public string Binding { set; get; }
+
+		public Timeline ProvideValue(IServiceProvider serviceProvider)
+		{
+			var anim = new PositionAnimation();
+
+			BindingBase GetBinding()
+			{
+				return new Binding(Binding);
+			}
+			
+			anim.SetBinding(PositionAnimation.ToProperty, GetBinding());
+			Storyboard.SetTargetProperty(anim, Property);
+			return anim;
+		}
+
+		object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)
+		{
+			return (this as IMarkupExtension<Timeline>).ProvideValue(serviceProvider);
+		}
+	}
+
+
 	public abstract class InterpolatableAnimation<T> : Animation<T> where T : IInterpolatable<T>
 	{
 	}
+
 
 	public class PositionAnimation : Animation<int>
 	{
@@ -395,7 +510,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public abstract class Timeline : VisualElement
+	public abstract class Timeline : BindableObject, IAnimation
 	{
 		const uint defaultDuration = 300;
 
@@ -415,91 +530,9 @@ namespace Xamarin.Forms
 
 		public EventHandler Completed { get; set; }
 
-	}
-
-	public class TimelineCollection : IList<Timeline>
-	{
-		Storyboard _parent;
-		public TimelineCollection(Storyboard parent)
+		public void Begin()
 		{
-			_parent = parent;
-		}
-		List<Timeline> _timelines = new List<Timeline>();
-
-		public Timeline this[int index] { get => _timelines[index]; set => _timelines[index] = value; }
-
-		public int Count => _timelines.Count;
-
-		public bool IsReadOnly => true;
-
-		public void Add(Timeline item)
-		{
-			item.Parent = _parent;
-			Element.SetInheritedBindingContext(item, _parent.BindingContext);
-
-			item.PropertyChanged += AnimationPropertyChanged;
-
-
-			_timelines.Add(item);
-		}
-
-		void AnimationPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == DoubleAnimation.ToProperty.PropertyName)
-			{
-				_parent.Begin(sender as Timeline);
-			}
-		}
-
-		public void Clear()
-		{
-			foreach (var item in _timelines)
-			{
-				item.PropertyChanged -= AnimationPropertyChanged;
-			}
-			_timelines.Clear();
-		}
-
-		public bool Contains(Timeline item)
-		{
-			return _timelines.Contains(item);
-		}
-
-		public void CopyTo(Timeline[] array, int arrayIndex)
-		{
-			_timelines.CopyTo(array, arrayIndex);
-		}
-
-		public IEnumerator<Timeline> GetEnumerator()
-		{
-			return _timelines.GetEnumerator();
-		}
-
-		public int IndexOf(Timeline item)
-		{
-			return _timelines.IndexOf(item);
-		}
-
-		public void Insert(int index, Timeline item)
-		{
-			_timelines.Insert(index, item);
-		}
-
-		public bool Remove(Timeline item)
-		{
-			item.PropertyChanged -= AnimationPropertyChanged;
-			return _timelines.Remove(item);
-		}
-
-		public void RemoveAt(int index)
-		{
-			_timelines[0].PropertyChanged -= AnimationPropertyChanged;
-			_timelines.RemoveAt(index);
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _timelines.GetEnumerator();
+			throw new NotImplementedException();
 		}
 	}
 }

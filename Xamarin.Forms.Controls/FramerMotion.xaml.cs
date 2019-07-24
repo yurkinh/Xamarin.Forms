@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,32 +17,35 @@ namespace Xamarin.Forms.Controls
 		{
 			InitializeComponent();
 			BindingContext = this;
-			var storyBoard = (boxView.Resources["animateScale"] as Storyboard);
-			if (storyBoard != null)
+			boxView.PropertyChanged += Layout_PropertyChanged;
+		}
+
+		void Layout_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == VisualElement.WidthProperty.PropertyName
+				 || e.PropertyName == VisualElement.HeightProperty.PropertyName)
 			{
-				storyBoard.Duration = 300;
-				storyBoard.Easing = Easing.SpringIn;
-				Storyboard.SetTarget(storyBoard, boxView);
+				if (boxView.Width > 0 && boxView.Height > 0)
+				{
+					sliderX.Maximum = layout.Width - boxView.Width;
+					sliderY.Maximum = layout.Height - boxView.Height;
+					X = (int)sliderX.Maximum / 2;
+					Y = (int)sliderY.Maximum / 2;
+					Device.StartTimer(TimeSpan.FromMilliseconds(2000), () => { Scale = 2; return true; });
+				}
 			}
 		}
 
-		protected override void OnAppearing()
+		double _scale = 0;
+		public double Scale
 		{
-			sliderX.Maximum = 600;
-			sliderY.Maximum = 600;
-			base.OnAppearing();
-		}
-
-		double _sliderValue = 1;
-		public double SliderValue
-		{
-			get => _sliderValue;
+			get => _scale;
 			set
 			{
 				var val = Math.Round(value, 2);
-				if (Math.Abs(val - _sliderValue) <= 0)
+				if (Math.Abs(val - _scale) <= 0)
 					return;
-				_sliderValue = val;
+				_scale = val;
 				OnPropertyChanged();
 			}
 		}

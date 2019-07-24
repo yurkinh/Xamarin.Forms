@@ -59,18 +59,17 @@
                         FlexLayout.Grow="1">
             <Frame x:Name="boxView"
                    Style="{StaticResource boxViewItem}">
-                <Frame.Resources>
-                    <Storyboard x:Key="animateScale">
-                        <PositionAnimation To="{Binding X}"
-                                           Storyboard.TargetProperty="Frame.X" />
+                <Frame.Triggers>
+                    <AnimateTrigger>
+                        <Animate Property="Frame.X" Binding="X"></Animate>
                         <PositionAnimation To="{Binding Y}"
                                            Storyboard.TargetProperty="Frame.Y" />
-                        <DoubleAnimation To="{Binding SliderValue}"
+                        <DoubleAnimation To="{Binding Scale}"
                                          Storyboard.TargetProperty="Frame.Scale" />
                         <DoubleAnimation To="{Binding Rotation}"
                                          Storyboard.TargetProperty="Frame.Rotation" />
-                    </Storyboard>
-                </Frame.Resources>
+                    </AnimateTrigger>
+                </Frame.Triggers>
 
             </Frame>
         </RelativeLayout>
@@ -89,31 +88,32 @@
                               Path=Value,
                               StringFormat='X: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-                <Stepper Value="{Binding X}" />
+            <Stepper Maximum="{Binding Source={x:Reference sliderX},Path=Maximum}"
+                         Value="{Binding X}" />
             </Frame>
-            <Slider x:Name="sliderX" Value="{Binding X, Mode=TwoWay}" />
+            <Slider x:Name="sliderX"
+                    Value="{Binding X, Mode=TwoWay}" />
 
             <Label Text="{Binding Source={x:Reference sliderY},
                               Path=Value,
                               StringFormat='Y: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-                <Stepper Value="{Binding Y}"/>
+            <Stepper Maximum="{Binding Source={x:Reference sliderY},Path=Maximum}"
+                         Value="{Binding Y}" />
             </Frame>
-            <Slider x:Name="sliderY" Value="{Binding Y, Mode=TwoWay}" />
-
+            <Slider x:Name="sliderY"
+                    Value="{Binding Y, Mode=TwoWay}" />
 
             <Label Text="{Binding Source={x:Reference slider},
                               Path=Value,
                               StringFormat='Scale: {0:F2}'}" />
-
             <Frame Style="{StaticResource stepperWrapper}">
-                <Stepper Value="{Binding SliderValue}" />
+                <Stepper Value="{Binding Scale}" />
             </Frame>
-
             <Slider x:Name="slider"
                     Maximum="5"
                     Minimum="0"
-                    Value="{Binding SliderValue, Mode=TwoWay}" />
+                    Value="{Binding Scale, Mode=TwoWay}" />
 
             <Label Text="{Binding Source={x:Reference sliderRotation},
                               Path=Value,
@@ -129,7 +129,6 @@
                     Value="{Binding Rotation, Mode=TwoWay}" />
 
         </FlexLayout>
-
 
     </FlexLayout>
 </ContentPage>
