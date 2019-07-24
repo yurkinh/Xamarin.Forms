@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls
 {
+	[Preserve(AllMembers=true)]
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FramerMotion : ContentPage
 	{
@@ -31,7 +27,7 @@ namespace Xamarin.Forms.Controls
 					sliderY.Maximum = layout.Height - boxView.Height;
 					X = (int)sliderX.Maximum / 2;
 					Y = (int)sliderY.Maximum / 2;
-					Device.StartTimer(TimeSpan.FromMilliseconds(2000), () => { Scale = 2; return true; });
+					Device.StartTimer(TimeSpan.FromMilliseconds(2000), () => { Scale = 2; return false; });
 				}
 			}
 		}
