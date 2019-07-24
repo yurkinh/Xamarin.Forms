@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Actions")]
-	public sealed class EventTrigger : TriggerBase
+	public class EventTrigger : TriggerBase
 	{
 		static readonly MethodInfo s_handlerinfo = typeof(EventTrigger).GetRuntimeMethods().Single(mi => mi.Name == "OnEventTriggered" && mi.IsPublic == false);
 		readonly List<BindableObject> _associatedObjects = new List<BindableObject>();

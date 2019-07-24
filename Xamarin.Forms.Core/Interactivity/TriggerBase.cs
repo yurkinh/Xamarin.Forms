@@ -122,8 +122,8 @@ namespace Xamarin.Forms
 
 			public void Add(T item)
 			{
-				if (IsReadOnly)
-					throw new InvalidOperationException("This list is ReadOnly");
+				//if (IsReadOnly)
+				//	throw new InvalidOperationException("This list is ReadOnly");
 				_actual.Add(item);
 			}
 

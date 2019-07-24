@@ -27,7 +27,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TargetNameProperty = BindableProperty.CreateAttached("TargetName", typeof(VisualElement), typeof(Timeline), null,
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
-
 				foreach (var item in (bindable as Storyboard)?.Children)
 				{
 					item.SetValue(BindingContextProperty, (newValue as VisualElement).BindingContext);
@@ -42,6 +41,17 @@ namespace Xamarin.Forms
 		{
 			bindable.SetValue(TargetNameProperty, value);
 			SetInheritedBindingContext(bindable, value?.BindingContext);
+		}
+
+		public static void SetTargetName(BindableObject bindable, string value)
+		{
+			bindable.SetValue(TargetNameProperty, value);
+			
+		}
+
+		public static VisualElement GetTargetName(BindableObject bindable)
+		{
+			return (VisualElement)bindable.GetValue(TargetNameProperty);
 		}
 
 		public static VisualElement GetTarget(BindableObject bindable)
@@ -146,9 +156,11 @@ namespace Xamarin.Forms
 
 				}
 				_runningAnimations.Add(elementAnimation);
-				elementAnimation.Commit(anim.Key, "ChildAnimations", 16, maxDuration, finished: (v, c) => Completed?.Invoke(this, new EventArgs()));
+				elementAnimation.Commit(anim.Key, "ChildAnimations", 16, maxDuration,
+						finished: (v, c) => Completed?.Invoke(this, new EventArgs()),
+						repeat: () => Loop
+					);
 			}
-			//
 		}
 
 		void AddPositionAnimation(VisualElement defaultTarget, BindableProperty defaultTargetProperty, PositionAnimation positionAnimation)
@@ -287,7 +299,7 @@ namespace Xamarin.Forms
 				}
 
 			}
-
+			
 			//mainAnimation.Add(animation.BeginTime, 1, newAnimation);
 
 			if (!_animationsPerElement.ContainsKey(animationTarget))
@@ -524,7 +536,9 @@ namespace Xamarin.Forms
 
 		public uint Duration { get; set; }
 
-		public bool AutoReverse { get; set; }
+		public bool Reverse { get; set; }
+
+		public bool Loop { get; set; }
 
 		public Easing Easing { get; set; }
 

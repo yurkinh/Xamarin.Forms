@@ -53,6 +53,13 @@
             <Setter Property="BackgroundColor"
                     Value="Purple" />
         </Style>
+        <Storyboard x:Key="loop"
+                    Storyboard.TargetName="boxView"
+                    Reverse="True"
+                    Duration="300">
+            <DoubleAnimation To="2" 
+                             Storyboard.TargetProperty="Frame.Scale" />
+        </Storyboard>
     </ContentPage.Resources>
     <FlexLayout>
         <RelativeLayout x:Name="layout"
@@ -61,7 +68,8 @@
                    Style="{StaticResource boxViewItem}">
                 <Frame.Triggers>
                     <AnimateTrigger>
-                        <Animate Property="Frame.X" Binding="X"></Animate>
+                        <Animate Property="Frame.X"
+                                 Binding="X" />
                         <PositionAnimation To="{Binding Y}"
                                            Storyboard.TargetProperty="Frame.Y" />
                         <DoubleAnimation To="{Binding Scale}"
@@ -83,12 +91,18 @@
             AlignItems="Start"
             JustifyContent="Center"
             Padding="0,10,0,0">
+            <Button Text="Loop Animation" WidthRequest="200" Margin="20">
+                <Button.Triggers>
+                    <AnimateTrigger Event="Clicked"
+                                    Storyboard="{StaticResource loop}"/>
+                </Button.Triggers>
+            </Button>
 
             <Label Text="{Binding Source={x:Reference sliderX},
                               Path=Value,
                               StringFormat='X: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-            <Stepper Maximum="{Binding Source={x:Reference sliderX},Path=Maximum}"
+                <Stepper Maximum="{Binding Source={x:Reference sliderX},Path=Maximum}"
                          Value="{Binding X}" />
             </Frame>
             <Slider x:Name="sliderX"
@@ -98,7 +112,7 @@
                               Path=Value,
                               StringFormat='Y: {0:F0}'}" />
             <Frame Style="{StaticResource stepperWrapper}">
-            <Stepper Maximum="{Binding Source={x:Reference sliderY},Path=Maximum}"
+                <Stepper Maximum="{Binding Source={x:Reference sliderY},Path=Maximum}"
                          Value="{Binding Y}" />
             </Frame>
             <Slider x:Name="sliderY"
