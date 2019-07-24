@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls
 					sliderY.Maximum = layout.Height - boxView.Height;
 					X = (int)sliderX.Maximum / 2;
 					Y = (int)sliderY.Maximum / 2;
-					Device.StartTimer(TimeSpan.FromMilliseconds(2000), () => { Scale = 2; return false; });
+				//	Device.StartTimer(TimeSpan.FromMilliseconds(2000), () => { Scale = 2; return false; });
 				}
 			}
 		}
@@ -82,6 +82,35 @@ namespace Xamarin.Forms.Controls
 				if (_y == value)
 					return;
 				_y = value;
+				OnPropertyChanged();
+			}
+		}
+
+		bool _loop;
+		public bool Loop
+		{
+			get => _loop;
+			set
+			{
+				if (_loop == value)
+					return;
+				_loop = value;
+				(Resources["loop"] as Storyboard).Loop = _loop;
+				OnPropertyChanged();
+			}
+		}
+
+		bool _reverse;
+		public bool Reverse
+		{
+			get => _reverse;
+			set
+			{
+				if (_reverse == value)
+					return;
+
+				_reverse = value;
+				(Resources["loop"] as Storyboard).Reverse = _reverse;
 				OnPropertyChanged();
 			}
 		}

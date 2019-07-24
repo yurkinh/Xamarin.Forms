@@ -31,7 +31,6 @@ namespace Xamarin.Forms
 				{
 					item.SetValue(BindingContextProperty, (newValue as VisualElement).BindingContext);
 				}
-
 			});
 
 		public static readonly BindableProperty TargetPropertyProperty = BindableProperty.CreateAttached("TargetProperty", typeof(BindableProperty), typeof(Timeline), null);
@@ -44,7 +43,7 @@ namespace Xamarin.Forms
 
 		public static void SetTargetName(BindableObject bindable, string value)
 		{
-			bindable.SetValue(TargetNameProperty, value);			
+			bindable.SetValue(TargetNameProperty, value);
 		}
 
 		public static VisualElement GetTargetName(BindableObject bindable)
@@ -150,8 +149,16 @@ namespace Xamarin.Forms
 				var elementAnimation = new Animation();
 				foreach (var animation in anim.Value)
 				{
-					elementAnimation.Add(0, 1, animation);
-
+					if (Reverse)
+					{
+						elementAnimation.Add(0, 0.5, animation);
+						elementAnimation.Add(0.5, 1, new Animation(animation.GetCallback(), 1, 0, Easing));
+					}
+					else
+					{
+						elementAnimation.Add(0, 1, animation);
+					}
+						
 				}
 				_runningAnimations.Add(elementAnimation);
 				elementAnimation.Commit(anim.Key, "ChildAnimations", 16, maxDuration,
@@ -297,7 +304,7 @@ namespace Xamarin.Forms
 				}
 
 			}
-			
+
 			//mainAnimation.Add(animation.BeginTime, 1, newAnimation);
 
 			if (!_animationsPerElement.ContainsKey(animationTarget))
@@ -443,7 +450,7 @@ namespace Xamarin.Forms
 
 	public class AnimateExtension : BindableObject, IMarkupExtension<Timeline>
 	{
-	
+
 		public BindableProperty Property { set; get; }
 
 		public string Binding { set; get; }
@@ -456,7 +463,7 @@ namespace Xamarin.Forms
 			{
 				return new Binding(Binding);
 			}
-			
+
 			anim.SetBinding(PositionAnimation.ToProperty, GetBinding());
 			Storyboard.SetTargetProperty(anim, Property);
 			return anim;

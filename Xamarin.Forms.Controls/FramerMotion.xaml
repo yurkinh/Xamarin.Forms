@@ -44,6 +44,8 @@
                x:Key="boxViewItem">
             <Setter Property="CornerRadius"
                     Value="25" />
+            <Setter Property="BackgroundColor"
+                    Value="White" />
             <Setter Property="WidthRequest"
                     Value="100" />
             <Setter Property="HeightRequest"
@@ -53,12 +55,23 @@
             <Setter Property="BackgroundColor"
                     Value="Purple" />
         </Style>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor"
+                    Value="#909090" />
+            <Setter Property="WidthRequest"
+                    Value="200" />
+            <Setter Property="Margin"
+                    Value="20" />
+        </Style>
         <Storyboard x:Key="loop"
                     Storyboard.TargetName="boxView"
-                    Reverse="True"
-                    Duration="300">
+                    Duration="500">
             <DoubleAnimation To="2" 
                              Storyboard.TargetProperty="Frame.Scale" />
+            <DoubleAnimation To="180" 
+                             Storyboard.TargetProperty="Frame.Rotation" />
+            <DoubleAnimation To="0.5" 
+                             Storyboard.TargetProperty="Frame.Opacity" />
         </Storyboard>
     </ContentPage.Resources>
     <FlexLayout>
@@ -91,12 +104,16 @@
             AlignItems="Start"
             JustifyContent="Center"
             Padding="0,10,0,0">
-            <Button Text="Loop Animation" WidthRequest="200" Margin="20">
+            <Button Text="Loop Animation">
                 <Button.Triggers>
                     <AnimateTrigger Event="Clicked"
                                     Storyboard="{StaticResource loop}"/>
                 </Button.Triggers>
             </Button>
+            <Label Text="Reverse: " />
+            <Switch IsToggled="{Binding Reverse}" OnColor="White" WidthRequest="100" />
+            <Label Text="Loop: " />
+            <Switch IsToggled="{Binding Loop}" OnColor="White" WidthRequest="100"/>
 
             <Label Text="{Binding Source={x:Reference sliderX},
                               Path=Value,
