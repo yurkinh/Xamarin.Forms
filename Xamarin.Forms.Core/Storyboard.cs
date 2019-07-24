@@ -34,8 +34,7 @@ namespace Xamarin.Forms
 
 			});
 
-		public static readonly BindableProperty TargetPropertyProperty = BindableProperty.CreateAttached("TargetProperty", typeof(BindableProperty), typeof(Timeline), null
-			);
+		public static readonly BindableProperty TargetPropertyProperty = BindableProperty.CreateAttached("TargetProperty", typeof(BindableProperty), typeof(Timeline), null);
 
 		public static void SetTarget(BindableObject bindable, VisualElement value)
 		{
@@ -45,8 +44,7 @@ namespace Xamarin.Forms
 
 		public static void SetTargetName(BindableObject bindable, string value)
 		{
-			bindable.SetValue(TargetNameProperty, value);
-			
+			bindable.SetValue(TargetNameProperty, value);			
 		}
 
 		public static VisualElement GetTargetName(BindableObject bindable)
@@ -338,12 +336,6 @@ namespace Xamarin.Forms
 		public void End()
 		{
 
-		}
-
-
-		public static string GetTargetName(object t)
-		{
-			throw new NotImplementedException();
 		}
 
 		void AnimationPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

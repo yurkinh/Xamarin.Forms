@@ -19,9 +19,12 @@ namespace Xamarin.Forms
 			if (existingTarget == null)
 			{
 				Storyboard.SetTarget(Storyboard, bindable as VisualElement);
-
 			}
-			Actions.Add(new StoryboardTriggerAction(Storyboard));
+
+			if (!string.IsNullOrEmpty(Event))
+			{
+				Actions.Add(new StoryboardTriggerAction(Storyboard));
+			}
 
 		}
 
@@ -33,7 +36,7 @@ namespace Xamarin.Forms
 
 		void BindableBindingContextChanged(object sender, EventArgs e)
 		{
-			//SetInheritedBindingContext(Storyboard, (sender as BindableObject).BindingContext);
+			SetInheritedBindingContext(Storyboard, (sender as BindableObject).BindingContext);
 		}
 
 		Storyboard _storyboard;
