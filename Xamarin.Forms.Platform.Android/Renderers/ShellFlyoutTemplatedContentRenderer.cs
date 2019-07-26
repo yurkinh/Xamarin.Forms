@@ -10,7 +10,7 @@ using System;
 using System.ComponentModel;
 using AView = Android.Views.View;
 using LP = Android.Views.ViewGroup.LayoutParams;
-using Android.Graphics;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -39,9 +39,11 @@ namespace Xamarin.Forms.Platform.Android
 			LoadView(shellContext);
 		}
 
-		protected virtual void LoadView(IShellContext shellContext)
-		{
-			var context = shellContext.AndroidContext;
+        protected virtual void LoadView(IShellContext shellContext)
+        {
+			Profile.FrameBegin();
+
+            var context = shellContext.AndroidContext;
 
 			// Android designer can't load fragments or resources from layouts
 			if (context.IsDesignerContext())
@@ -50,14 +52,24 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var coordinator = LayoutInflater.FromContext(context).Inflate(Resource.Layout.FlyoutContent, null);
+			Profile.FramePartition("get FlyoutContentId");
+			var flyoutContentId = Resource.Layout.FlyoutContent;
+
+			Profile.FramePartition("Inflate FlyoutContent");
+			var coordinator = context.Inflate(flyoutContentId);
+
+			Profile.FramePartition("Find Recycler");
 			var recycler = coordinator.FindViewById<RecyclerView>(Resource.Id.flyoutcontent_recycler);
+
+			Profile.FramePartition("Find AppBar");
 			var appBar = coordinator.FindViewById<AppBarLayout>(Resource.Id.flyoutcontent_appbar);
 
 			_rootView = coordinator as ViewGroup;
 
+			Profile.FramePartition("Add Listener");
 			appBar.AddOnOffsetChangedListener(this);
 
+			Profile.FramePartition("Add HeaderView");
 			_actionBarHeight = (int)context.ToPixels(56);
 
 			_flyoutHeader = ((IShellController)shellContext.Shell).FlyoutHeader;
@@ -75,12 +87,14 @@ namespace Xamarin.Forms.Platform.Android
 			};
 			appBar.AddView(_headerView);
 
+			Profile.FramePartition("Recycler.SetAdapter");
 			var adapter = new ShellFlyoutRecyclerAdapter(shellContext, OnElementSelected);
 			recycler.SetPadding(0, (int)context.ToPixels(20), 0, 0);
 			recycler.SetClipToPadding(false);
 			recycler.SetLayoutManager(new LinearLayoutManager(context, (int)Orientation.Vertical, false));
 			recycler.SetAdapter(adapter);
 
+			Profile.FramePartition("Initialize BgImage");
 			var metrics = context.Resources.DisplayMetrics;
 			var width = Math.Min(metrics.WidthPixels, metrics.HeightPixels);
 
@@ -101,12 +115,17 @@ namespace Xamarin.Forms.Platform.Android
 				LayoutParameters = new LP(coordinator.LayoutParameters)
 			};
 
+			Profile.FramePartition("UpdateFlyoutHeaderBehavior");
 			UpdateFlyoutHeaderBehavior();
             _shellContext.Shell.PropertyChanged += OnShellPropertyChanged;
 
-            UpdateFlyoutBackground();
-        }
+			Profile.FramePartition("UpdateFlyoutBackground");
+			UpdateFlyoutBackground();
 
+			Profile.FrameEnd();
+		}
+
+<<<<<<< HEAD
 		void OnFlyoutHeaderMeasureInvalidated(object sender, EventArgs e)
 		{
 			if(_headerView != null)
@@ -117,6 +136,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			((IShellController)_shellContext.Shell).OnFlyoutItemSelected(element);
 		}
+=======
+		protected void OnElementSelected(Element element)
+        {
+            ((IShellController)_shellContext.Shell).OnFlyoutItemSelected(element);
+        }
+>>>>>>> 20 percent faster
 
         protected virtual void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

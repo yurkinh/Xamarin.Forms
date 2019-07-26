@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static void UpdateFlowDirection(this AView view, IVisualElementController controller)
 		{
-			if (view == null || controller == null || (int)Build.VERSION.SdkInt < 17)
+			if (view == null || controller == null || (int)Forms.SdkInt < 17)
 				return;
 
 			// if android:targetSdkVersion < 17 setting these has no effect
@@ -31,5 +31,16 @@ namespace Xamarin.Forms.Platform.Android
 			else if (controller.EffectiveFlowDirection.IsLeftToRight())
 				view.LayoutDirection = ALayoutDirection.Ltr;
 		}
+<<<<<<< HEAD
+=======
+
+		internal static void UpdateHorizontalAlignment(this EditText view, TextAlignment alignment, bool hasRtlSupport, AGravityFlags orMask = AGravityFlags.NoGravity)
+		{
+			if ((int)Forms.SdkInt < 17 || !hasRtlSupport)
+				view.Gravity = alignment.ToHorizontalGravityFlags() | orMask;
+			else
+				view.TextAlignment = alignment.ToTextAlignment();
+		}
+>>>>>>> 20 percent faster
 	}
 }

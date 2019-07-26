@@ -7,7 +7,11 @@ using Android.Support.V4.View;
 using Android.Text;
 using Android.Util;
 using Android.Views;
+<<<<<<< HEAD
 using Android.Widget;
+=======
+using Xamarin.Forms.Internals;
+>>>>>>> 20 percent faster
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
@@ -35,9 +39,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		public LabelRenderer(Context context) : base(context)
 		{
+			Profile.FrameBegin();
 			_labelTextColorDefault = TextColors;
 			_visualElementRenderer = new VisualElementRenderer(this);
 			BackgroundManager.Init(this);
+			Profile.FrameEnd();
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use LabelRenderer(Context) instead.")]

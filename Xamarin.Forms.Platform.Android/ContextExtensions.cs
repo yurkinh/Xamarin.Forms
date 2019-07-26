@@ -120,8 +120,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (context == null)
 				return false;
 			
-			if ($"{context.ToString()}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
-				return true;
+			//if ($"{context.ToString()}".Contains("com.android.layoutlib.bridge.android.BridgeContext"))
+			//	return true;
 
 			if (context is ContextWrapper contextWrapper)
 				return contextWrapper.BaseContext.IsDesignerContext();

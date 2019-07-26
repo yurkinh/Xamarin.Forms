@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public struct ActivationOptions
+	public struct InitializationOptions
 	{
 		public struct EffectScope
 		{
@@ -33,9 +33,9 @@ namespace Xamarin.Forms
 			public ExportEffectAttribute[] Effects;
 		}
 
-		public ActivationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
+		public InitializationOptions(Context activity, Bundle bundle, Assembly resourceAssembly)
 		{
-			this = default(ActivationOptions);
+			this = default(InitializationOptions);
 			this.Activity = activity;
 			this.Bundle = bundle;
 			this.ResourceAssembly = resourceAssembly;
@@ -45,14 +45,15 @@ namespace Xamarin.Forms
 		public Assembly ResourceAssembly;
 		public HandlerAttribute[] Handlers;
 		public EffectScope[] EffectScopes;
-		public ActivationFlags Flags;
+		public InitializationFlags Flags;
 	}
 
 	public static class Forms
 	{
-
+		static object s_lock = new object();
 		const int TabletCrossover = 600;
 
+		static BuildVersionCodes? s_sdkInt;
 		static bool? s_isLollipopOrNewer;
 		static bool? s_isMarshmallowOrNewer;
 
@@ -70,12 +71,22 @@ namespace Xamarin.Forms
 		static Color _ColorButtonNormal = Color.Default;
 		public static Color ColorButtonNormalOverride { get; set; }
 
+		internal static BuildVersionCodes SdkInt {
+			get {
+				lock (s_lock)
+				{
+					if (!s_sdkInt.HasValue)
+						s_sdkInt = Build.VERSION.SdkInt;
+					return (BuildVersionCodes)s_sdkInt;
+				}
+			}
+		}
 		internal static bool IsLollipopOrNewer
 		{
 			get
 			{
 				if (!s_isLollipopOrNewer.HasValue)
-					s_isLollipopOrNewer = (int)Build.VERSION.SdkInt >= 21;
+					s_isLollipopOrNewer = (int)SdkInt >= 21;
 				return s_isLollipopOrNewer.Value;
 			}
 		}
@@ -85,7 +96,7 @@ namespace Xamarin.Forms
 			get
 			{
 				if (!s_isMarshmallowOrNewer.HasValue)
-					s_isMarshmallowOrNewer = (int)Build.VERSION.SdkInt >= 23;
+					s_isMarshmallowOrNewer = (int)SdkInt >= 23;
 				return s_isMarshmallowOrNewer.Value;
 			}
 		}
@@ -142,13 +153,13 @@ namespace Xamarin.Forms
 			Profile.FrameEnd();
 		}
 
-		public static void Initialize(ActivationOptions activation)
+		public static void Initialize(InitializationOptions options)
 		{
 			Profile.FrameBegin();
 			SetupInit(
-				activation.Activity,
-				activation.ResourceAssembly,
-				activation
+				options.Activity,
+				options.ResourceAssembly,
+				options
 			);
 			Profile.FrameEnd();
 		}
@@ -203,10 +214,11 @@ namespace Xamarin.Forms
 		static void SetupInit(
 			Context activity,
 			Assembly resourceAssembly,
-			ActivationOptions? maybeOptions = null
+			InitializationOptions? maybeOptions = null
 		)
 		{
 			Profile.FrameBegin();
+
 			if (!IsInitialized)
 			{
 				// Only need to get this once; it won't change
@@ -224,10 +236,13 @@ namespace Xamarin.Forms
 				ResourceManager.Init(resourceAssembly);
 			}
 
-			Profile.FramePartition("Color.SetAccent()");
+			Profile.FramePartition("GetAccentColor");
+			var accentColor = (activity as FormsAppCompatActivity)?.AccentColor ?? GetAccentColor(activity);
+
+			Profile.FramePartition("GetAccentColor");
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// This could change if the UI mode changes (e.g., if night mode is enabled)
-			Color.SetAccent(GetAccentColor(activity));
+			Color.SetAccent(accentColor);
 			_ColorButtonNormalSet = false;
 
 			if (!IsInitialized)
@@ -251,19 +266,17 @@ namespace Xamarin.Forms
 
 			// We want this to be updated when we have a new activity (e.g. on a configuration change)
 			// because Device.Info watches for orientation changes and we need a current activity for that
-			Profile.FramePartition("new AndroidDeviceInfo(activity)");
-			Device.Info = new AndroidDeviceInfo(activity);
+			Profile.FramePartition("create AndroidDeviceInfo");
+			var info = (activity as FormsAppCompatActivity)?.DeviceInfo ?? new AndroidDeviceInfo(activity);
+			Device.Info = info;
+
+			Profile.FramePartition("setFlags");
 			Device.SetFlags(s_flags);
 
 			Profile.FramePartition("AndroidTicker");
-
-			var ticker = Ticker.Default as AndroidTicker;
-			if (ticker != null)
-				ticker.Dispose();
-			Ticker.SetDefault(new AndroidTicker());
+			Ticker.SetDefault(null);
 
 			Profile.FramePartition("RegisterAll");
-
 			if (!IsInitialized)
 			{
 				if (maybeOptions.HasValue)
@@ -287,7 +300,7 @@ namespace Xamarin.Forms
 					}
 
 					// css
-					var noCss = (flags & ActivationFlags.NoCss) != 0;
+					var noCss = (flags & InitializationFlags.NoCss) != 0;
 					if (!noCss)
 						Registrar.RegisterStylesheets();
 				}
@@ -307,7 +320,7 @@ namespace Xamarin.Forms
 			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
 			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
 
-			if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
+			if (SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
 
 			if (ExpressionSearch.Default == null)
@@ -338,7 +351,7 @@ namespace Xamarin.Forms
 			FlagsSet = true;
 		}
 
-		static Color GetAccentColor(Context context)
+		internal static Color GetAccentColor(Context context)
 		{
 			Color rc;
 			using (var value = new TypedValue())
@@ -355,7 +368,7 @@ namespace Xamarin.Forms
 				{
 					// Detect if legacy device and use appropriate accent color
 					// Hardcoded because could not get color from the theme drawable
-					var sdkVersion = (int)Build.VERSION.SdkInt;
+					var sdkVersion = (int)SdkInt;
 					if (sdkVersion <= 10)
 					{
 						// legacy theme button pressed color
@@ -392,7 +405,7 @@ namespace Xamarin.Forms
 			return rc;
 		}
 
-		class AndroidDeviceInfo : DeviceInfo
+		internal class AndroidDeviceInfo : DeviceInfo
 		{
 			bool _disposed;
 			readonly Context _formsActivity;

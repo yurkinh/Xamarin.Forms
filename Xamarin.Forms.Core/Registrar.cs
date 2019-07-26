@@ -9,9 +9,9 @@ using Xamarin.Forms.StyleSheets;
 namespace Xamarin.Forms
 {
 	[Flags]
-	public enum ActivationFlags
+	public enum InitializationFlags : long
 	{
-		NoCss = 1 << 0,
+		NoCss = 1 << 0
 	}
 
 
@@ -296,9 +296,9 @@ namespace Xamarin.Forms.Internals
 
 		public static void RegisterAll(Type[] attrTypes)
 		{
-			RegisterAll(attrTypes, default(ActivationFlags));
+			RegisterAll(attrTypes, default(InitializationFlags));
 		}
-		public static void RegisterAll(Type[] attrTypes, ActivationFlags flags)
+		public static void RegisterAll(Type[] attrTypes, InitializationFlags flags)
 		{
 			Profile.FrameBegin();
 
