@@ -75,7 +75,7 @@ namespace Xamarin.Forms
 
 		public object CreateContent(object item, BindableObject container) =>
 			OnCreateContent(item, container);
-
+    
 		internal virtual object OnCreateContent(object item, BindableObject container)
 		{
 			if (_loadTemplate == null)

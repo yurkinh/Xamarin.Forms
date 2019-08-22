@@ -386,6 +386,9 @@ namespace Xamarin.Forms.Controls
 		public IApp RunningApp => AppSetup.RunningApp;
 
 		protected virtual bool Isolate => false;
+
+		IDispatcher _dispatcher = new FallbackDispatcher();
+		public override IDispatcher Dispatcher { get => _dispatcher; }
 #endif
 
 		protected TestCarouselPage()
@@ -518,12 +521,18 @@ namespace Xamarin.Forms.Controls
 		protected abstract void Init();
 	}
 
+#if UITEST
+	[Category(UITestCategories.TabbedPage)]
+#endif
 	public abstract class TestTabbedPage : TabbedPage
 	{
 #if UITEST
 		public IApp RunningApp => AppSetup.RunningApp;
 
 		protected virtual bool Isolate => false;
+
+		IDispatcher _dispatcher = new FallbackDispatcher();
+		public override IDispatcher Dispatcher { get => _dispatcher; }
 #endif
 
 		protected TestTabbedPage()
@@ -581,11 +590,42 @@ namespace Xamarin.Forms.Controls
 #endif
 		}
 
-		public ContentPage CreateContentPage()
+		public ContentPage AddTopTab(string title)
 		{
+			ContentPage page = new ContentPage();
+			Items[0].Items[0].Items.Add(new ShellContent()
+			{
+				Title = title,
+				Content = page
+			});
+			return page;
+		}
+
+		public ContentPage AddBottomTab(string title)
+		{
+
+			ContentPage page = new ContentPage();
+			Items[0].Items.Add(new ShellSection()
+			{
+				Items =
+				{
+					new ShellContent()
+					{
+						Content = page,
+						Title = title
+					}
+				}
+			});
+			return page;
+		}
+
+		public ContentPage CreateContentPage(string shellItemTitle = null)
+		{
+			shellItemTitle = shellItemTitle ?? $"Item: {Items.Count}";
 			ContentPage page = new ContentPage();
 			ShellItem item = new ShellItem()
 			{
+				Title = shellItemTitle,
 				Items =
 				{
 					new ShellSection()
@@ -603,8 +643,33 @@ namespace Xamarin.Forms.Controls
 
 			Items.Add(item);
 			return page;
-
 		}
+
+
+		public ShellItem AddContentPage(ContentPage contentPage)
+		{
+			ContentPage page = new ContentPage();
+			ShellItem item = new ShellItem()
+			{
+				Items =
+				{
+					new ShellSection()
+					{
+						Items =
+						{
+							new ShellContent()
+							{
+								Content = contentPage
+							}
+						}
+					}
+				}
+			};
+
+			Items.Add(item);
+			return item;
+		}
+
 #if UITEST
 		[SetUp]
 		public void Setup()
@@ -631,16 +696,25 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public void ShowFlyout(string flyoutIcon = "OK")
+		public void ShowFlyout(string flyoutIcon = "OK", bool usingSwipe = false)
 		{
 			RunningApp.WaitForElement(flyoutIcon);
-			RunningApp.Tap(flyoutIcon);
+
+			if(usingSwipe)
+			{
+				var rect = RunningApp.ScreenBounds();
+				RunningApp.DragCoordinates(10, rect.CenterY, rect.CenterX, rect.CenterY);
+			}
+			else
+			{
+				RunningApp.Tap(flyoutIcon);
+			}
 		}
 
 
-		public void TapInFlyout(string text, string flyoutIcon = "OK")
+		public void TapInFlyout(string text, string flyoutIcon = "OK", bool usingSwipe = false)
 		{
-			ShowFlyout(flyoutIcon);
+			ShowFlyout(flyoutIcon, usingSwipe);
 			RunningApp.WaitForElement(text);
 			RunningApp.Tap(text);
 		}
