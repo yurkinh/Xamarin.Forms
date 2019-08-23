@@ -16,8 +16,8 @@ parameters:
   nugetVersion: $(NUGET_VERSION)
   monoVersion: $(MONO_VERSION)
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
-  provisionator.osxPath: 'build/provisioning/provisioning.csx'
-  provisionator.extraArguments: '$(build.artifactstagingdirectory)/androidApp'
+  provisionatorPath: 'build/provisioning/provisioning.csx'
+  provisionatorExtraArguments: ''
   provisioningAndroid : true
 
 jobs:
@@ -29,26 +29,22 @@ jobs:
     dependsOn: ${{ parameters.dependsOn }}
     steps:
       - checkout: self
-      - script: |
-          export PATH="$PATH:/Users/vsts/.dotnet/tools"
-          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet tool install --global boots
-          boots https://aka.ms/xamarin-android-commercial-d16-2-macos
 
       - task: xamops.azdevex.provisionator-task.provisionator@1
         displayName: Provisionate Xamarin
         condition: eq(${{ parameters.provisioningAndroid }}, 'true')
         inputs:
-          provisioning_script: ${{ parameters.provisionator.osxPath }}
+          provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
       - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
         displayName: 'Select MONO ${{ parameters.monoVersion }}'
 
-      - task: NuGetToolInstaller@0
-        displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
-        inputs:
-          versionSpec: ${{ parameters.nugetVersion }}
+      - script: |
+          export PATH="$PATH:/Users/vsts/.dotnet/tools"
+          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
+          dotnet tool install --global boots
+          boots https://aka.ms/xamarin-android-commercial-d16-2-macos
 
       - task: NuGetCommand@2
         displayName: 'NuGet restore ${{ parameters.slnPath }}'
