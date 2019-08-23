@@ -18,7 +18,7 @@ parameters:
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
   provisionator.osxPath: 'build/provisioning/provisioning.csx'
   provisionator.extraArguments: '$(build.artifactstagingdirectory)/androidApp'
-  provisioningAndroid : false
+  provisioningAndroid : true
 
 jobs:
   - job: ${{ parameters.name }}
