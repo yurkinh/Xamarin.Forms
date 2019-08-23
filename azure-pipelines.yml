@@ -48,10 +48,10 @@ pr:
 
 schedules:
 - cron: "0 0 * * *"
- displayName: Daily midnight build
- branches:
-   include:
-   - master 
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master 
    
 jobs:
 - template: build/steps/build-windows.yml
