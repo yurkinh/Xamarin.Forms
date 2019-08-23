@@ -16,6 +16,9 @@ parameters:
   nugetVersion: $(NUGET_VERSION)
   monoVersion: $(MONO_VERSION)
   apkTargetFolder: '$(build.artifactstagingdirectory)/androidApp'
+  provisionator.osxPath: 'build/provisioning/provisioning.csx'
+  provisionator.extraArguments: '$(build.artifactstagingdirectory)/androidApp'
+  provisioningAndroid : false
 
 jobs:
   - job: ${{ parameters.name }}
@@ -29,8 +32,15 @@ jobs:
       - script: |
           export PATH="$PATH:/Users/vsts/.dotnet/tools"
           export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet tool install --global boots 
+          dotnet tool install --global boots
           boots https://aka.ms/xamarin-android-commercial-d16-2-macos
+
+      - task: xamops.azdevex.provisionator-task.provisionator@1
+        displayName: Provisionate Xamarin
+        condition: eq(${{ parameters.provisioningAndroid }}, 'true')
+        inputs:
+          provisioning_script: ${{ parameters.provisionator.osxPath }}
+          provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
       - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
         displayName: 'Select MONO ${{ parameters.monoVersion }}'

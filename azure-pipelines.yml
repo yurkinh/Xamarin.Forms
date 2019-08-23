@@ -16,7 +16,7 @@ variables:
 - name: XCODE_VERSION
   value: 10.2
 - name: NUGET_VERSION
-  value: 5.0.2
+  value: 5.2.0
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 
@@ -88,6 +88,9 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    provisioningAndroid : $(provisioning)
+    provisionator.osxPath : 'build/provisioning/provisioning.csx'
+    provisioningOSX : $(provisioning)
 
 - job: osx
   displayName: OSX Phase
