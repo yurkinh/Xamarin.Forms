@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.UWP
 					IsSourceGrouped = false
 				};
 			}
-
+			
 			ListViewBase.ItemsSource = _collectionViewSource.View;
 		}
 
@@ -317,6 +317,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (ListViewBase == null)
 			{
 				ListViewBase = SelectLayout(newElement.ItemsLayout);
+				ListViewBase.IsSynchronizedWithCurrentItem = false;
 
 				_layout = newElement.ItemsLayout;
 				_layout.PropertyChanged += LayoutPropertyChanged;
@@ -540,9 +541,5 @@ namespace Xamarin.Forms.Platform.UWP
 				await JumpTo(list, targetItem, args.ScrollToPosition);
 			}
 		}
-
-		
-
-		
 	}
 }

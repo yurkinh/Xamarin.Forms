@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Windows.Input;
 
 namespace Xamarin.Forms
@@ -69,6 +71,33 @@ namespace Xamarin.Forms
 
 		protected virtual void OnSelectionChanged(SelectionChangedEventArgs args)
 		{
+		}
+
+		protected override void OnItemsSourceChanging(IEnumerable oldItemsSource, IEnumerable newItemsSource)
+		{
+			base.OnItemsSourceChanging(oldItemsSource, newItemsSource);
+
+			// If the items source is changing completely, then the old selections no longer apply
+			SelectedItem = null;
+			SelectedItems.Clear();
+
+			if (oldItemsSource is INotifyCollectionChanged incc)
+			{
+				// If we're watching the old source for item changes, stop
+				incc.CollectionChanged -= ItemsSourceCollectionChanged;
+			}
+		}
+
+
+		protected override void OnItemsSourceChanged(IEnumerable oldItemsSource, IEnumerable newItemsSource)
+		{
+			base.OnItemsSourceChanged(oldItemsSource, newItemsSource);
+
+			if (newItemsSource is INotifyCollectionChanged incc)
+			{
+				// Watch for changes to the source contents so we can un-select any selected items which are removed
+				incc.CollectionChanged += ItemsSourceCollectionChanged;
+			}
 		}
 
 		static object CoerceSelectedItems(BindableObject bindable, object value)
@@ -187,6 +216,73 @@ namespace Xamarin.Forms
 			var args = new SelectionChangedEventArgs(previousSelection, newSelection);
 
 			SelectionPropertyChanged(selectableItemsView, args);
+		}
+
+		void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+		{
+			if (args.Action == NotifyCollectionChangedAction.Reset
+				|| args.Action == NotifyCollectionChangedAction.Remove
+				|| args.Action == NotifyCollectionChangedAction.Replace)
+			{
+				EnsureSelectedItems();
+			}
+		}
+
+		bool IsItemInSource(object item)
+		{
+			if (ItemsSource is IList<object> list)
+			{
+				for (int n = 0; n < list.Count; n++)
+				{
+					if (list[n] == item)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			var enumerator = ItemsSource.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current == item)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void EnsureSelectedItems()
+		{
+			if (SelectedItem != null)
+			{
+				if (!IsItemInSource(SelectedItem))
+				{
+					SelectedItem = null;
+				}
+			}
+
+			if (SelectedItems.Count == 0)
+			{
+				return;
+			}
+
+			var toRemove = new List<object>();
+			for (int n = 0; n < SelectedItems.Count; n++)
+			{
+				if (!IsItemInSource(SelectedItems[n]))
+				{
+					toRemove.Add(SelectedItems[n]);
+				}
+			}
+
+			for (int n = 0; n < toRemove.Count; n++)
+			{
+				SelectedItems.Remove(toRemove[n]);
+			}
 		}
 	}
 }

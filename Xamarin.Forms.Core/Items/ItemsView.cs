@@ -35,7 +35,18 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty ItemsSourceProperty =
-			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
+			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null, 
+				propertyChanging: ItemsSourceChanging, propertyChanged: ItemsSourceChanged);
+
+		static void ItemsSourceChanging(BindableObject bindableObject, object oldItemsSource, object newItemsSource)
+		{
+			((ItemsView)bindableObject).OnItemsSourceChanging((IEnumerable)oldItemsSource, (IEnumerable)newItemsSource);
+		}
+
+		static void ItemsSourceChanged(BindableObject bindableObject, object oldItemsSource, object newItemsSource)
+		{
+			((ItemsView)bindableObject).OnItemsSourceChanged((IEnumerable)oldItemsSource, (IEnumerable)newItemsSource);
+		}
 
 		public IEnumerable ItemsSource 
 		{
@@ -261,6 +272,14 @@ namespace Xamarin.Forms
 		protected virtual void OnScrolled(ItemsViewScrolledEventArgs e)
 		{
 			
+		}
+
+		protected virtual void OnItemsSourceChanging(IEnumerable oldItemsSource, IEnumerable newItemsSource)
+		{
+		}
+
+		protected virtual void OnItemsSourceChanged(IEnumerable oldItemsSource, IEnumerable newItemsSource)
+		{
 		}
 	}
 }
