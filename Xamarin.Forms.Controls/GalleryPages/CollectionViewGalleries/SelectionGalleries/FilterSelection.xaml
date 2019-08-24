@@ -11,7 +11,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -21,9 +20,7 @@
 
             <Button x:Name="ResetButton" Text="Reset" Grid.Row="2" AutomationId="Reset" />
 
-            <Label x:Name="CurrentSelection" Grid.Row="3" />
-
-            <CollectionView x:Name="CollectionView" Grid.Row="4" SelectionMode="Single">
+            <CollectionView x:Name="CollectionView" Grid.Row="3" SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Label Text="{Binding Caption}"/>
