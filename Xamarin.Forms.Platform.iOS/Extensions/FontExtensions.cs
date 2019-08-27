@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal static UIFont ToUIFont(this IFontElement element) => ToNativeFont(element);
 
-		static UIFont _ToNativeFont(string family, float size, FontAttributes attributes)
+		internal static UIFont _ToNativeFont(string family, float size, FontAttributes attributes)
 		{
 			var bold = (attributes & FontAttributes.Bold) != 0;
 			var italic = (attributes & FontAttributes.Italic) != 0;

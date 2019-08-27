@@ -90,10 +90,26 @@ namespace Xamarin.Forms.Platform.MacOS
 
 #if __MOBILE__
 			UIFont targetFont;
-			if (span.IsDefault())
-				targetFont = ((IFontElement)owner).ToUIFont();
+			string fontFamily;
+			nfloat fontSize;
+			FontAttributes fontAttributes;
+
+			if (span.IsDefaultFontFamily())
+				fontFamily = ((IFontElement)owner).ToUIFont().Name;
 			else
-				targetFont = span.ToUIFont();
+				fontFamily = span.ToUIFont().FamilyName;
+
+			if (span.IsDefaultFontSize())
+				fontSize = ((IFontElement)owner).ToUIFont().PointSize;
+			else
+				fontSize = span.ToUIFont().PointSize;
+
+			if (span.IsDefaultFontAttributes())
+				fontAttributes = ((IFontElement)owner).FontAttributes;
+			else
+				fontAttributes = span.FontAttributes;
+
+			targetFont = FontExtensions._ToNativeFont(fontFamily, (float)fontSize, fontAttributes);
 #else
 			NSFont targetFont;
 			if (span.IsDefault())

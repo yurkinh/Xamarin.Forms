@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.Issues.Issue3901">
+	<StackLayout Padding="32" VerticalOptions="Center">
+    <!-- Place new controls here -->
+    <Label>
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize Default</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+    <Label FontSize="Micro">
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize Micro</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+    <Label FontSize="Small">
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize Small</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+    <Label FontSize="Medium">
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize Medium</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+    <Label FontSize="Large">
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize Large</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+    <Label FontSize="30">
+        <Label.FormattedText>
+            <FormattedString>
+                <Span>FontSize 30</Span>
+                <Span FontAttributes="Bold">Bold</Span>
+                <Span FontAttributes="Italic">Italic</Span>
+                <Span FontAttributes="Bold,Italic">Bold Italic</Span>
+            </FormattedString>        
+        </Label.FormattedText>
+    </Label>
+  </StackLayout>
+</ContentPage>

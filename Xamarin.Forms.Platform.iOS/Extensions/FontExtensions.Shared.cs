@@ -19,8 +19,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		internal static bool IsDefault(this Span self)
 		{
-			return self.FontFamily == null && self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true) &&
-					self.FontAttributes == FontAttributes.None;
+			return IsDefaultFontAttributes(self) && IsDefaultFontFamily(self) && IsDefaultFontSize(self);
+		}
+
+		internal static bool IsDefaultFontFamily(this Span self)
+		{
+			return self.FontFamily == null;
+		}
+
+		internal static bool IsDefaultFontSize(this Span self)
+		{
+			return self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true);
+		}
+
+		internal static bool IsDefaultFontAttributes(this Span self)
+		{
+			return self.FontAttributes == FontAttributes.None;
 		}
 
 		static NativeFont ToNativeFont(this IFontElement element)
