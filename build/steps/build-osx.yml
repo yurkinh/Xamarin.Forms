@@ -8,7 +8,10 @@ steps:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments)
 
-  - bash: ./build.sh --target Boots
+  - task: NuGetToolInstaller@0
+    displayName: 'Use NuGet'
+    inputs:
+      versionSpec: $(nugetVersion)
 
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
