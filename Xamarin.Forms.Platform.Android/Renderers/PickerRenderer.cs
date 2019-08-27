@@ -104,7 +104,12 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				CallOnClick();
+			{
+				if (Focusable)
+					CallOnClick();
+				else
+					OnClickHandler();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -113,13 +118,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void IPickerRenderer.OnClick()
+		void OnClickHandler()
 		{
 			Picker model = Element;
 
 			if (_dialog != null)
 				return;
-			
+
 			var picker = new NumberPicker(Context);
 			if (model.Items != null && model.Items.Any())
 			{
@@ -178,6 +183,11 @@ namespace Xamarin.Forms.Platform.Android
 				_dialog = null;
 			};
 			_dialog.Show();
+		}
+
+		void IPickerRenderer.OnClick()
+		{
+			OnClickHandler();
 		}
 
 		void RowsCollectionChanged(object sender, EventArgs e)
