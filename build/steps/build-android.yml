@@ -37,15 +37,11 @@ jobs:
           provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-      - task: NuGetCommand@2
-        displayName: 'NuGet restore ${{ parameters.slnPath }}'
-        inputs:
-          restoreSolution: ${{ parameters.slnPath }}
-
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
         inputs:
           solution: ${{ parameters.buildTaskPath }}
+          restoreNugetPackages: true
 
       - task: MSBuild@1
         displayName: 'Build Android ${{ parameters.name }}'
@@ -53,6 +49,7 @@ jobs:
           solution: ${{ parameters.androidProjectPath }}
           configuration: ${{ parameters.buildConfiguration }}
           msbuildArguments: ${{ parameters.androidProjectArguments }}
+          restoreNugetPackages: true
 
       - task: CopyFiles@2
         displayName: 'Copy ${{ parameters.name }}'
