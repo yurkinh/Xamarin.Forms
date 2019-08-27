@@ -14,7 +14,7 @@ variables:
 - name: MONO_VERSION
   value: 6_4_0_165
 - name: XCODE_VERSION
-  value: 10.2
+  value: 10.3
 - name: NUGET_VERSION
   value: 5.2.0
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
