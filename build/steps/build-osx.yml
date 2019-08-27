@@ -8,12 +8,6 @@ steps:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments)
 
-  - bash: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(MONO_VERSION)
-    displayName: Switch to the latest Xamarin SDK
-
-  - bash: echo '##vso[task.setvariable variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_$(XCODE_VERSION).app;sudo xcode-select --switch /Applications/Xcode_$(XCODE_VERSION).app/Contents/Developer
-    displayName: Switch to the latest Xcode
-
   - bash: ./build.sh --target Boots
 
   - task: NuGetCommand@2
@@ -43,7 +37,6 @@ steps:
       solutionFile: $(slnPath)
       configuration: $(buildConfiguration)
 
-
   - task: CopyFiles@2
     displayName: 'Copy test-cloud.exe'
     inputs:
@@ -52,7 +45,6 @@ steps:
       CleanTargetFolder: true
       OverWrite: true
       flattenFolders: true
-
 
   - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'

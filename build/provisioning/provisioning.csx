@@ -1,8 +1,10 @@
 var channel = Env("CHANNEL") ?? "Stable";
 
+Console.WriteLine(channel);
+
 if (IsMac)
 {
-  Item (XreItem.Xcode_10_1_0).XcodeSelect ();
-}
-Console.WriteLine(channel);
+  Item (XreItem.Xcode_10_3_0).XcodeSelect ();
+}  
+
 XamarinChannel(channel);

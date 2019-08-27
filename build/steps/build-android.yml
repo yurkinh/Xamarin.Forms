@@ -37,15 +37,6 @@ jobs:
           provisioning_script: ${{ parameters.provisionatorPath }}
           provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
-      - script: '/bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh ${{ parameters.monoVersion }}"'
-        displayName: 'Select MONO ${{ parameters.monoVersion }}'
-
-      - script: |
-          export PATH="$PATH:/Users/vsts/.dotnet/tools"
-          export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-          dotnet tool install --global boots
-          boots https://aka.ms/xamarin-android-commercial-d16-2-macos
-
       - task: NuGetCommand@2
         displayName: 'NuGet restore ${{ parameters.slnPath }}'
         inputs:
