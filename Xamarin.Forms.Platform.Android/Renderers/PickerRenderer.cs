@@ -105,10 +105,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.Focus)
 			{
-				if (Focusable)
+				if (Clickable)
 					CallOnClick();
 				else
-					OnClickHandler();
+					((IPickerRenderer)this)?.OnClick();
 			}
 			else if (_dialog != null)
 			{
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void OnClickHandler()
+		void IPickerRenderer.OnClick()
 		{
 			Picker model = Element;
 
@@ -183,11 +183,6 @@ namespace Xamarin.Forms.Platform.Android
 				_dialog = null;
 			};
 			_dialog.Show();
-		}
-
-		void IPickerRenderer.OnClick()
-		{
-			OnClickHandler();
 		}
 
 		void RowsCollectionChanged(object sender, EventArgs e)

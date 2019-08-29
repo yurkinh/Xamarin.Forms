@@ -87,10 +87,10 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.Focus)
 			{
-				if (Focusable)
+				if (Clickable)
 					CallOnClick();
 				else
-					OnClickHandler();
+					((IPickerRenderer)this)?.OnClick();
 			}
 			else if (_dialog != null)
 			{
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.Android
 			return dialog;
 		}
 
-		void OnClickHandler()
+		void IPickerRenderer.OnClick()
 		{
 			if (_dialog != null && _dialog.IsShowing)
 			{
@@ -126,11 +126,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			_dialog = CreateTimePickerDialog(view.Time.Hours, view.Time.Minutes);
 			_dialog.Show();
-		}
-
-		void IPickerRenderer.OnClick()
-		{
-			OnClickHandler();
 		}
 
 		void OnCancelButtonClicked(object sender, EventArgs e)

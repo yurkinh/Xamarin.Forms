@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Clickable)
 					CallOnClick();
 				else
-					OnClickHandler();
+					((IPickerRenderer)this)?.OnClick();
 			}
 			else if (_dialog != null)
 			{
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void OnClickHandler()
+		void IPickerRenderer.OnClick()
 		{
 			if (_dialog != null && _dialog.IsShowing)
 			{
@@ -151,11 +151,6 @@ namespace Xamarin.Forms.Platform.Android
 			((IElementController)view).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 
 			ShowPickerDialog(view.Date.Year, view.Date.Month - 1, view.Date.Day);
-		}
-
-		void IPickerRenderer.OnClick()
-		{
-			OnClickHandler();
 		}
 
 		void ShowPickerDialog(int year, int month, int day)
