@@ -347,7 +347,7 @@ namespace Xamarin.Forms.Platform.iOS
 					CollectionView.ContentInset = new UIEdgeInsets(0, headerWidth, 0, footerWidth);
 
 					// if the header grows it will scroll off the screen because if you change the content inset iOS adjusts the content offset so the list doesn't move
-					// this changes the offset of the list by how much ever the header size has changed
+					// this changes the offset of the list by however much the header size has changed
 					CollectionView.ContentOffset = new CoreGraphics.CGPoint(CollectionView.ContentOffset.X + (currentInset.Left - CollectionView.ContentInset.Left), CollectionView.ContentOffset.Y);
 				}
 			}
@@ -369,7 +369,7 @@ namespace Xamarin.Forms.Platform.iOS
 					CollectionView.ContentInset = new UIEdgeInsets(headerHeight, 0, footerHeight, 0);
 
 					// if the header grows it will scroll off the screen because if you change the content inset iOS adjusts the content offset so the list doesn't move
-					// this changes the offset of the list by how much ever the header size has changed
+					// this changes the offset of the list by however much the header size has changed
 					CollectionView.ContentOffset = new CoreGraphics.CGPoint(CollectionView.ContentOffset.X, CollectionView.ContentOffset.Y + (currentInset.Top - CollectionView.ContentInset.Top));
 				}
 			}
