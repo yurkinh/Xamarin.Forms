@@ -151,6 +151,11 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement("Foo");
 
 			RunningApp.Screenshot("Picker is shown");
+
+			RunningApp.Tap("Foo");
+
+			RunningApp.WaitForNoElement("Foo");
+
 		}
 #endif
 	}
