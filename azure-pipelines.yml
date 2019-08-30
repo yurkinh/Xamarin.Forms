@@ -17,6 +17,8 @@ variables:
   value: 10.3
 - name: NUGET_VERSION
   value: 5.2.0
+- name: DOTNET_VERSION
+  value: 2.2.200
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 
@@ -68,6 +70,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)\android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    dotnetVersion : $(DOTNET_VERSION)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
@@ -79,6 +82,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)\android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    dotnetVersion : $(DOTNET_VERSION)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
@@ -90,6 +94,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    dotnetVersion : $(DOTNET_VERSION)
     provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - job: osx
@@ -111,6 +116,7 @@ jobs:
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
     monoVersion : $(MONO_VERSION)
+    dotnetVersion : $(DOTNET_VERSION)
   steps:
      - template: build/steps/build-osx.yml
 

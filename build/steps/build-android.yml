@@ -19,6 +19,7 @@ parameters:
   provisionatorPath: 'build/provisioning/provisioning.csx'
   provisionatorExtraArguments: ''
   provisioningAndroid : true
+  dotnetVersion : $(DOTNET_VERSION)
 
 jobs:
   - job: ${{ parameters.name }}
@@ -48,9 +49,9 @@ jobs:
           restoreSolution:  ${{ parameters.slnPath }}
           
       - task: DotNetCoreInstaller@0
-        displayName: 'Install .net core 2.2.200'
+        displayName: 'Install .net core ${{ parameters.dotnetVersion }}'
         inputs:
-            version: '2.2.200'
+            version: ${{ parameters.dotnetVersion }}
 
       - task: MSBuild@1
         displayName: 'Build ${{ parameters.buildTaskPath  }}'
