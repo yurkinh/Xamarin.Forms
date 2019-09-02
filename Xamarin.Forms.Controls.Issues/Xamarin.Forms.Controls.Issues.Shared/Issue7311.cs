@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = picker;
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void OpeningPickerPressingBackButtonTwiceShouldNotOpenPickerAgain()
 		{

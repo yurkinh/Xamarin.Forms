@@ -125,6 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(x => x.Class("DatePicker"));
 
 			RunningApp.Screenshot("DatePicker is shown");
+			RunningApp.TapCoordinates(5, 100);
 		}
 
 		[Test]
@@ -138,6 +139,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(x => x.Class("timePicker"));
 
 			RunningApp.Screenshot("TimePicker is shown");
+			RunningApp.TapCoordinates(5, 100);
 		}
 
 		[Test]
