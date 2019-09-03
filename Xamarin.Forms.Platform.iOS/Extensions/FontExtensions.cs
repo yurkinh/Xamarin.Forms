@@ -7,7 +7,10 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public static partial class FontExtensions
 	{
-		static readonly string DefaultFontName = UIFont.SystemFontOfSize(12).Name;
+		// The default font on iOS switches when the font size goes above 20 points.
+		// Also see: https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/typography
+		static readonly string DefaultFontName = UIFont.SystemFontOfSize(19).Name;
+		static readonly string DefaultFontNameLarge = UIFont.SystemFontOfSize(20).Name;
 
 		public static UIFont ToUIFont(this Font self) => ToNativeFont(self);
 
@@ -18,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var bold = (attributes & FontAttributes.Bold) != 0;
 			var italic = (attributes & FontAttributes.Italic) != 0;
 
-			if (family != null && family != DefaultFontName)
+			if (family != null && family != DefaultFontName && family != DefaultFontNameLarge)
 			{
 				try
 				{
