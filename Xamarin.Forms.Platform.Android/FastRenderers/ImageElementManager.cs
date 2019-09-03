@@ -137,15 +137,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
 			{
-				if (newImage.IsAnimationAutoPlay)
+				if (newImage.IsAnimationAutoPlay || newImage.IsAnimationPlaying)
 					updatedAnimation.Start();
 			}
 		}
 
-		internal static void OnAnimationStopped(IImageController imageElement, FormsAnimationDrawableStateEventArgs e)
-		{			
-			if (imageElement != null && e.Finished)
-				imageElement.OnAnimationFinishedPlaying();
+		internal static void OnAnimationStopped(IElementController image, FormsAnimationDrawableStateEventArgs e)
+		{
+			if (image != null && e.Finished)
+				image.SetValueFromRenderer(Image.IsAnimationPlayingProperty, false);
 		}
 
 		static void UpdateAspect(IImageRendererController rendererController, ImageView Control, IImageElement newImage, IImageElement previous = null)
