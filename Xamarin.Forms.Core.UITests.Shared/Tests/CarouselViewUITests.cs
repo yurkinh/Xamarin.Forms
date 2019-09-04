@@ -32,13 +32,13 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			VisitSubGallery(subgallery);
 
-			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
+			App.WaitForElement("pos:1", "Did start on the correct position");
 
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "0", "Did not scroll to first position");
+			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
+			App.WaitForElement("pos:0", "Did not scroll to first position");
 
 			App.SwipeRightToLeft(c => c.Marked("TheCarouselView"));
-
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "1", "Did not scroll to second position");
+			App.WaitForElement("pos:1", "Did not scroll to second position");
 
 			App.Tap("Item: 1");
 
