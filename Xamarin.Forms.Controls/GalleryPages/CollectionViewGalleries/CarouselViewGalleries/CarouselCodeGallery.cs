@@ -83,7 +83,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 			{
 				Maximum = 100,
 				Minimum = 0,
-				Value = 30
+				Value = 30,
+				WidthRequest = 100
 			};
 
 			padi.ValueChanged += (s, e) => {
