@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
 
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "1", "Swiped while swipe is disabled");
+			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 		}
 
 		[TestCase("CarouselView (Code, Vertical)")]
@@ -69,12 +69,12 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "0", "Did not scroll to first position");
+			App.WaitForElement("pos:0", "Did not scroll to first position");
 
 			App.ScrollDown(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "1", "Did not scroll to second position");
-
+			App.WaitForElement("pos:1", "Did not scroll to second position");
+		
 			App.Tap("Item: 1");
 
 #if __ANDROID__
@@ -92,9 +92,9 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Tap("SwipeSwitch");
 
-			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
+			App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
-			Assert.AreEqual(App.Query("CurrentPositionLabel").First().Text, "1", "Swiped while swipe is disabled");
+			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 		}
 
 		void VisitSubGallery(string galleryName)
