@@ -19,6 +19,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			switch (layout)
 			{
+				case GridItemsLayout gridItemsLayout:
+					_orientation = gridItemsLayout.Orientation;
+					_horizontalSpacing = gridItemsLayout.HorizontalItemSpacing;
+					_verticalSpacing = gridItemsLayout.VerticalItemSpacing;
+					break;
 				case ListItemsLayout listItemsLayout:
 					_orientation = listItemsLayout.Orientation;
 					if (_orientation == ItemsLayoutOrientation.Horizontal)
@@ -57,13 +62,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (_orientation == ItemsLayoutOrientation.Vertical)
 			{
 				outRect.Left = position == 0 ? 0 : (int)_adjustedHorizontalSpacing;
-				outRect.Bottom = (int)_adjustedVerticalSpacing;
+				outRect.Bottom = (int)(_adjustedVerticalSpacing - (_verticalSpacing * 2));
+				outRect.Top = (int)(_adjustedVerticalSpacing - (_verticalSpacing * 2));
 			}
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				outRect.Top = position == 0 ? 0 : (int)_adjustedVerticalSpacing;
-				outRect.Right = (int)_adjustedHorizontalSpacing;
+				outRect.Right = (int)(_adjustedHorizontalSpacing - (_horizontalSpacing * 2));
+				outRect.Left = (int)(_adjustedHorizontalSpacing - (_horizontalSpacing * 2));
 			}
 		}
 	}

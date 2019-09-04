@@ -129,6 +129,8 @@ namespace Xamarin.Forms.Platform.Android
 			_itemDecoration = CreateSpacingDecoration(_layout);
 			AddItemDecoration(_itemDecoration);
 
+			Tracker?.UpdateLayout();
+
 			base.UpdateItemSpacing();
 		}
 
@@ -139,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_layout is ListItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemWidth = (int)(Width - Carousel.PeekAreaInsets.Left - Carousel.PeekAreaInsets.Right) / numberOfVisibleItems;
+				itemWidth = (int)(Width - Carousel.PeekAreaInsets.Left - Carousel.PeekAreaInsets.Right - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
 			}
 
 			return itemWidth;
@@ -152,7 +154,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_layout is ListItemsLayout listItemsLayout && listItemsLayout.Orientation == ItemsLayoutOrientation.Vertical)
 			{
 				var numberOfVisibleItems = Carousel.NumberOfSideItems * 2 + 1;
-				itemHeight = (int)(Height - Carousel.PeekAreaInsets.Top - Carousel.PeekAreaInsets.Bottom) / numberOfVisibleItems;
+				itemHeight = (int)(Height - Carousel.PeekAreaInsets.Top - Carousel.PeekAreaInsets.Bottom - Context?.ToPixels(listItemsLayout.ItemSpacing)) / numberOfVisibleItems;
 			}
 
 			return itemHeight;
@@ -168,12 +170,12 @@ namespace Xamarin.Forms.Platform.Android
 			if (position == -1 || _isUpdatingPositionFromForms)
 				return;
 
-			var context = ItemsViewAdapter?.ItemsSource.GetItem(position);
+			var item = ItemsViewAdapter?.ItemsSource.GetItem(position);
 
-			if (context == null)
+			if (item == null)
 				throw new InvalidOperationException("Visible item not found");
 
-			Carousel.SetCurrentItem(context);
+			Carousel.SetCurrentItem(item);
 		}
 
 		void UpdateIsBounceEnabled()
