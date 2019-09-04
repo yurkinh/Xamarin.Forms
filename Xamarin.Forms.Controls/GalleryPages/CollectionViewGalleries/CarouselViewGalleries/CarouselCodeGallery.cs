@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries;
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGalleries;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
+	[Preserve(AllMembers = true)]
 	internal class CarouselCodeGallery : ContentPage
 	{
 		readonly Label _scrollInfoLabel = new Label();
@@ -46,7 +47,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				Position = 2,
-			//	NumberOfSideItems = 1,
+				//NumberOfSideItems = 1,
 				Margin = new Thickness(0,10,0,40),
 				PeekAreaInsets = new Thickness(30,0,30,0),
 				BackgroundColor = Color.LightGray,
@@ -107,7 +108,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		{
 			_scrollInfoLabel.Text = $"First item: {e.FirstVisibleItemIndex}, Last item: {e.LastVisibleItemIndex}";
 
-			double delta = 0, offset = 0;
+			double delta;
+			double offset;
 
 			if (_orientation == ItemsLayoutOrientation.Horizontal)
 			{
