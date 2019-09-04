@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(UITestCategories.CollectionView)]
+	[NUnit.Framework.Category(UITestCategories.CollectionView)]
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 7128, "[iOS] Changing model property scrolls CollectionView back to top",
