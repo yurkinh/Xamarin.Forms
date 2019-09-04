@@ -26,14 +26,14 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
-				if(_itemDecoration != null)
+				if (_itemDecoration != null)
 				{
 					_itemDecoration.Dispose();
 					_itemDecoration = null;
 				}
 
-                _layout = null;
-            }
+				_layout = null;
+			}
 
 			base.Dispose(disposing);
 		}
