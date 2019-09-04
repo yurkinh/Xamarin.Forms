@@ -49,10 +49,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Position = 2,
 				//NumberOfSideItems = 1,
 				Margin = new Thickness(0,10,0,40),
-				PeekAreaInsets = new Thickness(30,0,30,0),
 				BackgroundColor = Color.LightGray,
 				AutomationId = "TheCarouselView"
 			};
+
+			if (orientation == ItemsLayoutOrientation.Horizontal)
+				carouselView.PeekAreaInsets = new Thickness(30, 0, 30, 0);
+			else
+				carouselView.PeekAreaInsets = new Thickness(0, 30, 0, 30);
 
 			carouselView.Scrolled += CarouselView_Scrolled;
 
@@ -84,7 +88,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			padi.ValueChanged += (s, e) => {
 				var peek = padi.Value;
-				carouselView.PeekAreaInsets = new Thickness(peek, 0, peek, 0);
+
+				if (orientation == ItemsLayoutOrientation.Horizontal)
+					carouselView.PeekAreaInsets = new Thickness(peek, 0, peek, 0);
+				else
+					carouselView.PeekAreaInsets = new Thickness(0, peek, 0, peek);
 			};
 
 			stckPeek.Children.Add(padi);
