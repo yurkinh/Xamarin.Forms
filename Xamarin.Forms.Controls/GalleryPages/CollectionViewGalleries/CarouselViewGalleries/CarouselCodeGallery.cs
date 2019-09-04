@@ -84,7 +84,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				Maximum = 100,
 				Minimum = 0,
 				Value = 30,
-				WidthRequest = 100
+				WidthRequest = 100,
+				BackgroundColor = Color.Pink
 			};
 
 			padi.ValueChanged += (s, e) => {
