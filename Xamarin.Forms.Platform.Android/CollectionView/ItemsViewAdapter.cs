@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateItemsSource();
 			}
-			if (property.Is(Xamarin.Forms.ItemsView.HeaderProperty))
+			else if (property.Is(Xamarin.Forms.ItemsView.HeaderProperty))
 			{
 				UpdateHasHeader();
 			}
@@ -130,7 +130,8 @@ namespace Xamarin.Forms.Platform.Android
 				return new TextViewHolder(view);
 			}
 
-			var itemContentView = new ItemContentView(context);
+			var itemContentView = _createItemContentView.Invoke(ItemsView, context);
+
 			return new TemplatedItemViewHolder(itemContentView, ItemsView.ItemTemplate);
 		}
 
