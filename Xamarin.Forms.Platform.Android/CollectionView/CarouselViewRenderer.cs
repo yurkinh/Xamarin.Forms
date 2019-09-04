@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isUpdatingPositionFromForms;
 		int _oldPosition;
 		int _initialPosition;
-		bool _scrollingToInitialPosition = true;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
@@ -79,14 +78,12 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateItemSpacing();
 		}
 
-		public override bool OnTouchEvent(MotionEvent e)
+		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			// TODO: This doesn't work because we need to interact with the Views
 			if (!_isSwipeEnabled)
-			{
 				return false;
-			}
-			return base.OnTouchEvent(e);
+			
+			return base.OnInterceptTouchEvent(ev);
 		}
 
 		public override void OnScrollStateChanged(int state)
@@ -129,7 +126,13 @@ namespace Xamarin.Forms.Platform.Android
 			_itemDecoration = CreateSpacingDecoration(_layout);
 			AddItemDecoration(_itemDecoration);
 
-			Tracker?.UpdateLayout();
+			var adapter = GetAdapter();
+
+			if (adapter != null)
+			{
+				adapter.NotifyItemChanged(_oldPosition);
+				Carousel.ScrollTo(_oldPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+			}
 
 			base.UpdateItemSpacing();
 		}
@@ -197,12 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (snapView != null)
 			{
 				int middleCenterPosition = layoutManager.GetPosition(snapView);
-				if (_scrollingToInitialPosition)
-				{
-					_scrollingToInitialPosition = !(_initialPosition == middleCenterPosition);
-					return;
-				}
-
+	
 				if (_oldPosition != middleCenterPosition)
 				{
 					_oldPosition = middleCenterPosition;
@@ -214,8 +212,9 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInitialPosition()
 		{
 			_isUpdatingPositionFromForms = true;
-			//Goto to the Correct Position
+			// Goto to the Correct Position
 			_initialPosition = Carousel.Position;
+			_oldPosition = _initialPosition;
 			Carousel.ScrollTo(_initialPosition, position: Xamarin.Forms.ScrollToPosition.Center);
 			_isUpdatingPositionFromForms = false;
 		}
