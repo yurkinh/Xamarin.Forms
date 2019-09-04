@@ -108,14 +108,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				}
 
 				_obsCollection = new ObservableCollection<CollectionViewGalleryTestItem>(items);
-				_obsCollection.CollectionChanged += ObsItemsSource_CollectionChanged;
+				_count = _obsCollection.Count;
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
 				_cv.ItemsSource = _obsCollection;
 			}
 		}
 
 		void ObsItemsSource_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			_count = _obsCollection.Count;
 			CollectionChanged?.Invoke(sender, e);
 		}
 
