@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks you for your interest in contributing to Xamarin.Forms! In this document, we'll outline what you need to know about contributing and how to get started.
+Thank you for your interest in contributing to Xamarin.Forms! In this document, we'll outline what you need to know about contributing and how to get started.
 
 ## Code of Conduct
 
