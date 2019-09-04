@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		protected readonly TItemsView ItemsView;
 		readonly Func<View, Context, ItemContentView> _createItemContentView;
-		internal readonly TItemsViewSource ItemsSource;
+		internal TItemsViewSource ItemsSource;
 
 		bool _disposed;
 		Size? _size;
@@ -49,6 +49,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void ItemsViewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs property)
 		{
+			if (property.Is(Xamarin.Forms.ItemsView.ItemsSourceProperty))
+			{
+				UpdateItemsSource();
+			}
 			if (property.Is(Xamarin.Forms.ItemsView.HeaderProperty))
 			{
 				UpdateHasHeader();
@@ -184,6 +188,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				templatedItemViewHolder.Bind(context, ItemsView);
 			}
+		}
+
+		void UpdateItemsSource()
+		{
+			ItemsSource?.Dispose();
+
+			ItemsSource = CreateItemsSource();
 		}
 
 		void SetStaticSize(Size size)
