@@ -68,4 +68,58 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SpacingGal
 			return IndexParser.ParseIndexes(Entry.Text, 2, out indexes);
 		}
 	}
+
+	internal class CarouselSpacingModifier : ContentView
+	{
+		protected readonly CarouselView _cv;
+		protected readonly Entry Entry;
+
+		public CarouselSpacingModifier(CarouselView cv, string buttonText)
+		{
+			_cv = cv;
+
+			var layout = new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				HorizontalOptions = LayoutOptions.Fill
+			};
+
+			var button = new Button { Text = buttonText, AutomationId = $"btn{buttonText}" };
+			var label = new Label { Text = LabelText, VerticalTextAlignment = TextAlignment.Center };
+
+			Entry = new Entry { Text = InitialEntryText, WidthRequest = 100, AutomationId = $"entry{buttonText}" };
+
+			layout.Children.Add(label);
+			layout.Children.Add(Entry);
+			layout.Children.Add(button);
+
+			button.Clicked += ButtonOnClicked;
+
+			Content = layout;
+		}
+
+		void ButtonOnClicked(object sender, EventArgs e)
+		{
+			OnButtonClicked();
+		}
+
+		protected virtual string LabelText => "Spacing:";
+
+		protected virtual string InitialEntryText => "0";
+
+		protected virtual void OnButtonClicked()
+		{
+			if (!ParseIndexes(out int[] indexes))
+			{
+				return;
+			}
+			
+			_cv.ItemSpacing = indexes[0];
+		}
+
+		protected virtual bool ParseIndexes(out int[] indexes)
+		{
+			return IndexParser.ParseIndexes(Entry.Text, 1, out indexes);
+		}
+	}
 }

@@ -33,18 +33,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 					new RowDefinition { Height = GridLength.Star }
 				}
 			};
-			var itemsLayout =
-			new ListItemsLayout(orientation)
-			{
-				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
-			};
 
 			var itemTemplate = ExampleTemplates.CarouselTemplate();
 
 			var carouselView = new CarouselView
 			{
-				ItemsLayout = itemsLayout,
+				Orientation = orientation,
 				ItemTemplate = itemTemplate,
 				Position = 2,
 				//NumberOfSideItems = 1,
@@ -64,14 +58,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
 
-			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
+			var generator = new CarouselItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
 
 			layout.Children.Add(generator);
 
 			var positionControl = new PositionControl(carouselView, nItems);
 			layout.Children.Add(positionControl);
 
-			var spacingModifier = new SpacingModifier(carouselView, "Update Spacing");
+			var spacingModifier = new CarouselSpacingModifier(carouselView, "Update Spacing");
 
 			layout.Children.Add(spacingModifier);
 

@@ -6,9 +6,86 @@ using FormsCollectionView = Xamarin.Forms.CollectionView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class CarouselViewRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
+	// CarouselViewRenderer
+	// PositionIndicator
+	// CarouselViewItemsRenderer
+
+	/*
+	 So the thing below would become the CarouselViewItemsRenderer, and remain largely untouched
+	 But it would no longer be the renderer for CarouselView; instead, we have CarouselViewRenderer : ViewGroup (or maybe just VisualElementRender<CarouselView>
+
+	CarouselView is what it is in this branch - a wrapper around ItemsView
+
+	CarouselViewItemsRenderer needs an alternate constructor that takes a CarouselView and uses its ItemsView
+
+	CarouselViewRenderer contains a CarouselViewItemsRenderer _and_ whatever thing shows the positions
+
+	  */
+
+	public class CarouselViewRenderer : VisualElementRenderer<CarouselView>
 	{
-		protected CarouselView Carousel;
+		private CarouselViewItemsRenderer _carouselViewItemsRenderer;
+
+		public CarouselViewRenderer(Context context) : base(context)
+		{
+
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<CarouselView> e)
+		{
+			TearDownOldElement(e.OldElement);
+			base.OnElementChanged(e);
+			SetupNewElement(e.NewElement);
+		}
+
+		protected virtual void SetupNewElement(CarouselView newElement)
+		{
+			if (newElement == null)
+			{
+				return;
+			}
+
+			_carouselViewItemsRenderer = new CarouselViewItemsRenderer(Context, newElement);
+			((IVisualElementRenderer)_carouselViewItemsRenderer).SetElement(newElement.ItemsView);
+			_carouselViewItemsRenderer.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
+
+			AddView(_carouselViewItemsRenderer);
+		}
+
+		protected virtual void TearDownOldElement(CarouselView oldElement)
+		{
+			if (_carouselViewItemsRenderer != null)
+			{
+				RemoveView(_carouselViewItemsRenderer);
+				_carouselViewItemsRenderer = null;
+			}
+		}
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+
+			if (_carouselViewItemsRenderer != null)
+			{
+				_carouselViewItemsRenderer.Measure(widthMeasureSpec, heightMeasureSpec);
+			}
+		}
+
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+
+			if (_carouselViewItemsRenderer != null)
+			{
+				_carouselViewItemsRenderer.Layout(0, 0, 
+					_carouselViewItemsRenderer.MeasuredWidth, 
+					_carouselViewItemsRenderer.MeasuredHeight);
+			}
+		}
+	}
+
+	public class CarouselViewItemsRenderer : ItemsViewRenderer<ItemsView, ItemsViewAdapter<ItemsView, IItemsViewSource>, IItemsViewSource>
+	{
 		IItemsLayout _layout;
 		ItemDecoration _itemDecoration;
 		bool _isSwipeEnabled;
@@ -16,9 +93,14 @@ namespace Xamarin.Forms.Platform.Android
 		int _oldPosition;
 		int _initialPosition;
 
-		public CarouselViewRenderer(Context context) : base(context)
+		ItemsView _itemsView;
+
+		public CarouselView Carousel { get; }
+
+		public CarouselViewItemsRenderer(Context context, CarouselView carousel) : base(context)
 		{
-			FormsCollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
+			FormsCollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewItemsRenderer));
+			Carousel = carousel;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -43,11 +125,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (newElement == null)
 			{
-				Carousel = null;
+				_itemsView = null;
 				return;
 			}
 
-			Carousel = newElement as CarouselView;
+			_itemsView = newElement;
 			_layout = ItemsView.ItemsLayout;
 
 			UpdateIsSwipeEnabled();
@@ -125,7 +207,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (adapter != null)
 			{
 				adapter.NotifyItemChanged(_oldPosition);
-				Carousel.ScrollTo(_oldPosition, position: Xamarin.Forms.ScrollToPosition.Center);
+				_itemsView.ScrollTo(_oldPosition, position: Xamarin.Forms.ScrollToPosition.Center);
 			}
 
 			base.UpdateItemSpacing();

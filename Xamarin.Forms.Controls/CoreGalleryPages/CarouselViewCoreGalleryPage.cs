@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls
 			element.IsScrollAnimated = true;
 			element.ItemsSource = GetCarouselItems();
 			element.ItemTemplate = GetCarouselTemplate();
-			element.ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal);
+			element.Orientation = ItemsLayoutOrientation.Horizontal;
 			element.HeightRequest = 250;
 		}
 
@@ -25,13 +25,13 @@ namespace Xamarin.Forms.Controls
 		{
 			base.Build(stackLayout);
 
-			var currentItemContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.CurrentItem, new CarouselView { HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate(), CurrentItem = _currentItem }, "CurrentItem", value => value.ToString());
-			var isSwipeEnabledContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsSwipeEnabled, new CarouselView { IsSwipeEnabled = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate()}, "IsSwipeEnabled", value => value.ToString());
-			var isScrollAnimatedContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsScrollAnimated, new CarouselView { IsScrollAnimated = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "IsScrollAnimated", value => value.ToString());
-			var horizontalNumberOfSideItemsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.NumberOfSideItems, new CarouselView { NumberOfSideItems = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "NumberOfSideItems", value => value.ToString());
-			var verticalNumberOfSideItemsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.NumberOfSideItems, new CarouselView { NumberOfSideItems = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Vertical), ItemTemplate = GetCarouselTemplate() }, "NumberOfSideItems", value => value.ToString());
-			var peekAreaInsetsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.PeekAreaInsets, new CarouselView { PeekAreaInsets = new Thickness(24, 12, 36, 6), HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "PeekAreaInsets", value => value.ToString());
-			var positionContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.Position, new CarouselView { Position = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), ItemsLayout = GetCarouselLayout(ItemsLayoutOrientation.Horizontal), ItemTemplate = GetCarouselTemplate() }, "Position", value => value.ToString());
+			var currentItemContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.CurrentItem, new CarouselView { HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate(), CurrentItem = _currentItem }, "CurrentItem", value => value.ToString());
+			var isSwipeEnabledContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsSwipeEnabled, new CarouselView { IsSwipeEnabled = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate()}, "IsSwipeEnabled", value => value.ToString());
+			var isScrollAnimatedContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.IsScrollAnimated, new CarouselView { IsScrollAnimated = false, HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate() }, "IsScrollAnimated", value => value.ToString());
+			var horizontalNumberOfSideItemsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.NumberOfSideItems, new CarouselView { NumberOfSideItems = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate() }, "NumberOfSideItems", value => value.ToString());
+			var verticalNumberOfSideItemsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.NumberOfSideItems, new CarouselView { NumberOfSideItems = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Vertical, ItemTemplate = GetCarouselTemplate() }, "NumberOfSideItems", value => value.ToString());
+			var peekAreaInsetsContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.PeekAreaInsets, new CarouselView { PeekAreaInsets = new Thickness(24, 12, 36, 6), HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate() }, "PeekAreaInsets", value => value.ToString());
+			var positionContainer = new ValueViewContainer<CarouselView>(Test.CarouselView.Position, new CarouselView { Position = 2, HeightRequest = 250, ItemsSource = GetCarouselItems(), Orientation = ItemsLayoutOrientation.Horizontal, ItemTemplate = GetCarouselTemplate() }, "Position", value => value.ToString());
 
 			Add(currentItemContainer);
 			Add(isSwipeEnabledContainer);

@@ -23,18 +23,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				}
 			};
 
-			var itemsLayout =
-			new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
-			{
-				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
-			};
-
 			var itemTemplate = GetCarouselTemplate();
 
 			var carouselView = new CarouselView
 			{
-				ItemsLayout = itemsLayout,
+				Orientation = ItemsLayoutOrientation.Horizontal,
 				ItemTemplate = itemTemplate,
 				ItemsSource = viewModel.Items,
 				IsScrollAnimated = true,

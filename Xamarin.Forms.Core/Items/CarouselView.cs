@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : ItemsView
+	public class CarouselView : View
 	{
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
@@ -22,6 +22,8 @@ namespace Xamarin.Forms
 			get { return (Thickness)GetValue(PeekAreaInsetsProperty); }
 			set { SetValue(PeekAreaInsetsProperty, value); }
 		}
+
+		public ItemsView ItemsView { get => _itemsView; }
 
 		static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
 
@@ -72,8 +74,13 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty CurrentItemProperty =
-		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay, 
+		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default, BindingMode.TwoWay,
 			propertyChanged: CurrentItemPropertyChanged);
+
+		public void ScrollTo(int oldPosition, ScrollToPosition position)
+		{
+			_itemsView.ScrollTo(oldPosition, position: position);
+		}
 
 		public static readonly BindableProperty CurrentItemChangedCommandProperty =
 			BindableProperty.Create(nameof(CurrentItemChangedCommand), typeof(ICommand), typeof(CarouselView));
@@ -153,18 +160,74 @@ namespace Xamarin.Forms
 			set => SetValue(PositionChangedCommandParameterProperty, value);
 		}
 
+
+		// Pass-through properties
+		public IEnumerable ItemsSource
+		{
+			get => _itemsView.ItemsSource;
+			set => _itemsView.ItemsSource = value;
+		}
+
+		public DataTemplate ItemTemplate
+		{
+			get => _itemsView.ItemTemplate;
+			set => _itemsView.ItemTemplate = value;
+		}
+
+		public ItemsLayoutOrientation Orientation
+		{
+			get => ((ListItemsLayout)_itemsView.ItemsLayout).Orientation;
+			set
+			{
+				var current = ((ListItemsLayout)_itemsView.ItemsLayout).Orientation;
+				if (value == current)
+				{
+					return;
+				}
+
+				_itemsView.ItemsLayout = new ListItemsLayout(value)
+				{
+					SnapPointsType = SnapPointsType.MandatorySingle,
+					SnapPointsAlignment = SnapPointsAlignment.Center
+				};
+			}
+		}
+
+		public double ItemSpacing
+		{
+			get => ((ListItemsLayout)_itemsView.ItemsLayout).ItemSpacing;
+			set
+			{
+				((ListItemsLayout)_itemsView.ItemsLayout).ItemSpacing = value;
+			}
+		}
+
+		public event EventHandler<ItemsViewScrolledEventArgs> Scrolled
+		{
+			add { _itemsView.Scrolled += value; }
+			remove { _itemsView.Scrolled -= value; }
+		}
+
+		// End pass-through properties
+
 		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
+
+		private ItemsView _itemsView;
 
 		public CarouselView()
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
-			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
+
+			_itemsView = new ItemsView();
+
+			_itemsView.ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-			ItemSizingStrategy = ItemSizingStrategy.None;
+
+			_itemsView.ItemSizingStrategy = ItemSizingStrategy.None;
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
@@ -200,6 +263,11 @@ namespace Xamarin.Forms
 				carousel.ScrollTo(args.CurrentPosition, position: ScrollToPosition.Center, animate: carousel.IsScrollAnimated);
 
 			carousel.OnPositionChanged(args);
+		}
+
+		void ScrollTo(int currentPosition, ScrollToPosition position, bool animate)
+		{
+			_itemsView.ScrollTo(currentPosition, position: position, animate: animate);
 		}
 
 		static int GetPositionForItem(CarouselView carouselView, object item)
