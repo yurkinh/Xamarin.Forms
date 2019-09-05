@@ -26,6 +26,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			Title = "Refresh View Tests";
+
 			_refreshView = new RefreshView()
 			{
 				Content = new ScrollView(),
