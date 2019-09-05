@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -31,20 +29,27 @@ namespace Xamarin.Forms.Controls.Issues
 			_refreshView = new RefreshView()
 			{
 				Content = new ScrollView(),
-				Command = new Command(() =>
+				Command = new Command(async () =>
 				{
+					await Task.Delay(2000);
 					_refreshView.IsRefreshing = false;
 				})
 			};
+
+			var isRefreshingLabel = new Label();
+
+			var label = new Label { BindingContext = _refreshView };
+			isRefreshingLabel.SetBinding(Label.TextProperty, new Binding("IsRefreshing", stringFormat: "IsRefreshing: {0}", source: _refreshView));
 
 			Content = new StackLayout()
 			{
 				Children =
 				{
+					isRefreshingLabel,
 					new Button()
 					{
 						Text = "Toggle Refresh",
-						Command = new Forms.Command(() =>
+						Command = new Command(() =>
 						{
 							_refreshView.IsRefreshing = !_refreshView.IsRefreshing;
 						})
