@@ -33,11 +33,10 @@ namespace Xamarin.Forms.Core.UITests
 			VisitSubGallery(subgallery);
 
 			App.WaitForElement("pos:1", "Did start on the correct position");
-
-			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X + rect.Width - 1, rect.CenterY);
 			App.WaitForElement("pos:0", "Did not scroll to first position");
-
-			App.SwipeRightToLeft(c => c.Marked("TheCarouselView"));
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X - 1, rect.CenterY);
 			App.WaitForElement("pos:1", "Did not scroll to second position");
 
 			App.Tap("Item: 1");
@@ -57,7 +56,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Tap("SwipeSwitch");
 
-			App.SwipeLeftToRight(c => c.Marked("TheCarouselView"));
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X + rect.Width - 1, rect.CenterY);
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 		}
@@ -66,15 +65,17 @@ namespace Xamarin.Forms.Core.UITests
 		public void CarouselViewVertical(string subgallery)
 		{
 			VisitSubGallery(subgallery);
-
-			App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
+			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y + rect.Height - 1);
+			//	App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
 			App.WaitForElement("pos:0", "Did not scroll to first position");
 
-			App.ScrollDown(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y - 1);
+			//App.ScrollDown(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
 			App.WaitForElement("pos:1", "Did not scroll to second position");
-		
+
 			App.Tap("Item: 1");
 
 #if __ANDROID__
@@ -92,7 +93,8 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Tap("SwipeSwitch");
 
-			App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.CenterY, rect.Y + rect.Height - 1);
+			//App.ScrollUp(c => c.Marked("TheCarouselView"), ScrollStrategy.Gesture);
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 		}
