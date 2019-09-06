@@ -19,12 +19,12 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(_carouselViewGalleries);
 		}
 
-		protected override void TestTearDown()
-		{
-			base.TestTearDown();
-			ResetApp();
-			NavigateToGallery();
-		}
+		//protected override void TestTearDown()
+		//{
+		//	base.TestTearDown();
+		//	ResetApp();
+		//	NavigateToGallery();
+		//}
 
 		[TestCase("CarouselView (Code, Horizontal)")]
 		//[TestCase("CarouselView (XAML, Horizontal)")]
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UITests
 			var rect = App.Query(c => c.Marked("TheCarouselView")).First().Rect;
 			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X + rect.Width - 1, rect.CenterY);
 			App.WaitForElement("pos:0", "Did not scroll to first position");
-			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X - 1, rect.CenterY);
+			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X + 5, rect.CenterY);
 			App.WaitForElement("pos:1", "Did not scroll to second position");
 
 			App.Tap("Item: 1");
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
 		}
 
-		[TestCase("CarouselView (Code, Vertical)")]
+		//[TestCase("CarouselView (Code, Vertical)")]
 		public void CarouselViewVertical(string subgallery)
 		{
 			VisitSubGallery(subgallery);
