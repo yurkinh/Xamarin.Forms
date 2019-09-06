@@ -19,13 +19,6 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(_carouselViewGalleries);
 		}
 
-		//protected override void TestTearDown()
-		//{
-		//	base.TestTearDown();
-		//	ResetApp();
-		//	NavigateToGallery();
-		//}
-
 		[TestCase("CarouselView (Code, Horizontal)")]
 		//[TestCase("CarouselView (XAML, Horizontal)")]
 		public void CarouselViewHorizontal(string subgallery)
@@ -59,9 +52,11 @@ namespace Xamarin.Forms.Core.UITests
 			App.DragCoordinates(rect.CenterX, rect.CenterY, rect.X + rect.Width - 1, rect.CenterY);
 
 			App.WaitForNoElement("pos:0", "Swiped while swipe is disabled");
+
+			App.NavigateBack();
 		}
 
-		//[TestCase("CarouselView (Code, Vertical)")]
+		[TestCase("CarouselView (Code, Vertical)")]
 		public void CarouselViewVertical(string subgallery)
 		{
 			VisitSubGallery(subgallery);
