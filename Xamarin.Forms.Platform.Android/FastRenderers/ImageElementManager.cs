@@ -103,10 +103,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (imageElement.IsLoading)
 				return;
 
-			if (!(view.Drawable is IFormsAnimationDrawable) && imageElement.IsAnimationPlaying)
+			if (!(view.Drawable is FormsAnimationDrawable) && imageElement.IsAnimationPlaying)
 				await TryUpdateBitmap(imageRendererController, view, imageElement);
 
-			if (view.Drawable is IFormsAnimationDrawable animation)
+			if (view.Drawable is FormsAnimationDrawable animation)
 			{
 				if (imageElement.IsAnimationPlaying && !animation.IsRunning)
 					animation.Start();
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
-			if (Control.Drawable is IFormsAnimationDrawable currentAnimation)
+			if (Control.Drawable is FormsAnimationDrawable currentAnimation)
 			{
 				rendererController.SetFormsAnimationDrawable(currentAnimation);
 				currentAnimation.Stop();
@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			await Control.UpdateBitmap(newImage, previous).ConfigureAwait(false);
 
-			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
+			if (Control.Drawable is FormsAnimationDrawable updatedAnimation)
 			{
 				if (newImage.IsAnimationAutoPlay || newImage.IsAnimationPlaying)
 					updatedAnimation.Start();

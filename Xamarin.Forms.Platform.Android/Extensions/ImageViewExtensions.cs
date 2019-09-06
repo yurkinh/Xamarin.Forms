@@ -45,7 +45,11 @@ namespace Xamarin.Forms.Platform.Android
 					IFormsAnimationDrawable animation = null;
 
 					if (imageController.GetLoadAsAnimation())
-						animation = await FormsAnimationDrawable.LoadImageAnimationAsync(newImageSource, imageView.Context);
+					{
+						var animationHandler = Registrar.Registered.GetHandlerForObject<IAnimationSourceHandler>(newImageSource);
+						if (animationHandler != null)
+							animation = await animationHandler.LoadImageAnimationAsync(newImageSource, imageView.Context);
+					}
 
 					if(animation == null)
 					{
@@ -134,7 +138,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!imageView.IsDisposed())
 			{
-				if (imageView.Drawable is IFormsAnimationDrawable animation)
+				if (imageView.Drawable is FormsAnimationDrawable animation)
 				{
 					imageView.SetImageDrawable(null);
 					animation.Reset();

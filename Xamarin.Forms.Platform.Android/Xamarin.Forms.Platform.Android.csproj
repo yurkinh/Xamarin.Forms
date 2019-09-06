@@ -167,6 +167,7 @@
     <Compile Include="EntryAccessibilityDelegate.cs" />
     <Compile Include="Renderers\BorderDrawable.cs" />
     <Compile Include="Renderers\CircularProgress.cs" />
+    <Compile Include="Renderers\IAnimationSourceHandler.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FontImageSourceHandler.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
