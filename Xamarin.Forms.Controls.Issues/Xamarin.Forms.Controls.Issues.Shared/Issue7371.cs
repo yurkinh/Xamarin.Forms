@@ -1,5 +1,6 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -35,8 +36,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void RefreshingListViewCrashesWhenDisposedTest()
+		public async Task RefreshingListViewCrashesWhenDisposedTest()
 		{
+			await Task.Delay(500);
 			RunningApp.WaitForElement(q => q.Marked("Success"));
 		}
 #endif
