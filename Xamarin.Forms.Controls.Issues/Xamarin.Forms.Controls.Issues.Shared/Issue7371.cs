@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			ListView.IsRefreshing = true;
 
-			Application.Current.MainPage = new ContentPage() { Content = new Label { Text = "Success" } };
+			Application.Current.MainPage = new ContentPage() { Content = new Label { Text = "Success", VerticalOptions = LayoutOptions.Center } };
 
 			ListView.IsRefreshing = false;
 		}
