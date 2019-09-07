@@ -1,11 +1,6 @@
 steps:
   - checkout: self
-  - script: |
-      export PATH="$PATH:/Users/vsts/.dotnet/tools"
-      export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
-      dotnet tool install --global boots 
-      boots https://aka.ms/xamarin-android-commercial-d16-3-macos
-      
+
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: Provisionate Xamarin
     condition: eq(variables['provisioningOSX'], 'true')
@@ -13,12 +8,11 @@ steps:
       provisioning_script: $(provisionator.osxPath)
       provisioning_extra_args: $(provisionator.extraArguments)
 
-  - bash: sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(MONO_VERSION)
-    displayName: Switch to the latest Xamarin SDK
-
-  - bash: echo '##vso[task.setvariable variable=MD_APPLE_SDK_ROOT;]'/Applications/Xcode_$(XCODE_VERSION).app;sudo xcode-select --switch /Applications/Xcode_$(XCODE_VERSION).app/Contents/Developer
-    displayName: Switch to the latest Xcode
-
+  - task: DotNetCoreInstaller@0
+    displayName: 'Install .net core $(dotnetVersion)'
+    inputs:
+      version: $(dotnetVersion)
+      
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet'
     inputs:

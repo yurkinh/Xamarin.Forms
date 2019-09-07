@@ -23,6 +23,8 @@ variables:
   value: Hosted Windows 2019 with VS2019
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
+- name: provisioning
+  value: true
 
 resources:
   repositories:
