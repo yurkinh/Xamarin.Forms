@@ -16,7 +16,7 @@ variables:
 - name: XCODE_VERSION
   value: 10.2
 - name: NUGET_VERSION
-  value: 5.0.2
+  value: 5.2.0
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
 
