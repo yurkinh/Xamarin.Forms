@@ -24,7 +24,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 			if (Control != null)
 			{
 				Drawable drawable = Control.Background;
+#pragma warning disable CS0618 // Type or member is obsolete
 				drawable.SetColorFilter(global::Android.Graphics.Color.Blue, PorterDuff.Mode.SrcAtop);
+#pragma warning restore CS0618 // Type or member is obsolete
 				Control.Background = drawable;
 			}
 		}
