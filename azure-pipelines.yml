@@ -19,7 +19,7 @@ variables:
   value: 5.0.2
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
-- name: XamarinAndroidVersion
+- name: XA_VERSION
   value: 16-2
 
 resources:
@@ -67,6 +67,7 @@ jobs:
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
+    XA_VERSION : $(XA_VERSION)
 
 - template: build/steps/build-android.yml
   parameters:
@@ -77,6 +78,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /bl:$(Build.ArtifactStagingDirectory)\android-legacy.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    XA_VERSION : $(XA_VERSION)
 
 - template: build/steps/build-android.yml
   parameters:
@@ -87,6 +89,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG FORMS_APPLICATION_ACTIVITY APP" /bl:$(Build.ArtifactStagingDirectory)\android-preappcompact.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    XA_VERSION : $(XA_VERSION)
 
 - template: build/steps/build-android.yml
   parameters:
@@ -97,6 +100,7 @@ jobs:
     androidProjectArguments: '/t:"Rebuild;SignAndroidPackage" /p:DefineConstants="TRACE DEBUG TEST_EXPERIMENTAL_RENDERERS APP" /bl:$(Build.ArtifactStagingDirectory)\android-newrenderers.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     monoVersion : $(MONO_VERSION)
+    XA_VERSION : $(XA_VERSION)
 
 - job: osx
   displayName: OSX Phase
@@ -117,6 +121,7 @@ jobs:
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
     monoVersion : $(MONO_VERSION)
+    XA_VERSION : $(XA_VERSION)
   steps:
      - template: build/steps/build-osx.yml
 

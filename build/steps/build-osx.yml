@@ -5,7 +5,7 @@ steps:
       export PATH="$PATH:/Users/vsts/.dotnet/tools"
       export DOTNET_ROOT="$(dirname "$(readlink "$(command -v dotnet)")")"
       dotnet tool install --global boots 
-      boots https://aka.ms/xamarin-android-commercial-d${{ parameters.XamarinAndroidVersion }}-macos
+      boots https://aka.ms/xamarin-android-commercial-d$(XA_VERSION)-macos
 
   - task: xamops.azdevex.provisionator-task.provisionator@1
     displayName: Provisionate Xamarin
