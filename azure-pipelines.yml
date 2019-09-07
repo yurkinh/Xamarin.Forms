@@ -18,7 +18,7 @@ variables:
 - name: NUGET_VERSION
   value: 5.0.2
 - name: winVmImage
-  value: Hosted Windows 2019 with VS201
+  value: Hosted Windows 2019 with VS2019
 - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
   value: true
 
