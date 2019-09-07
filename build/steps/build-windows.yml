@@ -17,6 +17,7 @@ parameters:
   artifactsName: 'win_build'
   nunitTestAdapterFolder: 'packages/NUnitTestAdapter.AnyVersion/build/'
   nunitTestFolder: '$(build.sourcesdirectory)'
+  provisioningWindows : true
 
 jobs:
   - job: ${{ parameters.name }}
@@ -34,9 +35,13 @@ jobs:
           BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
-    - script: |
-        dotnet tool install --global boots
-        boots https://aka.ms/xamarin-android-commercial-d16-3-windows
+      
+    - task: xamops.azdevex.provisionator-task.provisionator@1
+      displayName: Provisionate Xamarin
+      condition: eq(${{ parameters.provisioningWindows }}, 'true')
+      inputs:
+        provisioning_script: ${{ parameters.provisionatorPath }}
+        provisioning_extra_args: ${{ parameters.provisionator.extraArguments }}
 
     - task: NuGetToolInstaller@0
       displayName: 'Use NuGet ${{ parameters.nugetVersion }}'

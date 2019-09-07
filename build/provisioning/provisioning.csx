@@ -20,6 +20,11 @@ if (IsMac)
 		ln (defaultInstallLocation, vstsInstallPath);
 
 }
+else
+{
+  Item("https://download.visualstudio.microsoft.com/download/pr/68e5a599-5d9b-4d59-b41a-8348d23faa73/abd0a8f9a6b6253facfaaa97e5e138509b004263134d310cc6d49c2f1ac734b9/Xamarin.Android.Sdk-10.0.0.40.vsix");
+  Item (XreItem.Java_OpenJDK_1_8_0_25);
+}
 
 
 void ln (string source, string destination)

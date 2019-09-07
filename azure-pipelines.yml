@@ -69,6 +69,8 @@ jobs:
     msbuildExtraArguments: '/nowarn:VSX1000 /p:CreateAllAndroidTargets=true /bl:$(Build.ArtifactStagingDirectory)\win.binlog'
     buildConfiguration: $(DefaultBuildConfiguration)
     buildPlatform: $(DefaultBuildPlatform)
+    dotnetVersion : $(DOTNET_VERSION)
+    provisionatorPath : 'build/provisioning/provisioning.csx'
 
 - template: build/steps/build-android.yml
   parameters:
