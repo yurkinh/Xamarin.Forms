@@ -324,6 +324,18 @@
       <Version>3.0.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Build.Download">
+      <Version>0.4.11</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+    <ProjectReference Include="..\Xamarin.Forms.Material.Android\Xamarin.Forms.Material.Android.csproj">
+      <Project>{e1586ce6-8eac-4388-a15a-1aabf108b5f8}</Project>
+      <Name>Xamarin.Forms.Material.Android</Name>
+    </ProjectReference>
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.0.0-preview02" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Build.Download">
       <Version>0.4.9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Firebase.AppIndexing">
@@ -344,29 +356,12 @@
     <PackageReference Include="Xamarin.GooglePlayServices.Tasks">
       <Version>60.1142.1</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <ProjectReference Include="..\Xamarin.Forms.Material.Android\Xamarin.Forms.Material.Android.csproj">
-      <Project>{e1586ce6-8eac-4388-a15a-1aabf108b5f8}</Project>
-      <Name>Xamarin.Forms.Material.Android</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Animated.Vector.Drawable" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Annotations" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Compat" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Core.UI" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Fragment" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Transition" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.Palette" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Vector.Drawable" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Migration" Version="1.0.0-preview03" />
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.0.2-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.Browser" Version="1.0.0-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.CardView" Version="1.0.0-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0-preview02" />
+    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.0.0-preview02" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\fonts\ionicons.ttf">
