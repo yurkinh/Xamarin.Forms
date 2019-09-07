@@ -1,3 +1,6 @@
+parameters:
+  dotnetVersion : $(DOTNET_VERSION)
+
 steps:
   - checkout: self
 
