@@ -21,6 +21,8 @@ variables:
   value: Hosted Windows 2019 with VS2019
 - name: XA_VERSION
   value: 16-2
+- name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+  value: true
 
 resources:
   repositories:
@@ -121,7 +123,6 @@ jobs:
     iOSCertSecureFileName: 'Xamarin Forms iOS Certificate.p12'
     iOSProvisioningSecureFileName: 'Xamarin Forms iOS Provisioning.mobileprovision'
     monoVersion : $(MONO_VERSION)
-    XA_VERSION : $(XA_VERSION)
   steps:
      - template: build/steps/build-osx.yml
 
