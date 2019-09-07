@@ -19,6 +19,8 @@ variables:
   value: 5.0.2
 - name: winVmImage
   value: Hosted Windows 2019 with VS2019
+- name: XamarinAndroidVersion
+  value: 16-2
 
 resources:
   repositories:

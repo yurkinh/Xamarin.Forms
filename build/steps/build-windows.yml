@@ -34,6 +34,9 @@ jobs:
           BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
+    - script: |
+        dotnet tool install --global boots
+        boots https://aka.ms/xamarin-android-commercial-d${{ parameters.XamarinAndroidVersion }}-windows
 
     - task: NuGetToolInstaller@0
       displayName: 'Use NuGet ${{ parameters.nugetVersion }}'
