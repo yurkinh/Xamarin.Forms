@@ -21,6 +21,7 @@ PowerShell:
 #addin "nuget:?package=Cake.Xamarin&version=3.0.0"
 #addin "nuget:?package=Cake.Android.Adb&version=3.0.0"
 #addin "nuget:?package=Cake.Git&version=0.19.0"
+#addin "nuget:?package=Cake.Android.SdkManager&version=3.0.2"
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
@@ -40,6 +41,9 @@ var informationalVersion = gitVersion.InformationalVersion;
 var buildVersion = gitVersion.FullBuildMetaData;
 var nugetversion = Argument<string>("packageVersion", gitVersion.NuGetVersion);
 
+var ANDROID_HOME = EnvironmentVariable ("ANDROID_HOME") ?? 
+    (IsRunningOnWindows () ? "C:\\Program Files (x86)\\Android\\android-sdk\\" : "");
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
@@ -56,6 +60,24 @@ Task("NuGetPack")
     .IsDependentOn("Build")
     .IsDependentOn("_NuGetPack");
 
+
+
+Task("Android29")
+    .Does(() =>
+    {
+        Information ("ANDROID_HOME: {0}", ANDROID_HOME);
+
+        var androidSdkSettings = new AndroidSdkManagerToolSettings { 
+            SdkRoot = ANDROID_HOME,
+            SkipVersionCheck = true
+        };
+
+        try { AcceptLicenses (androidSdkSettings); } catch { }
+
+        AndroidSdkManagerInstall (new [] {
+                "platforms;android-29"
+            }, androidSdkSettings);
+    });
 
 Task("_NuGetPack")
     .Does(() =>

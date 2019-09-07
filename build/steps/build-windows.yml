@@ -35,7 +35,9 @@ jobs:
           BuildConfiguration:  ${{ parameters.releaseBuildConfiguration }}
           BuildPlatform: ${{ parameters.buildPlatform }}
     steps:
-      
+    - script: |
+        build.cmd -Target Android29
+  
     - task: xamops.azdevex.provisionator-task.provisionator@1
       displayName: Provisionate Xamarin
       condition: eq(${{ parameters.provisioningWindows }}, 'true')
