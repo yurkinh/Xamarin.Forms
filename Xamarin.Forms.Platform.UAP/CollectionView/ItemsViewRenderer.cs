@@ -14,6 +14,7 @@ using Xamarin.Forms.Platform.UAP;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 using UWPApp = Windows.UI.Xaml.Application;
 using UWPDataTemplate = Windows.UI.Xaml.DataTemplate;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -31,6 +32,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		View _currentHeader;
 		View _currentFooter;
+
+		FrameworkElement _emptyView;
+		View _formsEmptyView;
 
 		protected ItemsControl ItemsControl { get; private set; }
 
@@ -69,6 +73,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateFooter();
 			}
+			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+			{
+				UpdateEmptyView();
+			}
 		}
 
 		protected virtual ListViewBase SelectLayout(IItemsLayout layoutSpecification)
@@ -83,7 +91,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			// Default to a plain old vertical ListView
-			return new Windows.UI.Xaml.Controls.ListView();
+			return new FormsListView();
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -99,6 +107,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (itemsSource == null)
 			{
+				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
+				{
+					incc.CollectionChanged -= ItemsChanged;
+				}
+
 				_collectionViewSource = null;
 				return;
 			}
@@ -115,6 +128,11 @@ namespace Xamarin.Forms.Platform.UWP
 					Source = TemplatedItemSourceFactory.Create(itemsSource, itemTemplate, Element),
 					IsSourceGrouped = false
 				};
+
+				if (_collectionViewSource?.Source is INotifyCollectionChanged incc)
+				{
+					incc.CollectionChanged += ItemsChanged;
+				}
 			}
 			else
 			{
@@ -126,6 +144,13 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			
 			ListViewBase.ItemsSource = _collectionViewSource.View;
+
+			UpdateEmptyViewVisibility();
+		}
+
+		private void ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdateEmptyViewVisibility();
 		}
 
 		protected virtual void UpdateItemTemplate()
@@ -262,6 +287,76 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		protected virtual void UpdateEmptyView()
+		{
+			if (Element == null || ListViewBase == null)
+			{
+				return;
+			}
+
+			var emptyView = Element.EmptyView;
+
+			if (emptyView == null)
+			{
+				return;
+			}
+
+			switch (emptyView)
+			{
+				case string text:
+					_emptyView = new TextBlock { Text = text };
+					break;
+				case View view:
+					_emptyView = RealizeEmptyView(view);
+					break;
+				default:
+					_emptyView = RealizeEmptyViewTemplate(emptyView, Element.EmptyViewTemplate);
+					break;
+			}
+
+			(ListViewBase as IEmptyView)?.SetEmptyView(_emptyView);
+
+			UpdateEmptyViewVisibility();
+		}
+
+		FrameworkElement RealizeEmptyViewTemplate(object bindingContext, DataTemplate emptyViewTemplate)
+		{
+			if (emptyViewTemplate == null)
+			{
+				return new TextBlock { Text = bindingContext.ToString() };
+			}
+
+			var template = emptyViewTemplate.SelectDataTemplate(bindingContext, null);
+			var view = template.CreateContent() as View;
+
+			view.BindingContext = bindingContext;
+			return RealizeEmptyView(view);
+		}
+
+		FrameworkElement RealizeEmptyView(View view)
+		{
+			_formsEmptyView = view;
+			return view.GetOrCreateRenderer().ContainerElement;
+		}
+
+		protected virtual void UpdateEmptyViewVisibility()
+		{
+			if(_emptyView != null && ListViewBase is IEmptyView emptyView)
+			{
+				emptyView.EmptyViewVisibility = (_collectionViewSource?.View?.Count ?? 0) == 0
+					? Visibility.Visible
+					: Visibility.Collapsed;
+
+				if (emptyView.EmptyViewVisibility == Visibility.Visible)
+				{
+					if (ActualWidth >= 0 && ActualHeight >= 0)
+					{
+						_formsEmptyView?.Layout(new Rectangle(0, 0, ActualWidth, ActualHeight));
+					}
+				}
+			}
+		}
+
 		static ListViewBase CreateGridView(GridItemsLayout gridItemsLayout)
 		{
 			var gridView = new FormsGridView();
@@ -277,7 +372,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				gridView.UseVerticalalItemsPanel();
+				gridView.UseVerticalItemsPanel();
 			}
 
 			gridView.MaximumRowsOrColumns = gridItemsLayout.Span;
@@ -288,11 +383,10 @@ namespace Xamarin.Forms.Platform.UWP
 		static ListViewBase CreateHorizontalListView()
 		{
 			// TODO hartez 2018/06/05 16:18:57 Is there any performance benefit to caching the ItemsPanelTemplate lookup?	
-			// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
-			var horizontalListView = new Windows.UI.Xaml.Controls.ListView()
+			var horizontalListView = new FormsListView()
 			{
 				ItemsPanel =
-					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalListItemsPanel"]
+					(ItemsPanelTemplate)UWPApp.Current.Resources["HorizontalListItemsPanel"]
 			};
 
 			ScrollViewer.SetHorizontalScrollMode(horizontalListView, ScrollMode.Auto);
@@ -337,6 +431,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateFooter();
 			UpdateVerticalScrollBarVisibility();
 			UpdateHorizontalScrollBarVisibility();
+			UpdateEmptyView();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
