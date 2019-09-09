@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void SetUpNewElement(ItemsView newElement)
 		{
 			base.SetUpNewElement(newElement);
+			InitializeSnapBehavior();
 			UpdateIsSwipeEnabled();
 			UpdateIsBounceEnabled();
 		}
@@ -55,6 +56,15 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			CarouselViewController?.TearDown();
 			base.TearDownOldElement(oldElement);
+		}
+
+		void InitializeSnapBehavior()
+		{
+			if (CarouselView == null || !(CarouselView.ItemsLayout is ItemsLayout itemsLayout))
+				return;
+
+			if (itemsLayout.SnapPointsType == SnapPointsType.None)
+				itemsLayout.SnapPointsType = SnapPointsType.Mandatory;
 		}
 
 		void UpdateIsSwipeEnabled()
