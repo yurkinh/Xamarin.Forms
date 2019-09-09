@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Support.V7.Widget;
 using Android.Views;
 using FormsCollectionView = Xamarin.Forms.CollectionView;
 
@@ -48,8 +49,10 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			Carousel = newElement as CarouselView;
+
 			_layout = ItemsView.ItemsLayout;
 
+			InitializeSnapBehavior();
 			UpdateIsSwipeEnabled();
 			UpdateInitialPosition();
 			UpdateItemSpacing();
@@ -131,6 +134,15 @@ namespace Xamarin.Forms.Platform.Android
 			base.UpdateItemSpacing();
 		}
 
+		void InitializeSnapBehavior()
+		{
+			if (!(_layout is ItemsLayout itemsLayout))
+				return;
+
+			if (itemsLayout.SnapPointsType == SnapPointsType.None)
+				itemsLayout.SnapPointsType = SnapPointsType.Mandatory;
+		}
+
 		int GetItemWidth()
 		{
 			var itemWidth = Width;
@@ -204,18 +216,13 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdatePositionFromScroll()
 		{
 			var snapHelper = GetSnapManager()?.GetCurrentSnapHelper();
-
-			if (snapHelper == null)
-				return;
-
 			var layoutManager = GetLayoutManager() as LayoutManager;
-
-			var snapView = snapHelper.FindSnapView(layoutManager);
+			var snapView = snapHelper?.FindSnapView(layoutManager);
 
 			if (snapView != null)
 			{
 				int middleCenterPosition = layoutManager.GetPosition(snapView);
-	
+
 				if (_oldPosition != middleCenterPosition)
 				{
 					_oldPosition = middleCenterPosition;
