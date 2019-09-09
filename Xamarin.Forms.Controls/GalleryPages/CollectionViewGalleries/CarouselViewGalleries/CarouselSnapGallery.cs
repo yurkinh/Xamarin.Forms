@@ -1,0 +1,142 @@
+﻿using System;
+using System.Linq;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
+{
+	[Preserve(AllMembers = true)]
+	public class CarouselSnapGallery : ContentPage
+	{
+		public CarouselSnapGallery()
+		{
+			On<iOS>().SetLargeTitleDisplay(LargeTitleDisplayMode.Never);
+
+			var viewModel = new CarouselItemsGalleryViewModel();
+
+			Title = $"CarouselView Snap Options";
+
+			var layout = new Grid
+			{
+				RowDefinitions = new RowDefinitionCollection
+				{
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Star }
+				}
+			};
+
+			var snapPointsStack = new StackLayout
+			{
+				Margin = new Thickness(12)
+			};
+
+			var snapPointsLabel = new Label { FontSize = 10, Text = "SnapPointsType:" };
+			var snapPointsTypes = Enum.GetNames(typeof(SnapPointsType)).Select(b => b).ToList();
+
+   			var snapPointsTypePicker = new Picker
+			{
+				ItemsSource = snapPointsTypes,
+				SelectedItem = snapPointsTypes[1]
+			};
+
+			snapPointsStack.Children.Add(snapPointsLabel);
+			snapPointsStack.Children.Add(snapPointsTypePicker);
+
+			layout.Children.Add(snapPointsStack, 0, 0);
+
+			var snapPointsAlignmentsStack = new StackLayout
+			{
+				Margin = new Thickness(12)
+			};
+
+			var snapPointsAlignmentsLabel = new Label { FontSize = 10, Text = "SnapPointsAlignment:" };
+			var snapPointsAlignments = Enum.GetNames(typeof(SnapPointsAlignment)).Select(b => b).ToList();
+
+			var snapPointsAlignmentPicker = new Picker
+			{
+				ItemsSource = snapPointsAlignments,
+				SelectedItem = snapPointsAlignments[0]
+		    };
+
+			snapPointsAlignmentsStack.Children.Add(snapPointsAlignmentsLabel);
+			snapPointsAlignmentsStack.Children.Add(snapPointsAlignmentPicker);
+
+			layout.Children.Add(snapPointsAlignmentsStack, 0, 1);
+
+			var itemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
+			{
+				SnapPointsType = SnapPointsType.Mandatory,
+				SnapPointsAlignment = SnapPointsAlignment.Start
+			};
+
+			var itemTemplate = GetCarouselTemplate();
+
+			var carouselView = new CarouselView
+			{
+				ItemsSource = viewModel.Items,
+				ItemsLayout = itemsLayout,
+				ItemTemplate = itemTemplate,
+				BackgroundColor = Color.LightGray,
+				PeekAreaInsets = new Thickness(0, 0, 300, 0),
+				Margin = new Thickness(12),
+				AutomationId = "TheCarouselView"
+			};
+
+			layout.Children.Add(carouselView, 0, 2);
+
+
+			snapPointsTypePicker.SelectedIndexChanged += (sender, e) =>
+			{
+				if (carouselView.ItemsLayout is ListItemsLayout listItemsLayout)
+				{
+					Enum.TryParse(snapPointsTypePicker.SelectedItem.ToString(), out SnapPointsType snapPointsType);
+					listItemsLayout.SnapPointsType = snapPointsType;
+				}
+			};
+
+			snapPointsAlignmentPicker.SelectedIndexChanged += (sender, e) =>
+			{
+				if (carouselView.ItemsLayout is ListItemsLayout listItemsLayout)
+				{
+					Enum.TryParse(snapPointsAlignmentPicker.SelectedItem.ToString(), out SnapPointsAlignment snapPointsAlignment);
+					listItemsLayout.SnapPointsAlignment = snapPointsAlignment;
+				}
+			};
+
+			Content = layout;
+			BindingContext = viewModel;
+		}
+
+		internal DataTemplate GetCarouselTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var grid = new Grid();
+
+				var info = new Label
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Margin = new Thickness(6)
+				};
+
+				info.SetBinding(Label.TextProperty, new Binding("Name"));
+
+				grid.Children.Add(info);
+
+				var frame = new Frame
+				{
+					Content = grid,
+					HasShadow = false
+				};
+
+				frame.SetBinding(BackgroundColorProperty, new Binding("Color"));
+
+				return frame;
+			});
+		}
+	}
+}
+

@@ -26,8 +26,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation),
 						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
 							new CarouselXamlGallery(), Navigation),
-						GalleryBuilder.NavButton("CarouselView (Items)", () =>
-							new CarouselItemsGallery(), Navigation),
+						GalleryBuilder.NavButton("CarouselView (Add, remove or clear Items)", () =>
+							new CarouselItemsGallery(), Navigation),      
+	        			GalleryBuilder.NavButton("CarouselView Snap", () =>
+							new CarouselSnapGallery(), Navigation)
 					}
 				}
 			};
