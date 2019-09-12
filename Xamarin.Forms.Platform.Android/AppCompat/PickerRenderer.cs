@@ -67,6 +67,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdatePicker();
 				UpdateTextColor();
 				UpdateCharacterSpacing();
+				UpdateGravity();
 			}
 
 			base.OnElementChanged(e);
@@ -86,6 +87,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
+				UpdateGravity();
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -183,6 +186,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		abstract protected void UpdateTextColor();
 		abstract protected void UpdateTitleColor();
 		abstract protected void UpdatePlaceHolderText();
+		abstract protected void UpdateGravity();
 	}
 
 	public class PickerRenderer : PickerRendererBase<EditText>
@@ -220,6 +224,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void UpdatePlaceHolderText()
 		{
 			EditText.Hint = Element.Title;
+		}
+
+		protected override void UpdateGravity()
+		{
+			EditText.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();
 		}
 	}
 }
