@@ -115,6 +115,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePicker();
 				UpdateTextColor();
 				UpdateCharacterSpacing();
+				UpdateHorizontalTextAlignment();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -125,6 +126,10 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName)
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
+				UpdateLayout();
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 			{
 				UpdatePicker();
@@ -144,6 +149,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateFont();
 			}
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateHorizontalTextAlignment();
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -193,6 +200,7 @@ namespace Xamarin.Forms.Platform.iOS
         protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
+			UpdateLayout();
 		}
 
 		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
@@ -266,6 +274,15 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
 		}
 
+		void UpdateHorizontalTextAlignment()
+		{
+#if __MOBILE__
+			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+#else
+			Control.Alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+#endif
+		}
+
 		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
@@ -277,6 +294,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
 			Control.Text = Control.Text;
+			UpdateLayout();
+		}
+
+		void UpdateLayout()
+		{
+#if __MOBILE__
+			LayoutSubviews();
+#else
+			Layout();
+#endif
 		}
 
 		protected override void Dispose(bool disposing)
