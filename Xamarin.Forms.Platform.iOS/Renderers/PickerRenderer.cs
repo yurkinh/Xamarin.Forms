@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using UIKit;
@@ -116,6 +117,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 				UpdateCharacterSpacing();
 				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -129,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateHorizontalTextAlignment();
 			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
-				UpdateLayout();
+				UpdateVerticalTextAlignment();
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 			{
 				UpdatePicker();
@@ -199,8 +201,7 @@ namespace Xamarin.Forms.Platform.iOS
 
         protected internal virtual void UpdateFont()
 		{
-			Control.Font = Element.ToUIFont();
-			UpdateLayout();
+			Control.Font = Element.ToUIFont();			
 		}
 
 		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
@@ -276,11 +277,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHorizontalTextAlignment()
 		{
-#if __MOBILE__
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-#else
-			Control.Alignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-#endif
+		}
+		void UpdateVerticalTextAlignment()
+		{
+			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();			
 		}
 
 		protected internal virtual void UpdateTextColor()
@@ -293,18 +294,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = textColor.ToUIColor();
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
-			Control.Text = Control.Text;
-			UpdateLayout();
-		}
-
-		void UpdateLayout()
-		{
-#if __MOBILE__
-			LayoutSubviews();
-#else
-			Layout();
-#endif
-		}
+			Control.Text = Control.Text;			
+		}		
 
 		protected override void Dispose(bool disposing)
 		{
