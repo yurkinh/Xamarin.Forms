@@ -55,6 +55,11 @@ namespace Xamarin.Forms.Material.Android
 		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
 
 		AView ITabStop.TabStop => EditText;
+
+		protected override void UpdateGravity()
+		{
+			_textInputEditText.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Element.VerticalTextAlignment.ToVerticalGravityFlags();
+		}
 	}
 }
 #endif
