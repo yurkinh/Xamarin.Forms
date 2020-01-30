@@ -19,6 +19,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ListSource(IEnumerable enumerable)
 		{
+			_itemsSource = new List<object>();
+
+			if (enumerable == null)
+				return;
+
 			foreach (object item in enumerable)
 			{
 				_itemsSource.Add(item);

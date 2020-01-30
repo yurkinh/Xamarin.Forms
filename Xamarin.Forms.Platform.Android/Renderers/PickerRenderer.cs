@@ -110,7 +110,12 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				CallOnClick();
+			{
+				if (Clickable)
+					CallOnClick();
+				else
+					((IPickerRenderer)this)?.OnClick();
+			}
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -125,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_dialog != null)
 				return;
-			
+
 			var picker = new NumberPicker(Context);
 			if (model.Items != null && model.Items.Any())
 			{

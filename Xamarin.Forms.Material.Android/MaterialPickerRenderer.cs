@@ -1,4 +1,4 @@
-#if __ANDROID_28__
+
 using Android.Content;
 using Android.Views;
 using Android.Widget;
@@ -50,9 +50,10 @@ namespace Xamarin.Forms.Material.Android
 		{
 			_textInputLayout.SetHint(Element.Title, Element);
 		}
+
 		protected override void UpdateTitleColor() => ApplyTheme();
 		protected override void UpdateTextColor() => ApplyTheme();
-		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
+		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.TitleColor);
 
 		AView ITabStop.TabStop => EditText;
 
@@ -62,4 +63,3 @@ namespace Xamarin.Forms.Material.Android
 		}
 	}
 }
-#endif
