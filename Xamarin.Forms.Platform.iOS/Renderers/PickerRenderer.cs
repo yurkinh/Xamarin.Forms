@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using UIKit;
@@ -103,6 +104,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePicker();
 				UpdateTextColor();
 				UpdateCharacterSpacing();
+				UpdateHorizontalTextAlignment();
+				UpdateVerticalTextAlignment();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -113,6 +116,10 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Picker.HorizontalTextAlignmentProperty.PropertyName)
+				UpdateHorizontalTextAlignment();
+			else if (e.PropertyName == Picker.VerticalTextAlignmentProperty.PropertyName)
+				UpdateVerticalTextAlignment();
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 			{
 				UpdatePicker();
@@ -132,6 +139,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UpdateFont();
 			}
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateHorizontalTextAlignment();
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -180,7 +189,7 @@ namespace Xamarin.Forms.Platform.iOS
 
         protected internal virtual void UpdateFont()
 		{
-			Control.Font = Element.ToUIFont();
+			Control.Font = Element.ToUIFont();			
 		}
 
 		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
@@ -254,6 +263,15 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
 		}
 
+		void UpdateHorizontalTextAlignment()
+		{
+			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+		}
+		void UpdateVerticalTextAlignment()
+		{
+			Control.VerticalAlignment = Element.VerticalTextAlignment.ToNativeTextAlignment();			
+		}
+
 		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
@@ -264,8 +282,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = textColor.ToUIColor();
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
-			Control.Text = Control.Text;
-		}
+			Control.Text = Control.Text;			
+		}		
 
 		protected override void Dispose(bool disposing)
 		{
