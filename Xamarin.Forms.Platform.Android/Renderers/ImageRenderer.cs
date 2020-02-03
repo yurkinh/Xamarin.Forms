@@ -66,6 +66,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement is IImageController imageController && imageController.GetLoadAsAnimation())
 				UpdateAnimations();
+
+			UpdateTint();
 		}
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -78,6 +80,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateAspect();
 			else if (e.Is(Image.IsAnimationPlayingProperty))
 				UpdateAnimations();
+			else if (e.PropertyName == Image.TintColorProperty.PropertyName)
+				UpdateTint();
 		}
 
 		void UpdateAnimations()
@@ -94,6 +98,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			AImageView.ScaleType type = Element.Aspect.ToScaleType();
 			Control.SetScaleType(type);
+		}
+
+		void UpdateTint()
+		{
+			if (Element == null || Control == null || Control.IsDisposed())
+			{
+				return;
+			}
+
+			if (Element.TintColor.Equals(Color.Transparent))
+			{
+				//Turn off tinting
+
+				if (Control.ColorFilter != null)
+					Control.ClearColorFilter();
+
+				return;
+			}
+
+			//Apply tint color			
+			Control.SetColorFilter(new PorterDuffColorFilter(Element.TintColor.ToAndroid(), PorterDuff.Mode.SrcIn));
 		}
 
 		protected virtual async Task TryUpdateBitmap(Image previous = null)

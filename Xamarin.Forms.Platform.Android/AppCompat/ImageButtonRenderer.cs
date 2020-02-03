@@ -76,6 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Tag = this;
 
 			_backgroundTracker = new BorderBackgroundManager(this, false);
+			
 		}
 
 		protected override void Dispose(bool disposing)
@@ -194,6 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void OnElementChanged(ElementChangedEventArgs<ImageButton> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+			UpdateTint();
 		}
 
 
@@ -285,12 +287,35 @@ namespace Xamarin.Forms.Platform.Android
 			_inputTransparent = Element.InputTransparent;
 		}
 
+		void UpdateTint()
+		{
+			if (Element == null || Control == null || Control.IsDisposed())
+			{
+				return;
+			}
+
+			if (Element.TintColor.Equals(Color.Transparent))
+			{
+				//Turn off tinting
+
+				if (Control.ColorFilter != null)
+					Control.ClearColorFilter();
+
+				return;
+			}
+
+			//Apply tint color			
+			Control.SetColorFilter(new PorterDuffColorFilter(Element.TintColor.ToAndroid(), PorterDuff.Mode.SrcIn));
+		}
+
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == ImageButton.TintColorProperty.PropertyName)
+				UpdateTint();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}

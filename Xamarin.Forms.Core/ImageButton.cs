@@ -39,6 +39,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty TintColorProperty = ImageElement.TintColorProperty;
+
 		public event EventHandler Clicked;
 		public event EventHandler Pressed;
 		public event EventHandler Released;
@@ -101,6 +103,12 @@ namespace Xamarin.Forms
 		{
 			get { return (ImageSource)GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
+		}
+
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore

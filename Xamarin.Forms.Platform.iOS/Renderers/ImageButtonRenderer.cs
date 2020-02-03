@@ -66,6 +66,8 @@ namespace Xamarin.Forms.Platform.iOS
 				await ImageElementManager.SetImage(this, Element).ConfigureAwait(false);
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == ImageButton.TintColorProperty.PropertyName)
+				UpdateTint();
 		}
 
 		protected async override void OnElementChanged(ElementChangedEventArgs<ImageButton> e)
@@ -84,6 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UpdatePadding();
+				UpdateTint();
 				await UpdateImage().ConfigureAwait(false);
 			}
 		}
@@ -101,6 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 				(float)(Element.Padding.Right)
 			);
 		}
+
 		async Task UpdateImage()
 		{
 			try
@@ -110,6 +114,25 @@ namespace Xamarin.Forms.Platform.iOS
 			catch (Exception ex)
 			{
 				Internals.Log.Warning(nameof(ImageRenderer), "Error loading image: {0}", ex);
+			}
+		}
+
+		void UpdateTint()
+		{
+			if (Control?.ImageView?.Image == null)
+				return;
+
+			if (Element.TintColor == Color.Transparent)
+			{
+				//Turn off tinting
+				Control.ImageView.Image = Control.ImageView.Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+				Control.TintColor = null;
+			}
+			else
+			{
+				//Apply tint color
+				Control.ImageView.Image = Control.ImageView.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+				Control.TintColor = Element.TintColor.ToUIColor();
 			}
 		}
 

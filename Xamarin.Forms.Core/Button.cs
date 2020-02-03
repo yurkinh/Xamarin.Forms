@@ -57,6 +57,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
+		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(TintColor), typeof(Color), typeof(Image), Color.Default);
+
 		public Thickness Padding
 		{
 			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
@@ -162,6 +164,12 @@ namespace Xamarin.Forms
 			set { SetValue(TextElement.CharacterSpacingProperty, value); }
 		}
 
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
+		}
+
 		bool IButtonElement.IsEnabledCore
 		{
 			set { SetValueCore(IsEnabledProperty, value); }
@@ -263,6 +271,7 @@ namespace Xamarin.Forms
 		Aspect IImageElement.Aspect => Aspect.AspectFit;
 		ImageSource IImageElement.Source => ImageSource;
 		bool IImageElement.IsOpaque => false;
+		Color IImageElement.TintColor => Color.Default;
 
 
 		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageSourceProperty.PropertyName);

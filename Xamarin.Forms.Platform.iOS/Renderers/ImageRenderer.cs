@@ -68,10 +68,11 @@ namespace Xamarin.Forms.Platform.iOS
 					var imageView = new FormsUIImageView();
 					imageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 					imageView.ClipsToBounds = true;
-					SetNativeControl(imageView);
+					SetNativeControl(imageView);					
 				}
 
 				await TrySetImage(e.OldElement as Image);
+				UpdateTint();
 			}
 
 			base.OnElementChanged(e);
@@ -83,6 +84,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TrySetImage().ConfigureAwait(false);
+			if (e.PropertyName == Image.TintColorProperty.PropertyName || e.PropertyName == Image.SourceProperty.PropertyName)
+				UpdateTint();
 		}
 
 		protected virtual async Task TrySetImage(Image previous = null)
@@ -108,6 +111,25 @@ namespace Xamarin.Forms.Platform.iOS
 		protected async Task SetImage(Image oldElement = null)
 		{
 			await ImageElementManager.SetImage(this, Element, oldElement).ConfigureAwait(false);
+		}
+
+		void UpdateTint()
+		{
+			if (Control?.Image == null || Element == null)
+				return;
+
+			if (Element.TintColor == Color.Transparent)
+			{
+				//Turn off tinting
+				Control.Image = Control.Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+				Control.TintColor = null;
+			}
+			else
+			{
+				//Apply tint color
+				Control.Image = Control.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
+				Control.TintColor = Element.TintColor.ToUIColor();
+			}
 		}
 
 		void IImageVisualElementRenderer.SetImage(UIImage image) => Control.Image = image;

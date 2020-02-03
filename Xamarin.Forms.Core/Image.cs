@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
 
-		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(TintColor), typeof(Color), typeof(Image), Color.Default);
+		public static readonly BindableProperty TintColorProperty = ImageElement.TintColorProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
 

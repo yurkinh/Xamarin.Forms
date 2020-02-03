@@ -1,16 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
-using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface IImageElement : ITintColor
+	public interface IImageElement
 	{
 		//note to implementor: implement this property publicly
 		Aspect Aspect { get; }
 		ImageSource Source { get; }
 		bool IsOpaque { get; }
+		Color TintColor { get; }
 
 
 		//note to implementor: but implement these methods explicitly
