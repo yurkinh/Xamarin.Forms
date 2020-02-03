@@ -22,6 +22,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsAnimationPlayingProperty = ImageElement.IsAnimationPlayingProperty;
 
+		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(TintColor), typeof(Color), typeof(Image), Color.Default);
+
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
 
 		public Image()
@@ -57,6 +59,12 @@ namespace Xamarin.Forms
 		{
 			get { return (ImageSource)GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
+		}		
+
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
 		}
 
 		bool IImageController.GetLoadAsAnimation() => ImageElement.GetLoadAsAnimation(this);
