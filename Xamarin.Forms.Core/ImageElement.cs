@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 
 		internal static readonly BindableProperty IsAnimationPlayingProperty = BindableProperty.Create(nameof(IImageElement.IsAnimationPlaying), typeof(bool), typeof(IImageElement), false);
 
-		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(IImageElement.TintColor), typeof(Color), typeof(Image), Color.Default);
+		public static readonly BindableProperty TintColorProperty = BindableProperty.Create(nameof(IImageElement.TintColor), typeof(Color), typeof(Image), Color.Transparent);
 
 		static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{

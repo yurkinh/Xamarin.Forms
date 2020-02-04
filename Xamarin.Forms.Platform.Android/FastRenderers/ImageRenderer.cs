@@ -81,7 +81,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		protected virtual void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
 			this.EnsureId();
-			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+			UpdateTint();
+
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));			
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -205,7 +207,31 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			ElementPropertyChanged?.Invoke(this, e);
+			if (e.PropertyName == Image.TintColorProperty.PropertyName)
+				UpdateTint();
+
+			ElementPropertyChanged?.Invoke(this, e);			
+		}
+
+		void UpdateTint()
+		{
+			if (Element == null || Control == null || Control.IsDisposed())
+			{
+				return;
+			}
+
+			if (Element.TintColor.Equals(Color.Transparent))
+			{
+				//Turn off tinting
+
+				if (Control.ColorFilter != null)
+					Control.ClearColorFilter();
+
+				return;
+			}
+
+			//Apply tint color			
+			Control.SetColorFilter(new PorterDuffColorFilter(Element.TintColor.ToAndroid(), PorterDuff.Mode.SrcIn));
 		}
 	}
 }
