@@ -206,6 +206,41 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
+		public override UIView HitTest(CGPoint point, UIEvent uievent)
+		{
+			if (!UserInteractionEnabled || Hidden)
+				return null;
+			
+			foreach (var subview in Subviews)
+			{
+				var view = HitTest(subview, point, uievent);
+
+				if (view != null)
+					return view;
+			}
+				
+			return base.HitTest(point, uievent);
+		}
+
+		UIView HitTest(UIView view, CGPoint point, UIEvent uievent)
+		{
+			if (view.Subviews == null)
+				return null;
+
+			foreach (var subview in view.Subviews)
+			{
+				CGPoint subPoint = subview.ConvertPointFromView(point, this);
+				UIView result = subview.HitTest(subPoint, uievent);
+
+				if (result != null)
+				{
+					return result;
+				}
+			}
+
+			return null;
+		}
+
 		public override void TouchesBegan(NSSet touches, UIEvent evt)
 		{
 			var navigationController = GetUINavigationController(GetViewController());
@@ -508,7 +543,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ProcessTouchMove(CGPoint point)
 		{
-			if (!_isSwiping)
+			if (!_isSwiping && _swipeThreshold == 0)
 			{
 				_swipeDirection = SwipeDirectionHelper.GetSwipeDirection(new Point(_initialPoint.X, _initialPoint.Y), new Point(point.X, point.Y));
 				RaiseSwipeStarted();
