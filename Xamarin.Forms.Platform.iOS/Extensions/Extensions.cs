@@ -198,14 +198,10 @@ namespace Xamarin.Forms.Platform.iOS
 		internal static void UpdateDefaultWritingDirection(NSMutableAttributedString mutableAttributedString, string text)
 		{
 			if (!string.IsNullOrEmpty(text))
-			{
-				var lr = new NLLanguageRecognizer();
-				lr.Process(text);
-				var p = lr.DominantLanguage.ToString();
-				var k=NSLocale.CurrentLocale.GetIdentifierDisplayName(p);
+			{				
 				var paragraphStyle = new NSMutableParagraphStyle
 				{
-					BaseWritingDirection = string.IsNullOrEmpty(k) ? NSWritingDirection.Natural : NSParagraphStyle.GetDefaultWritingDirection(NSLocale.CurrentLocale.GetIdentifierDisplayName(p))
+					BaseWritingDirection = NSParagraphStyle.GetDefaultWritingDirection(NLLanguageRecognizer.GetDominantLanguage(text).ToString())
 				};
 				mutableAttributedString.AddAttribute
 				(
@@ -213,7 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 					NSObject.FromObject(paragraphStyle), new NSRange(0, text.Length - 1)
 				);				
 			}
-		}
+		}		
 
 		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
 			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
