@@ -1,6 +1,7 @@
 using CoreFoundation;
 using CoreText;
 using Foundation;
+using NaturalLanguage;
 using System;
 using UIKit;
 using Xamarin.Forms.Internals;
@@ -198,9 +199,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (!string.IsNullOrEmpty(text))
 			{
+				var lr = new NLLanguageRecognizer();
+				lr.Process(text);
+				var p = lr.DominantLanguage.ToString();
+				var k=NSLocale.CurrentLocale.GetIdentifierDisplayName(p);
 				var paragraphStyle = new NSMutableParagraphStyle
 				{
-					BaseWritingDirection = NSParagraphStyle.GetDefaultWritingDirection(NSLocale.CurrentLocale.LanguageCode)
+					BaseWritingDirection = string.IsNullOrEmpty(k) ? NSWritingDirection.Natural : NSParagraphStyle.GetDefaultWritingDirection(NSLocale.CurrentLocale.GetIdentifierDisplayName(p))
 				};
 				mutableAttributedString.AddAttribute
 				(
