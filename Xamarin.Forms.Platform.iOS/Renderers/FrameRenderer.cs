@@ -31,11 +31,14 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
-			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName ||
 				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				SetupLayer();
+			else if (e.PropertyName == VisualElement.TranslationXProperty.PropertyName ||
+					 e.PropertyName == VisualElement.TranslationYProperty.PropertyName)
+				SetNeedsLayout();
 		}
 
 		public virtual void SetupLayer()
@@ -101,9 +104,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Preserve(Conditional = true)]
 		class ShadowView : UIView
 		{
-			CALayer _shadowee;
-			CGRect _previousBounds;
-			CGRect _previousFrame;
+			CALayer _shadowee;			
 
 			[Preserve(Conditional = true)]
 			public ShadowView(CALayer shadowee)
@@ -131,19 +132,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void LayoutSubviews()
 			{
-				if (_shadowee.Bounds != _previousBounds || _shadowee.Frame != _previousFrame)
-				{
-					base.LayoutSubviews();
-					SetBounds();
-				}
+				SetBounds();
+				base.LayoutSubviews();				
 			}
 
 			void SetBounds()
 			{
 				Layer.Frame = _shadowee.Frame;
-				Layer.Bounds = _shadowee.Bounds;
-				_previousBounds = _shadowee.Bounds;
-				_previousFrame = _shadowee.Frame;
+				Layer.Bounds = _shadowee.Bounds;				
 			}
 		}
 	}
