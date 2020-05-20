@@ -313,5 +313,23 @@ namespace Xamarin.Forms.Platform.UWP
 				_queryTextBox.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
 			}
 		}
+
+		bool _isDisposed;
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			if (disposing && Control != null)
+			{
+				Control.QuerySubmitted -= OnQuerySubmitted;
+				Control.TextChanged -= OnTextChanged;
+				Control.Loaded -= OnControlLoaded;
+			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
+		}
 	}
 }
