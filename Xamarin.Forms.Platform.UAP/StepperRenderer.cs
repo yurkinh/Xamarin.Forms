@@ -80,5 +80,21 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.Value = Element.Value;
 		}
+
+		bool _isDisposed;
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_isDisposed)
+				return;
+
+			if (disposing && Control != null)
+			{
+				Control.ValueChanged -= OnControlValue;
+			}
+
+			_isDisposed = true;
+			base.Dispose(disposing);
+		}
 	}
 }
