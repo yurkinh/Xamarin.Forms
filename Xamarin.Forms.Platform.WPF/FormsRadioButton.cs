@@ -42,8 +42,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnApplyTemplate();
 
-			UpdateBackgroundColor();
-			UpdateBorderRadius();
+			UpdateBackgroundColor();			
 		}
 
 		static void OnBackgroundColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -53,7 +52,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		static void OnBorderRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			((FormsRadioButton)d).UpdateBorderRadius();
+			
 		}
 
 		void UpdateBackgroundColor()
@@ -63,10 +62,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 			Background = BackgroundColor;
 		}
-
-		void UpdateBorderRadius()
-		{
-			
-		}
+		
 	}
 }
