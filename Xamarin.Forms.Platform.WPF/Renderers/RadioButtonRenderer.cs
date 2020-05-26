@@ -8,9 +8,8 @@ namespace Xamarin.Forms.Platform.WPF
 	public class RadioButtonRenderer : ViewRenderer<RadioButton, FormsRadioButton>
 	{
 		bool _fontApplied;
-		FormsRadioButton _button;
-
-		public bool IsDisposed { get; private set; }
+		bool _isDisposed; 
+		FormsRadioButton _button;		
 
 		protected override void OnElementChanged(ElementChangedEventArgs<RadioButton> e)
 		{
@@ -23,8 +22,7 @@ namespace Xamarin.Forms.Platform.WPF
 					_button = new FormsRadioButton();
 
 					_button.Click += OnButtonClick;
-					_button.AddHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed, true);
-					_button.Loaded += ButtonOnLoaded;
+					_button.AddHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed, true);					
 					_button.Checked += OnRadioButtonCheckedOrUnchecked;
 					_button.Unchecked += OnRadioButtonCheckedOrUnchecked;
 
@@ -55,11 +53,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateFont();
 				UpdateCheck();
 			}
-		}
-
-		void ButtonOnLoaded(object o, RoutedEventArgs routedEventArgs)
-		{			
-		}
+		}		
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -192,18 +186,17 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void Dispose(bool disposing)
 		{
-			if (IsDisposed)
+			if (_isDisposed)
 				return;
 			if (_button != null)
 			{
 				_button.Click -= OnButtonClick;
-				_button.RemoveHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed);
-				_button.Loaded -= ButtonOnLoaded;
+				_button.RemoveHandler(System.Windows.Controls.Button.ClickEvent, (RoutedEventHandler)OnPointerPressed);				
 				_button.Checked -= OnRadioButtonCheckedOrUnchecked;
 				_button.Unchecked -= OnRadioButtonCheckedOrUnchecked;
 			}
 
-			IsDisposed = true;
+			_isDisposed = true;
 
 			base.Dispose(disposing);
 		}
