@@ -391,8 +391,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static void OnCharacterChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
-			var textBox = (FormsTextBox)dependencyObject;
-			textBox.UpdateInputScope();
+			var textBox = (FormsTextBox)dependencyObject;			
 			textBox.SyncBaseText();
 		}
 
