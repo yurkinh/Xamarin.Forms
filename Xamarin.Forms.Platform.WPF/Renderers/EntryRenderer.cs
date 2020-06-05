@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
 				UpdateIsReadOnly();
+				UpdatePasswordChar();
 			}
 
 			base.OnElementChanged(e);
@@ -74,6 +75,8 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateMaxLength();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == Entry.PasswordCharProperty.PropertyName)
+				UpdatePasswordChar();
 		}
 		
 		internal override void OnModelFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)
@@ -285,6 +288,13 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateIsReadOnly()
 		{
 			Control.IsReadOnly = Element.IsReadOnly;
+		}
+
+		void UpdatePasswordChar()
+		{
+			if (Control == null || Element == null)
+				return;
+			Control.ObfuscationCharacter = Element.PasswordChar;
 		}
 	}
 }

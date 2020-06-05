@@ -15,8 +15,6 @@ namespace Xamarin.Forms.Platform.WPF
 	/// </summary>
 	public class FormsTextBox : TextBox
 	{
-		const char ObfuscationCharacter = '●';
-
 		public static readonly DependencyProperty PlaceholderTextProperty = DependencyProperty.Register("PlaceholderText", typeof(string), typeof(FormsTextBox),
 			new PropertyMetadata(string.Empty));
 
@@ -31,6 +29,9 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected internal static readonly DependencyProperty DisabledTextProperty = DependencyProperty.Register("DisabledText", typeof(string), typeof(FormsTextBox),
 			new PropertyMetadata(""));
+
+		public static readonly DependencyProperty ObfuscationCharacterProperty = DependencyProperty.Register(nameof(ObfuscationCharacter),
+	       typeof(char), typeof(FormsTextBox), new PropertyMetadata('●', OnCharacterChanged));
 
 		static InputScope s_passwordInputScope;
 		InputScope _cachedInputScope;
@@ -68,6 +69,12 @@ namespace Xamarin.Forms.Platform.WPF
 			set { SetValue(TextProperty, value); }
 		}
 
+		public char ObfuscationCharacter
+		{
+			get { return (char)GetValue(ObfuscationCharacterProperty); }
+			set { SetValue(ObfuscationCharacterProperty, value); }
+		}
+
 		protected internal string DisabledText
 		{
 			get { return (string)GetValue(DisabledTextProperty); }
@@ -94,7 +101,7 @@ namespace Xamarin.Forms.Platform.WPF
 			int lengthDifference = base.Text.Length - Text.Length;
 
 			var savedSelectionStart = SelectionStart;
-			string updatedRealText = DetermineTextFromPassword(Text, SelectionStart, base.Text);
+			string updatedRealText = DetermineTextFromPassword(Text, SelectionStart, base.Text, ObfuscationCharacter);
 
 			if (Text == updatedRealText)
 			{
@@ -153,17 +160,17 @@ namespace Xamarin.Forms.Platform.WPF
 			SelectionStart = savedSelectionStart;
 		}
 
-		static string DetermineTextFromPassword(string realText, int start, string passwordText)
+		static string DetermineTextFromPassword(string realText, int start, string passwordText, char symbol)
 		{
 			var lengthDifference = passwordText.Length - realText.Length;
 			if (lengthDifference > 0)
-				realText = realText.Insert(start - lengthDifference, new string(ObfuscationCharacter, lengthDifference));
+				realText = realText.Insert(start - lengthDifference, new string(symbol, lengthDifference));
 			else if (lengthDifference < 0)
 				realText = realText.Remove(start, -lengthDifference);
 
 			var sb = new System.Text.StringBuilder(passwordText.Length);
 			for (int i = 0; i < passwordText.Length; i++)
-				sb.Append(passwordText[i] == ObfuscationCharacter ? realText[i] : passwordText[i]);
+				sb.Append(passwordText[i] == symbol ? realText[i] : passwordText[i]);
 
 			return sb.ToString();
 		}
@@ -285,6 +292,12 @@ namespace Xamarin.Forms.Platform.WPF
 		static void TextPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
 			var textBox = (FormsTextBox)dependencyObject;
+			textBox.SyncBaseText();
+		}
+
+		static void OnCharacterChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			var textBox = (FormsTextBox)dependencyObject;			
 			textBox.SyncBaseText();
 		}
 
