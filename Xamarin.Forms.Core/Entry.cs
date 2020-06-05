@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
@@ -44,6 +44,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SelectionLengthProperty = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(Entry), 0, validateValue: (b, v) => (int)v >= 0);
 
 		public static readonly BindableProperty ClearButtonVisibilityProperty = BindableProperty.Create(nameof(ClearButtonVisibility), typeof(ClearButtonVisibility), typeof(Entry), ClearButtonVisibility.Never);
+
+		public static readonly BindableProperty PasswordCharProperty = BindableProperty.Create(nameof(PasswordChar), typeof(char), typeof(Entry), '●');
+
 
 		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
@@ -129,6 +132,12 @@ namespace Xamarin.Forms
 		{
 			get => (ClearButtonVisibility)GetValue(ClearButtonVisibilityProperty);
 			set => SetValue(ClearButtonVisibilityProperty, value);
+		}
+
+		public char PasswordChar
+		{
+			get => (char)GetValue(PasswordCharProperty);
+			set => SetValue(PasswordCharProperty, value);
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

@@ -68,6 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateIsReadOnly();
 				UpdateInputScope();
 				UpdateClearButtonVisibility();
+				UpdatePasswordChar();
 
 
 
@@ -154,6 +155,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateIsReadOnly();
 			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
 				UpdateClearButtonVisibility();
+			else if(e.PropertyName == Entry.PasswordCharProperty.PropertyName)
+				UpdatePasswordChar();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -341,6 +344,13 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			Control.InputScope = Element.ReturnType.ToInputScope();
+		}
+
+		void UpdatePasswordChar()
+		{
+			if (Control == null || Element == null)
+				return;
+			Control.ObfuscationCharacter = Element.PasswordChar;
 		}
 
 		void SelectionChanged(object sender, RoutedEventArgs e)
