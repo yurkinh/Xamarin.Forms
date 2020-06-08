@@ -1,8 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Renderscripts;
+using Android.Runtime;
+using Android.Sax;
 #if __ANDROID_29__
 using AndroidX.Core.Content;
 #else
@@ -14,6 +19,7 @@ using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using Java.Interop;
 using Java.Lang;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
@@ -191,6 +197,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateImeOptions();
 			UpdateReturnType();
 			UpdateIsReadOnly();
+			UpdatePasswordChar();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -282,8 +289,11 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == Entry.PasswordCharProperty.PropertyName)
+				UpdatePasswordChar();
 			if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
 				UpdateClearBtnOnPropertyChanged();
+			
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -362,6 +372,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateFont();
 		}
+
+		void UpdatePasswordChar()
+		{
+			EditText.TransformationMethod= new AsteriskPasswordTransformationMethod(Element.PasswordChar);
+		}		
 
 		abstract protected void UpdatePlaceholderColor();
 
@@ -548,6 +563,8 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 
+	
+
 	// Entry clear button management
 	public abstract partial class EntryRendererBase<TControl>
 	{
@@ -640,6 +657,55 @@ namespace Xamarin.Forms.Platform.Android
 				EditText.Touch += EditTextTouched;
 			else
 				EditText.Touch -= EditTextTouched;
+		}
+	}
+
+	public class AsteriskPasswordTransformationMethod : PasswordTransformationMethod
+	{
+		char _passwordChar;
+
+		public AsteriskPasswordTransformationMethod(char passwordChar)
+		{
+			_passwordChar = passwordChar;
+		}
+
+		public override ICharSequence GetTransformationFormatted(ICharSequence source, global::Android.Views.View view)
+		{
+			return new PasswordCharSequence(source, _passwordChar);
+		}
+
+		private class PasswordCharSequence : Java.Lang.Object, ICharSequence
+		{
+			readonly ICharSequence _source;
+			char _passwordChar;
+
+			public PasswordCharSequence(ICharSequence source, char passwordChar)
+			{
+				_source = source;
+				_passwordChar = passwordChar;
+			}
+			public char CharAt(int index)
+			{
+				return _passwordChar; // here is your custom password character
+			}
+			public IEnumerator<char> GetEnumerator()
+			{
+				return _source.GetEnumerator();
+			}
+			public int Length()
+			{
+				return _source.Length();
+			}
+
+			public ICharSequence SubSequenceFormatted(int start, int end)
+			{
+				return _source.SubSequenceFormatted(start, end);
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return _source.GetEnumerator();
+			}
 		}
 	}
 }
