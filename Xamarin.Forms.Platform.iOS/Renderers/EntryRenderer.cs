@@ -141,6 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
 			UpdateReturnType();
+			UpdatePasswordChar();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -206,6 +207,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsReadOnly();
 			else if (e.PropertyName == Entry.ClearButtonVisibilityProperty.PropertyName)
 				UpdateClearButtonVisibility();
+			else if (e.PropertyName == Entry.PasswordCharProperty.PropertyName)
+				UpdatePasswordChar();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -553,5 +556,22 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ClearButtonMode = Element.ClearButtonVisibility == ClearButtonVisibility.WhileEditing ? UITextFieldViewMode.WhileEditing : UITextFieldViewMode.Never;
 		}
+
+		void UpdatePasswordChar()
+		{
+			//Control.ObfuscationCharacter = Element.PasswordChar;
+			Control.Delegate = new PasswordCharDelegate();
+		}
 	}
+
+	public class PasswordCharDelegate: UITextField, IUITextFieldDelegate
+	{
+		[Export("textField:shouldChangeCharactersInRange:replacementString:")]
+		public new  bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+		{
+			throw new System.NotImplementedException();
+		}
+	}
+
+	
 }
