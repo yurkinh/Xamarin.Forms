@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 	{
 		private SizeRequest _perfectSize;
 		private bool _perfectSizeValid;
-		private bool _allocated;
+		private bool _allocated = true;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
