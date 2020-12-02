@@ -282,8 +282,8 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		void UpdateFlowDirection()
-		{
-			(Control as UITextField).UpdateTextAlignment(Element);
+		{			
+			Control.UpdateFlowDirection(Element);
 		}
 
 		protected internal virtual void UpdateTextColor()

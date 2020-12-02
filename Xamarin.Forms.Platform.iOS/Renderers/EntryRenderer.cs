@@ -460,8 +460,8 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		void UpdateFlowDirection()
-		{
-			(Control as UITextField).UpdateTextAlignment(Element);
+		{			
+			Control.UpdateFlowDirection(Element);
 		}
 
 		UITextPosition GetSelectionEnd(int cursorPosition, UITextPosition start, int startOffset)
